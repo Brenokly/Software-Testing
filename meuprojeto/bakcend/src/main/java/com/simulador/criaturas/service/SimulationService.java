@@ -5,9 +5,8 @@ import java.util.Random;
 
 import org.springframework.stereotype.Service;
 
-import com.simulador.criaturas.dtos.CreatureResponseDTO;
-import static com.simulador.criaturas.dtos.CreatureResponseDTO.toDTO;
 import static com.simulador.criaturas.dtos.CreatureResponseDTO.toDTOList;
+import com.simulador.criaturas.dtos.IterationStatusDTO;
 import com.simulador.criaturas.model.Creature;
 import com.simulador.criaturas.model.Creatures;
 
@@ -19,19 +18,24 @@ import com.simulador.criaturas.model.Creatures;
 @Service
 public class SimulationService {
 
-    private Creatures creatures;                    // Criaturas
-    private final Random random = new Random();     // Gera números aleatórios
-    private static int iterationCount = 1;          // Contador de iterações
+    private Creatures activeCreatures; // Criaturas ativas
+    private Creatures inactiveCreatures; // Criaturas inativas (Creaturas que chegaram a 0 de ouro)
+    private int iterationCount = 1; // Contador de iterações
+    private boolean isFinished; // Indica se a simulação terminou
+    private final Random random = new Random(); // Gera números aleatórios
 
-    public SimulationService(int amountOfCreatures) {
+    public void startSimulation(int amountOfCreatures) {
         if (amountOfCreatures <= 1) {
             throw new IllegalArgumentException("Deve haver mais de uma criatura para a simulação.");
         }
 
-        this.creatures = new Creatures(amountOfCreatures);
+        // Inicializa as criaturas com o valor recebido do front-end.
+        this.activeCreatures = new Creatures(amountOfCreatures);
+        this.inactiveCreatures = new Creatures(0);
+        this.isFinished = false;
     }
 
-    public List<CreatureResponseDTO> iterate() {
+    public IterationStatusDTO iterate() {
         // Nesse método é feita a iteração sobre a criatura corrente.
         // A iteração consiste em: mover uma criatura, encontrar vizinho, roubar moedas.
         // Se não houver criaturas suficientes, lança uma exceção.
@@ -39,7 +43,7 @@ public class SimulationService {
 
         validateMinimumCreatures();
 
-        Creature current = creatures.getCurrent();
+        Creature current = activeCreatures.getCurrent();
         validateCreature(current);
 
         double r = generateRandomFactor();
@@ -51,13 +55,28 @@ public class SimulationService {
         handleGoldTransfer(current, neighbor);
 
         iterationCount++;
-        creatures.next();
+        activeCreatures.next();
 
-        return toDTOList(creatures.getCreatures());
+        return getIterationStatus();
+    }
+
+    private IterationStatusDTO getIterationStatus() {
+        // Verifica se a simulação terminou
+        if (activeCreatures.getAmoutOfCreatures() <= 1) {
+            isFinished = true;
+        }
+
+        // Retorna o estado atual da simulação, incluindo as criaturas ativas e
+        // inativas.
+        return IterationStatusDTO.toDTO(
+                toDTOList(activeCreatures.getCreatures()),
+                toDTOList(inactiveCreatures.getCreatures()),
+                iterationCount,
+                isFinished);
     }
 
     private void validateMinimumCreatures() {
-        if (creatures.getAmoutOfCreatures() <= 1) {
+        if (activeCreatures.getAmoutOfCreatures() <= 1) {
             throw new IllegalStateException("Não há criaturas suficientes para iterar.");
         }
     }
@@ -81,7 +100,9 @@ public class SimulationService {
     private void handleGoldTransfer(Creature current, Creature neighbor) {
         double stolen = neighbor.giveMoney(0.5);
         if (stolen < 0) {
-            creatures.removeCreature(neighbor.getId());
+            inactiveCreatures.addCreature(activeCreatures.removeCreature(neighbor.getId())); // Remove da lista de
+                                                                                             // ativas e adiciona na
+                                                                                             // inativa
             validateMinimumCreatures(); // Pode lançar exceção se só sobrar uma
         } else {
             current.setGold(current.getGold() + stolen);
@@ -91,7 +112,7 @@ public class SimulationService {
     private Creature findClosestNeighbor(Creature current) {
         double currentX = current.getX();
 
-        List<Creature> others = creatures.getCreatures().stream() // Filtra as criaturas que não são a corrente
+        List<Creature> others = activeCreatures.getCreatures().stream() // Filtra as criaturas que não são a corrente
                 .filter(c -> c.getId() != current.getId())
                 .toList();
 
@@ -109,24 +130,14 @@ public class SimulationService {
         return closestCreature;
     }
 
-    public List<CreatureResponseDTO> getCreatures() {
-        return toDTOList(creatures.getCreatures());
-    }
-
-    public int getIterationCount() {
-        return iterationCount;
-    }
-
-    public int getAmoutOfCreatures() {
-        return creatures.getAmoutOfCreatures();
-    }
-
-    public int getCurrentIndex() {
-        return creatures.getCurrentIndex();
+    public int creatureCurrent() {
+        return activeCreatures.getCurrent().getId();
     }
 
     public void resetSimulation() {
-        this.creatures = new Creatures(creatures.getAmoutOfCreatures());
+        this.activeCreatures = new Creatures(activeCreatures.getAmoutOfCreatures());
+        this.inactiveCreatures = new Creatures(0);
+        this.isFinished = false;
         iterationCount = 0;
     }
 

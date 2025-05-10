@@ -15,9 +15,9 @@ import lombok.ToString;
 @ToString
 public class Creatures {
 
-    private final List<Creature> creatures;    // Lista de criaturas
-    private int amoutOfCreatures;              // Quantidade de criaturas
-    private int currentIndex = 0;              // Índice da criatura corrente (id da criatura)
+    private final List<Creature> creatures; // Lista de criaturas
+    private int amoutOfCreatures; // Quantidade de criaturas
+    private int currentIndex = 0; // Índice da criatura corrente
 
     public Creatures(int amoutOfCreatures) {
         this.creatures = new ArrayList<>();
@@ -84,6 +84,13 @@ public class Creatures {
         creatures.remove(currentIndex);
         if (currentIndex >= creatures.size()) {
             currentIndex = 0;
+        }
+    }
+
+    public void addCreature(Creature creature) {
+        if (creature != null) {
+            creatures.add(creature);
+            amoutOfCreatures++;
         }
     }
 

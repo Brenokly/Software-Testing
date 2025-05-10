@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class Creature {
 
-    private int id;         // Identificador único da criatura
-    private double x;       // Posição x da criatura no mapa (Lugar no horizonte)
-    private double gold;    // Quantidade de ouro que a criatura possui
+    private int id; // Identificador único da criatura
+    private double x; // Posição x da criatura no mapa (Lugar no horizonte)
+    private double gold; // Quantidade de ouro que a criatura possui
 
     public Creature(int id) {
         this.id = id;

@@ -18,16 +18,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreatureResponseDTO {
 
-    private int id;
-    private double x;
-    private double gold;
+    private int id;         // ID da criatura
+    private double x;       // Posição da criatura no eixo X (Horizonte)
+    private double gold;    // Quantidade de ouro da criatura
 
     public static CreatureResponseDTO toDTO(Creature creature) {
         return new CreatureResponseDTO(
                 creature.getId(),
                 creature.getX(),
-                creature.getGold()
-        );
+                creature.getGold());
     }
 
     public static List<CreatureResponseDTO> toDTOList(List<Creature> creatures) {
