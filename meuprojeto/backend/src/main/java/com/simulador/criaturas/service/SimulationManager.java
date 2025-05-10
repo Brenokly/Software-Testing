@@ -3,6 +3,8 @@ package com.simulador.criaturas.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.simulador.criaturas.dtos.IterationStatusDTO;
+
 @Component
 public class SimulationManager {
 
@@ -13,8 +15,8 @@ public class SimulationManager {
     this.simulationService = simulationService;
   }
 
-  public void iniciarSimulacao(int quantidade) {
-    simulationService.startSimulation(quantidade); // Usar o método startSimulation do SimulationService
+  public IterationStatusDTO iniciarSimulacao(int quantidade) {
+    return simulationService.startSimulation(quantidade);
   }
 
   public SimulationService getSimulacao() {

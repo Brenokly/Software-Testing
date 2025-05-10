@@ -24,7 +24,7 @@ public class SimulationService {
     private boolean isFinished; // Indica se a simulação terminou
     private final Random random = new Random(); // Gera números aleatórios
 
-    public void startSimulation(int amountOfCreatures) {
+    public IterationStatusDTO startSimulation(int amountOfCreatures) {
         if (amountOfCreatures <= 1) {
             throw new IllegalArgumentException("Deve haver mais de uma criatura para a simulação.");
         }
@@ -33,6 +33,8 @@ public class SimulationService {
         this.activeCreatures = new Creatures(amountOfCreatures);
         this.inactiveCreatures = new Creatures(0);
         this.isFinished = false;
+
+        return getIterationStatus();
     }
 
     public IterationStatusDTO iterate() {

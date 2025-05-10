@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Projeto com frontend e backend",
   "scripts": {
-    "start": "concurrently \"cd backend && ./mvnw spring-boot:run\" \"cd frontend && npm run dev\""
+    "start": "concurrently \"cd backend && mvn spring-boot:run\" \"cd frontend && npm run dev\""
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

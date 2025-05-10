@@ -26,8 +26,8 @@ public class SimulationController {
   }
 
   @PostMapping("/iniciar")
-  public void iniciarSimulacao(@RequestBody SimulationRequestDTO request) {
-    simulationManager.iniciarSimulacao(request.getQuantidade());
+  public IterationStatusDTO iniciarSimulacao(@RequestBody SimulationRequestDTO request) {
+    return simulationManager.iniciarSimulacao(request.getQuantidade());
   }
 
   @PostMapping("/iterar")
