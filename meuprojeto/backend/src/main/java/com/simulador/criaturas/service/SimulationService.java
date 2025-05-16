@@ -1,12 +1,11 @@
 package com.simulador.criaturas.service;
 
-import static com.simulador.criaturas.dtos.CreatureResponseDTO.toDTOList;
-
 import java.util.List;
 import java.util.Random;
 
 import org.springframework.stereotype.Service;
 
+import static com.simulador.criaturas.dtos.CreatureResponseDTO.toDTOList;
 import com.simulador.criaturas.dtos.IterationStatusDTO;
 import com.simulador.criaturas.model.Creature;
 import com.simulador.criaturas.model.Creatures;
