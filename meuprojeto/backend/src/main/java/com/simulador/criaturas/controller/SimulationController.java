@@ -41,8 +41,18 @@ public class SimulationController {
   }
 
   @PostMapping("/resetar")
-  public void resetarSimulacao() {
-    getService().resetSimulation();
+  public IterationStatusDTO resetarSimulacao() {
+    return getService().resetSimulation();
+  }
+
+  @GetMapping("/finalizar")
+  public IterationStatusDTO finalizarSimulacao() {
+    return getService().finishSimulation();
+  }
+
+  @GetMapping("/status")
+  public IterationStatusDTO getStatus() {
+    return getService().getIterationStatus();
   }
 
   private SimulationService getService() {

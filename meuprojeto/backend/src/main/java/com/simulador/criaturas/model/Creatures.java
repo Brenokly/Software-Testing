@@ -27,7 +27,7 @@ public class Creatures {
 
     private void initializeCreatures() {
         clearCreatures();
-        for (int i = 1; i <= amoutOfCreatures; i++) {
+        for (int i = 0; i < amoutOfCreatures; i++) {
             creatures.add(new Creature(i));
         }
     }
