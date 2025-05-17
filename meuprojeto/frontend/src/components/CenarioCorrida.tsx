@@ -1,9 +1,12 @@
+"use client";
 import { CreatureResponseDTO } from "@/utils/types/types";
+import { useEffect } from "react";
 import { Creature } from "./Creature";
 
 interface CenarioCorridaProps {
   criaturas: CreatureResponseDTO[];
   criaturaAtualId: number | null;
+  onFinishDetected?: () => void;
   alturaPista?: number;
   espacamento?: number;
 }
@@ -11,9 +14,22 @@ interface CenarioCorridaProps {
 export function CenarioCorrida({
   criaturas,
   criaturaAtualId,
+  onFinishDetected,
   alturaPista = 40,
   espacamento = 27,
 }: CenarioCorridaProps) {
+  useEffect(() => {
+    const algumaChegouAoFinal = criaturas.some(
+      (criatura) => criatura.x >= 10_000_000
+    );
+    if (algumaChegouAoFinal) {
+      // Avisa o pai que acabou a corrida
+      if (onFinishDetected) {
+        onFinishDetected();
+      }
+    }
+  }, [criaturas, onFinishDetected]);
+
   return (
     <div
       className="w-full h-full"

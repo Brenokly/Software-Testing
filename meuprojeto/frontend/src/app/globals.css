@@ -1,1 +1,10 @@
 @import "tailwindcss";
+
+/* Importa a fonte retrô */
+@import "@fontsource/press-start-2p";
+
+/* Aplica a fonte no body */
+* {
+  font-family: 'Press Start 2P', cursive;
+}
+

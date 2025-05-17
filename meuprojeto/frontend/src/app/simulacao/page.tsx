@@ -2,6 +2,7 @@
 
 import { CenarioCorrida } from "@/components/CenarioCorrida";
 import {
+  finalizar,
   getCriaturaAtual,
   iniciarSimulacao,
   iterar,
@@ -9,19 +10,19 @@ import {
 } from "@/utils/services/simulacaoService";
 import { IterationStatusDTO } from "@/utils/types/types";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function SimulacaoPage() {
   const [status, setStatus] = useState<IterationStatusDTO | null>(null);
   const [criaturaAtualId, setCriaturaAtualId] = useState<number | null>(null);
-  const [quantidadeCriaturas, setQuantidade] = useState(10);
   const searchParams = useSearchParams();
 
-  useEffect(() => {
+  const quantidadeCriaturas = useMemo(() => {
     const qtd = Number(searchParams.get("quantidade"));
-    if (!isNaN(qtd)) setQuantidade(qtd);
+    return isNaN(qtd) ? 10 : qtd;
   }, [searchParams]);
 
+  // Inicia simulação
   useEffect(() => {
     async function iniciar() {
       try {
@@ -36,19 +37,38 @@ export default function SimulacaoPage() {
     iniciar();
   }, [quantidadeCriaturas]);
 
-  async function handleIterar() {
-    const dados = await iterar();
-    setStatus(dados);
-    const atual = await getCriaturaAtual();
-    setCriaturaAtualId(atual);
-  }
+  const atualizarStatus = useCallback(
+    async (acao: () => Promise<IterationStatusDTO>) => {
+      const dados = await acao();
+      setStatus(dados);
+      const atual = await getCriaturaAtual();
+      setCriaturaAtualId(atual);
 
-  async function handleResetar() {
-    const dados = await resetar();
-    setStatus(dados);
-    const atual = await getCriaturaAtual();
-    setCriaturaAtualId(atual);
-  }
+      return dados;
+    },
+    []
+  );
+
+  const handleIterar = useCallback(() => {
+    if (status?.finished) return;
+    return atualizarStatus(iterar);
+  }, [status, atualizarStatus]);
+
+  const handleResetar = useCallback(() => {
+    return atualizarStatus(resetar);
+  }, [atualizarStatus]);
+
+  const handleFinalizar = useCallback(async (): Promise<void> => {
+    if (status?.finished) return;
+    await atualizarStatus(finalizar);
+  }, [status, atualizarStatus]);
+
+  // Callback para ser chamada pelo CenarioCorrida quando detectar fim
+  const onFinishDetected = useCallback(() => {
+    if (!status?.finished) {
+      handleFinalizar();
+    }
+  }, [status, handleFinalizar]);
 
   return (
     <div
@@ -65,6 +85,7 @@ export default function SimulacaoPage() {
           <CenarioCorrida
             criaturas={status?.statusCreatures || []}
             criaturaAtualId={criaturaAtualId}
+            onFinishDetected={onFinishDetected} // callback para aviso de fim
           />
         </div>
         <div
@@ -78,7 +99,7 @@ export default function SimulacaoPage() {
         >
           {/* Iteration Info */}
           <div className="bg-white/80 p-3 rounded shadow font-mono">
-            <p className="text-xl font-bold">
+            <p className="text-x font-bold">
               - Iteração #{status?.iterationCount ?? "—"}
             </p>
             <p className="text-sm">
@@ -94,7 +115,8 @@ export default function SimulacaoPage() {
             <ul className="space-y-1 overflow-y-auto pr-2 flex-1">
               {status?.statusCreatures.map((c) => (
                 <li key={c.id} className="text-sm">
-                  🧍‍♂️ ID: {c.id} | X: {c.x} | 🪙 Ouro: {c.gold}
+                  🧍‍♂️ ID: {c.id} | X: {c.x.toFixed(2)} | 🪙 Ouro:{" "}
+                  {c.gold.toFixed(2)}
                 </li>
               ))}
               {status?.statusCreatures.length === 0 && (
@@ -109,7 +131,8 @@ export default function SimulacaoPage() {
             <ul className="space-y-1 overflow-y-auto pr-2 flex-1">
               {status?.inactiveCreatures.map((c) => (
                 <li key={c.id} className="text-sm">
-                  🧍‍♂️ ID: {c.id} | X: {c.x} | 🪙 Ouro: {c.gold}
+                  🧍‍♂️ ID: {c.id} | X: {c.x.toFixed(2)} | 🪙 Ouro:{" "}
+                  {c.gold.toFixed(2)}
                 </li>
               ))}
               {status?.inactiveCreatures.length === 0 && (
@@ -120,8 +143,7 @@ export default function SimulacaoPage() {
         </div>
       </div>
 
-      {/* Botões */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 flex gap-4 bg-white/80 px-4 py-2 rounded shadow">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 flex gap-10 bg-white/80 px-4 py-2 rounded shadow">
         <button
           onClick={handleIterar}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"

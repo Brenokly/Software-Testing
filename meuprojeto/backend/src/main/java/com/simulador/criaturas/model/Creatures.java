@@ -45,7 +45,7 @@ public class Creatures {
     public Creature removeCreature(int id) {
         for (int i = 0; i < creatures.size(); i++) {
             if (creatures.get(i).getId() == id) {
-                creatures.remove(i);
+                Creature removed = creatures.remove(i);
                 amoutOfCreatures--;
 
                 // Corrige o índice atual se necessário
@@ -53,7 +53,7 @@ public class Creatures {
                     currentIndex = (currentIndex - 1 + creatures.size()) % creatures.size();
                 }
 
-                return null; // ou retorne a criatura removida, se preferir
+                return removed;
             }
         }
         return null;

@@ -19,6 +19,9 @@ const filterMap: Record<number, string> = {
 interface CriaturaProps {
   Creature: CreatureResponseDTO;
   isSelected?: boolean;
+  pistaLargura?: number;
+  minX?: number;
+  maxX?: number;
 }
 
 export function Creature({ Creature, isSelected = false }: CriaturaProps) {
@@ -43,13 +46,22 @@ export function Creature({ Creature, isSelected = false }: CriaturaProps) {
     return () => clearInterval(interval);
   }, []);
 
+  const xMin = 0;
+  const xMax = 10_000_000;
+  const pistaLargura = 885;
+
+  let posicaoX = ((Creature.x - xMin) / (xMax - xMin)) * pistaLargura;
+
+  // Limitar para não sair da pista
+  posicaoX = Math.min(pistaLargura, Math.max(0, posicaoX));
+
   const criaturaFilter = filterMap[Creature.id] || "none"; // Filtro padrão caso o id não esteja mapeado
 
   return (
     <div
       className="relative flex flex-col items-center transition-all duration-500"
       style={{
-        transform: `translateX(${Creature.x * 2}px)`,
+        transform: `translateX(${posicaoX}px)`,
       }}
     >
       {isSelected && (

@@ -21,7 +21,7 @@ public class SimulationService {
     private Creatures activeCreatures; // Criaturas ativas
     private Creatures inactiveCreatures; // Criaturas inativas (Creaturas que chegaram a 0 de ouro)
     private int iterationCount = 1; // Contador de iterações
-    private boolean isFinished; // Indica se a simulação terminou
+    private boolean isFinished;
     private final Random random = new Random(); // Gera números aleatórios
 
     public IterationStatusDTO startSimulation(int amountOfCreatures) {
@@ -104,7 +104,7 @@ public class SimulationService {
 
     private void handleGoldTransfer(Creature current, Creature neighbor) {
         double stolen = neighbor.giveMoney(0.5);
-        if (stolen < 0) {
+        if (stolen < 1) {
             inactiveCreatures.addCreature(activeCreatures.removeCreature(neighbor.getId())); // Remove da lista de
                                                                                              // ativas e adiciona na
                                                                                              // inativa
