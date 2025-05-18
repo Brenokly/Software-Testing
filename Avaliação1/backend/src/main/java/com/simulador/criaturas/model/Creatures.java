@@ -21,9 +21,9 @@ public class Creatures {
     private int amountOfCreatures; // Quantidade de criaturas
     private int currentIndex = 0; // Índice da criatura corrente
 
-    public Creatures(int amountOfCreatures) {
+    public Creatures(int amount) {
         this.creatures = new ArrayList<>();
-        this.amountOfCreatures = amountOfCreatures;
+        this.amountOfCreatures = amount;
         initializeCreatures();
     }
 
@@ -155,7 +155,7 @@ public class Creatures {
             throw new IllegalArgumentException("A criatura não pode ser nula.");
         }
         creatures.add(creature);
-        amountOfCreatures = creatures.size();
+        amountOfCreatures++;
     }
 
     /**
@@ -171,7 +171,6 @@ public class Creatures {
     private void clearCreatures() {
         creatures.clear();
         currentIndex = 0;
-        amountOfCreatures = 0;
     }
 
 }

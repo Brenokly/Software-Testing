@@ -47,8 +47,6 @@ public class SimulationService {
             throw new InsufficientCreatures("A quantidade de criaturas deve estar entre 2 e 10.");
         }
 
-        System.out.println("Iniciando simulação com " + amountOfCreatures + " criaturas.");
-
         this.initialAmountOfCreatures = amountOfCreatures;
         this.isFinished = false;
         this.iterationCount = 1;
@@ -129,6 +127,7 @@ public class SimulationService {
         if (!isValid) {
             throw new IllegalStateException("A simulação não foi iniciada corretamente.");
         }
+
         return IterationStatusDTO.toDTO(
                 toDTOList(activeCreatures.getCreatures()),
                 toDTOList(inactiveCreatures.getCreatures()),
@@ -160,7 +159,7 @@ public class SimulationService {
      * método sem parâmetros.
      *
      * @return o status da iteração após a reinicialização.
-     * @pre nenhuma pré-condição específica.
+     * @pre startSimulation() deve ter sido chamado.
      * @post a simulação é reiniciada com a quantidade inicial de criaturas.
      * @throws Nenhuma exceção é lançada pelo método.
      */

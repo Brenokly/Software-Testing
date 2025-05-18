@@ -28,7 +28,6 @@ public class SimulationController {
 
   @PostMapping("/iniciar")
   public IterationStatusDTO iniciarSimulacao(@Validated @RequestBody SimulationRequestDTO request) {
-    System.out.println("Iniciando simulação com " + request.getQuantidade() + " criaturas.");
     return simulationManager.iniciarSimulacao(request.getQuantidade());
   }
 
