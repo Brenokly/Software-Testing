@@ -9,20 +9,33 @@ import {
   resetar,
 } from "@/utils/services/simulacaoService";
 import { IterationStatusDTO } from "@/utils/types/types";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function SimulacaoPage() {
   const [status, setStatus] = useState<IterationStatusDTO | null>(null);
   const [criaturaAtualId, setCriaturaAtualId] = useState<number | null>(null);
+  const [winner, setWinner] = useState<number | null>(null);
+  const [autoIterar, setAutoIterar] = useState(false);
+
+  // Estado para velocidade da iteração (intervalo em ms)
+  // Começa em 500 ms (velocidade normal)
+  const [intervaloIteracao, setIntervaloIteracao] = useState(500);
+
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const quantidadeCriaturas = useMemo(() => {
     const qtd = Number(searchParams.get("quantidade"));
     return isNaN(qtd) ? 10 : qtd;
   }, [searchParams]);
 
-  // Inicia simulação
+  useEffect(() => {
+    if (quantidadeCriaturas <= 1 || quantidadeCriaturas > 10) {
+      router.push("/"); // Redireciona para a home
+    }
+  }, [quantidadeCriaturas, router]);
+
   useEffect(() => {
     async function iniciar() {
       try {
@@ -54,25 +67,66 @@ export default function SimulacaoPage() {
     return atualizarStatus(iterar);
   }, [status, atualizarStatus]);
 
+  const toggleAutoIterar = () => setAutoIterar((v) => !v);
+
+  // Efeito para iteração automática com velocidade variável
+  useEffect(() => {
+    if (!autoIterar || status?.finished) {
+      setAutoIterar(false);
+      return;
+    }
+
+    const intervalId = setInterval(() => {
+      handleIterar();
+    }, intervaloIteracao);
+
+    return () => clearInterval(intervalId);
+  }, [autoIterar, handleIterar, intervaloIteracao, status]);
+
   const handleResetar = useCallback(() => {
+    // se estiver iterando, para a iteração automática
+    if (autoIterar) {
+      setAutoIterar(false);
+    }
     return atualizarStatus(resetar);
-  }, [atualizarStatus]);
+  }, [atualizarStatus, autoIterar]);
 
   const handleFinalizar = useCallback(async (): Promise<void> => {
     if (status?.finished) return;
     await atualizarStatus(finalizar);
   }, [status, atualizarStatus]);
 
-  // Callback para ser chamada pelo CenarioCorrida quando detectar fim
   const onFinishDetected = useCallback(() => {
     if (!status?.finished) {
       handleFinalizar();
     }
   }, [status, handleFinalizar]);
 
+  useEffect(() => {
+    if (status?.finished) {
+      const vencedores = status.statusCreatures.filter(
+        (c) => c.x >= 10_000_000
+      );
+      if (vencedores.length > 0) {
+        setWinner(vencedores[0].id);
+      }
+    }
+  }, [status?.finished, status?.statusCreatures]);
+
+  // Função para aumentar a velocidade da iteração em até 3x
+  // Velocidade padrão = 500ms
+  // 1x -> 500ms, 2x -> 250ms, 3x -> ~167ms
+  const aumentarVelocidade = () => {
+    setIntervaloIteracao((atual) => {
+      if (atual === 500) return 250;
+      if (atual === 250) return 167;
+      return 500; // volta para velocidade normal após 3x
+    });
+  };
+
   return (
     <div
-      className="w-screen h-screen"
+      className="w-screen h-screen relative"
       style={{
         backgroundImage: "url('/grass.png')",
         backgroundRepeat: "repeat",
@@ -107,6 +161,12 @@ export default function SimulacaoPage() {
                 ? "✅ Simulação Finalizada"
                 : "🔄 Simulação em Andamento"}
             </p>
+
+            {winner !== null && (
+              <p className="mt-2 text-black font-bold">
+                🏆 Vencedor: Criatura #{winner}
+              </p>
+            )}
           </div>
 
           {/* Criaturas Ativas */}
@@ -143,18 +203,35 @@ export default function SimulacaoPage() {
         </div>
       </div>
 
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 flex gap-10 bg-white/80 px-4 py-2 rounded shadow">
+      <div className="absolute bottom-10 left-1/2 flex items-center justify-center gap-10 bg-white/80 px-4 py-2 rounded shadow -translate-x-1/2 z-50">
         <button
           onClick={handleIterar}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
         >
-          Iterar
+          Iterar uma vez
         </button>
         <button
           onClick={handleResetar}
           className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
         >
-          Resetar
+          Resetar Iteração
+        </button>
+        <button
+          onClick={toggleAutoIterar}
+          className={`px-4 py-2 rounded text-white ${
+            autoIterar
+              ? "bg-green-600 hover:bg-green-700"
+              : "bg-gray-600 hover:bg-gray-700"
+          }`}
+        >
+          {autoIterar ? "Parar iteração automática" : "iteração automática"}
+        </button>
+        {/* Botão novo para aumentar velocidade */}
+        <button
+          onClick={aumentarVelocidade}
+          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
+        >
+          Velocidade: {Math.round(500 / intervaloIteracao)}x
         </button>
       </div>
     </div>
