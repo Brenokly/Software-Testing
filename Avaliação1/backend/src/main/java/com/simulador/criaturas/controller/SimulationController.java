@@ -1,6 +1,7 @@
 package com.simulador.criaturas.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +27,7 @@ public class SimulationController {
   }
 
   @PostMapping("/iniciar")
-  public IterationStatusDTO iniciarSimulacao(@RequestBody SimulationRequestDTO request) {
+  public IterationStatusDTO iniciarSimulacao(@Validated @RequestBody SimulationRequestDTO request) {
     return simulationManager.iniciarSimulacao(request.getQuantidade());
   }
 
@@ -37,7 +38,7 @@ public class SimulationController {
 
   @GetMapping("/criatura-atual")
   public int getCriaturaAtual() {
-    return getService().creatureCurrent();
+    return getService().getCurrentCreatureId();
   }
 
   @PostMapping("/resetar")

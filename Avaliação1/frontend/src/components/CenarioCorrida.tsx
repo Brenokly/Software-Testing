@@ -56,6 +56,9 @@ export function CenarioCorrida({
             marginTop: index === 0 ? `${27}px` : undefined,
           }}
         >
+          <div className="ml-2">
+            <p>{criatura.id}</p>
+          </div>
           <div style={{ position: "relative", zIndex: 10 }}>
             <Creature
               Creature={criatura}

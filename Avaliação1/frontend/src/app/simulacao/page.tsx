@@ -113,14 +113,15 @@ export default function SimulacaoPage() {
     }
   }, [status?.finished, status?.statusCreatures]);
 
-  // Função para aumentar a velocidade da iteração em até 3x
+  // Função para aumentar a velocidade da iteração em até 4x
   // Velocidade padrão = 500ms
-  // 1x -> 500ms, 2x -> 250ms, 3x -> ~167ms
+  // 1x -> 500ms, 2x -> 250ms, 3x -> 167ms, 4x -> 125ms
   const aumentarVelocidade = () => {
     setIntervaloIteracao((atual) => {
       if (atual === 500) return 250;
       if (atual === 250) return 167;
-      return 500; // volta para velocidade normal após 3x
+      if (atual === 167) return 125;
+      return 500; // volta para velocidade normal após 4x
     });
   };
 
