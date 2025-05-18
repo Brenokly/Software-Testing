@@ -82,7 +82,7 @@ public class Creatures {
         for (int i = 0; i < creatures.size(); i++) {
             if (creatures.get(i).getId() == id) {
                 Creature removed = creatures.remove(i);
-                amountOfCreatures--;
+                amountOfCreatures = creatures.size();
 
                 if (creatures.isEmpty()) {
                     currentIndex = 0;
@@ -111,7 +111,7 @@ public class Creatures {
             return null;
         }
         Creature removed = creatures.remove(currentIndex);
-        amountOfCreatures--;
+        amountOfCreatures = creatures.size();
 
         if (creatures.isEmpty()) {
             currentIndex = 0;
@@ -155,7 +155,7 @@ public class Creatures {
             throw new IllegalArgumentException("A criatura não pode ser nula.");
         }
         creatures.add(creature);
-        amountOfCreatures++;
+        amountOfCreatures = creatures.size();
     }
 
     /**

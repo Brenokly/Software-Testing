@@ -47,6 +47,8 @@ public class SimulationService {
             throw new InsufficientCreatures("A quantidade de criaturas deve estar entre 2 e 10.");
         }
 
+        System.out.println("Iniciando simulação com " + amountOfCreatures + " criaturas.");
+
         this.initialAmountOfCreatures = amountOfCreatures;
         this.isFinished = false;
         this.iterationCount = 1;
@@ -106,7 +108,9 @@ public class SimulationService {
         }
 
         iterationCount++;
-        activeCreatures.next();
+        if (activeCreatures.getAmountOfCreatures() > 1) {
+            activeCreatures.next();
+        }
 
         return getIterationStatus();
     }
@@ -197,11 +201,10 @@ public class SimulationService {
      * @throws Nenhuma exceção é lançada pelo método.
      */
     private boolean shouldFinishDueToCreatureCount() {
-        if (activeCreatures == null || inactiveCreatures == null) {
+        if (!isValid) {
             return false;
         }
-        return activeCreatures.getAmountOfCreatures() <= 1
-                || inactiveCreatures.getAmountOfCreatures() > 10;
+        return activeCreatures.getAmountOfCreatures() < 2 || activeCreatures.getAmountOfCreatures() > 10;
     }
 
     /**
@@ -230,6 +233,7 @@ public class SimulationService {
      */
     private Creature findClosestNeighbor(Creature current) {
         if (activeCreatures.getAmountOfCreatures() <= 1) {
+            isFinished = true;
             return null;
         }
 

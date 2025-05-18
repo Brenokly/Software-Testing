@@ -59,4 +59,5 @@ public class SimulationManager {
   public SimulationService getSimulacao() {
     return simulationService;
   }
+
 }

@@ -15,7 +15,9 @@ function validarResposta(data: unknown): IterationStatusDTO {
 }
 
 export async function iniciarSimulacao(quantidade: number): Promise<IterationStatusDTO> {
+  console.log("Iniciando simulação com quantidade:", quantidade);
   const response = await api.post("/iniciar", { quantidade });
+  console.log("Resposta da API:", response.data);
   return validarResposta(response.data);
 }
 
