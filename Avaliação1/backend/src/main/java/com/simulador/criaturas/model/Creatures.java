@@ -24,12 +24,25 @@ public class Creatures {
     public Creatures(int amount) {
         this.creatures = new ArrayList<>();
         this.amountOfCreatures = amount;
-        initializeCreatures();
+        initializeCreatures(amount);
     }
 
-    private void initializeCreatures() {
+    /**
+     * Inicializa a lista de criaturas com base na quantidade especificada.
+     *
+     * @param amount quantidade de criaturas a serem criadas
+     * @return nenhum valor de retorno.
+     * @pre amount > 0
+     * @post A lista de criaturas será inicializada com a quantidade especificada.
+     * @throws IllegalArgumentException Se a quantidade for menor ou igual a zero.
+     */
+    private void initializeCreatures(int amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("A quantidade de criaturas deve ser maior que zero.");
+        }
+
         clearCreatures();
-        for (int i = 0; i < amountOfCreatures; i++) {
+        for (int i = 0; i < amount; i++) {
             creatures.add(new Creature(i));
         }
     }
@@ -40,7 +53,7 @@ public class Creatures {
      * @param id Identificador da criatura.
      * @return A criatura correspondente ao id, ou null se não encontrada.
      * @pre nenhuma pré-condição específica.
-     * @post Se retornar não-nulo, a criatura terá o id especificado.
+     * @post Se retornar não-nulo, a criatura será a que corresponde ao id.
      * @throws Nenhuma exceção é lançada pelo método.
      */
     public Creature getCreature(int id) {
@@ -60,12 +73,16 @@ public class Creatures {
      * @return A criatura atual, ou null se não houver criaturas.
      * @pre A lista de criaturas não deve estar vazia.
      * @post Se retornar não-nulo, a criatura será a que está na posição atual.
-     * @throws Nenhuma exceção é lançada pelo método.
+     * @throws IllegalStateException Se a lista de criaturas estiver vazia ou se a
+     *                               criatura atual for nula.
      */
     public Creature getCurrent() {
         if (creatures.isEmpty()) {
             return null;
+        } else if (creatures.get(currentIndex) == null) {
+            throw new IllegalStateException("A criatura atual não pode ser nula.");
         }
+
         return creatures.get(currentIndex);
     }
 
@@ -74,11 +91,15 @@ public class Creatures {
      *
      * @param id Identificador da criatura a ser removida.
      * @return A criatura removida, ou null se não encontrada.
-     * @pre nenhuma pré-condição específica.
+     * @pre A lista de criaturas não deve estar vazia.
      * @post Se retornar não-nulo, a criatura terá sido removida da lista.
      * @throws Nenhuma exceção é lançada pelo método.
      */
     public Creature removeCreature(int id) {
+        if (creatures.isEmpty()) {
+            return null;
+        }
+
         for (int i = 0; i < creatures.size(); i++) {
             if (creatures.get(i).getId() == id) {
                 Creature removed = creatures.remove(i);
@@ -104,12 +125,16 @@ public class Creatures {
      * @return A criatura removida, ou null se não houver criaturas.
      * @pre A lista de criaturas não deve estar vazia.
      * @post Se retornar não-nulo, a criatura terá sido removida da lista.
-     * @throws Nenhuma exceção é lançada pelo método.
+     * @throws IllegalStateException Se a lista de criaturas não estiver vazia e a
+     *                               criatura atual for nula.
      */
     public Creature removeCurrent() {
         if (creatures.isEmpty()) {
             return null;
+        } else if (creatures.get(currentIndex) == null) {
+            throw new IllegalStateException("A criatura atual não pode ser nula.");
         }
+
         Creature removed = creatures.remove(currentIndex);
         amountOfCreatures = creatures.size();
 

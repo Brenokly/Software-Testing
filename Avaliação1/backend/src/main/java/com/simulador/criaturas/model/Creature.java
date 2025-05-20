@@ -55,7 +55,8 @@ public class Creature {
      * @return Quantidade de ouro roubada da vítima.
      * @pre victim != null && 0 < percentage <= 1
      * @post gold += ouro roubado, se finito e positivo.
-     * @throws IllegalArgumentException se precondições forem violadas.
+     * @throws IllegalArgumentException se precondições ou poscondições forem
+     *                                  violadas.
      */
     public double stealGoldFrom(Creature victim, double percentage) {
         // Domínio: victim != null && 0 < percentage <= 1, Fronteira: victim != null &&
@@ -75,9 +76,14 @@ public class Creature {
         double amountStolen = victim.loseGold(percentage);
 
         // Evita NaN ou infinitos causados por somas com valores inválidos
-        if (Double.isFinite(amountStolen) && amountStolen > 0) {
-            this.gold += amountStolen;
+        if (!Double.isFinite(amountStolen) || amountStolen < 0) {
+            throw new IllegalArgumentException("Roubo inválido: valor roubado não pode ser negativo ou infinito.");
+        } else if (amountStolen == 0) {
+            return 0; // Nada a roubar
         }
+
+        // Neste ponto, amountStolen é garantidamente > 0 e finito
+        this.gold += amountStolen;
 
         return amountStolen;
     }
@@ -99,14 +105,12 @@ public class Creature {
             throw new IllegalArgumentException("Percentual de perda deve estar entre 0 e 1 (exclusivo de 0).");
         }
 
-        if (this.gold <= 0) {
-            return 0; // Nada a perder
+        if (this.gold <= 0.0) {
+            return 0.0; // Ouro já é zero, nada a perder
         }
 
         double amountLost = this.gold * percentage;
         this.gold -= amountLost;
-
-        // Como o percentual máximo é 1, o ouro não pode ficar negativo aqui!
 
         return amountLost;
     }

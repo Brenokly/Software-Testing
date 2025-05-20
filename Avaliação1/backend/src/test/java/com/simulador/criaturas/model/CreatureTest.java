@@ -164,6 +164,18 @@ public class CreatureTest {
                 .hasMessageContaining("Percentual de perda deve estar entre 0 e 1 (exclusivo de 0).");
     }
 
+    @Test
+    void loseGold_whenGoldIsZero_shouldNotEnterCalculationLogic() {
+        Creature c = new Creature(123, 0.0, 0.0);
+
+        double lost = c.loseGold(0.5);
+
+        // Se entrou na lógica de cálculo, o gold teria mudado.
+        // Se não entrou, o gold permanece zero.
+        assertThat(c.getGold()).isEqualTo(0.0);
+        assertThat(lost).isEqualTo(0.0);
+    }
+
     // stealGoldFrom()
 
     @Test
@@ -260,10 +272,12 @@ public class CreatureTest {
         Creature victim = mock(Creature.class);
         when(victim.loseGold(anyDouble())).thenReturn(Double.NaN);
 
-        double result = thief.stealGoldFrom(victim, 0.5);
+        assertThatThrownBy(() -> thief.stealGoldFrom(victim, 0.5))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Roubo inválido: valor roubado não pode ser negativo ou infinito.");
 
-        assertThat(result).isNaN();
         assertThat(thief.getGold()).isEqualTo(100.0);
+        assertThat(victim.getGold()).isEqualTo(0.0);
     }
 
     @Test
@@ -272,9 +286,25 @@ public class CreatureTest {
         Creature victim = mock(Creature.class);
         when(victim.loseGold(anyDouble())).thenReturn(Double.POSITIVE_INFINITY);
 
-        double result = thief.stealGoldFrom(victim, 0.5);
+        assertThatThrownBy(() -> thief.stealGoldFrom(victim, 0.5))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Roubo inválido: valor roubado não pode ser negativo ou infinito.");
 
-        assertThat(result).isEqualTo(Double.POSITIVE_INFINITY);
+        assertThat(thief.getGold()).isEqualTo(100.0);
+        assertThat(victim.getGold()).isEqualTo(0.0);
+    }
+
+    @Test
+    void stealGoldFrom_givenVictimReturnsNegativeValue_shouldNotAddToGold() {
+        Creature thief = new Creature(1, 0.0, 100.0);
+        Creature victim = mock(Creature.class);
+        when(victim.loseGold(anyDouble())).thenReturn(-42.0);
+
+        assertThatThrownBy(() -> thief.stealGoldFrom(victim, 0.5))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Roubo inválido: valor roubado não pode ser negativo ou infinito.");
+
         assertThat(thief.getGold()).isEqualTo(100.0);
     }
+
 }
