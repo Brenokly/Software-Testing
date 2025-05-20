@@ -1,12 +1,11 @@
 package com.simulador.criaturas.service;
 
-import static com.simulador.criaturas.dtos.CreatureResponseDTO.toDTOList;
-
 import java.util.List;
 import java.util.Random;
 
 import org.springframework.stereotype.Service;
 
+import static com.simulador.criaturas.dtos.CreatureResponseDTO.toDTOList;
 import com.simulador.criaturas.dtos.IterationStatusDTO;
 import com.simulador.criaturas.exception.InsufficientCreatures;
 import com.simulador.criaturas.model.Creature;
@@ -37,10 +36,11 @@ public class SimulationService {
      * Inicia a simulação com a quantidade especificada de criaturas.
      *
      * @param amountOfCreatures a quantidade de criaturas a serem simuladas
-     * @return o status da iteração após o início da simulação
+     * @return O status da iteração após o início da simulação
      * @pre amountOfCreatures deve estar entre 2 e 10
-     * @post a simulação é iniciada com a quantidade especificada de criaturas
-     * @throws InsufficientCreatures se a qnt de criaturas não estiver no intervalo
+     * @post A simulação é iniciada com a quantidade especificada de criaturas
+     * @throws InsufficientCreatures se a quantidade de criaturas não estiver no
+     *                               intervalo
      */
     public IterationStatusDTO startSimulation(int amountOfCreatures) {
         if (amountOfCreatures < 2 || amountOfCreatures > 10) {
@@ -67,9 +67,13 @@ public class SimulationService {
      * @return o status da iteração após a execução
      * @pre a simulação deve estar em um estado válido
      * @post a iteração é executada e o status é atualizado
-     * @throws IllegalStateException se a simulação não foi iniciada corretamente ou
-     *                               IllegalArgumentException caso alguma criatura
-     *                               esteja com problema
+     * @throws IllegalStateException    se a simulação não foi iniciada corretamente
+     *                                  ou
+     *                                  IllegalArgumentException caso alguma
+     *                                  criatura
+     *                                  esteja com problema.
+     * @throws IllegalArgumentException se acontecer algum problema com as
+     *                                  criaturas.
      */
     public IterationStatusDTO iterate() {
         if (!isValid) {

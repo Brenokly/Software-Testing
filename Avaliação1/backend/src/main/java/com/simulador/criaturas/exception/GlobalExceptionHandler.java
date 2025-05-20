@@ -9,6 +9,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -48,6 +49,7 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(Exception.class)
+  @ResponseBody
   public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
     return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno no servidor", ex.getMessage());
   }

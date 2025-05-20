@@ -34,28 +34,36 @@ public class Creature {
      * @pre -1 <= randomR <= 1
      * @post x será atualizado com x + (randomR * gold).
      * @throws IllegalArgumentException se randomR estiver fora do intervalo [-1,
-     *                                  1].
+     *                                  1] ou se randomR for NaN ou infinito.
      */
     public void moveCreature(double randomR) {
-        if (randomR < -1 || randomR > 1) {
+        // Domínio: -1 <= randomR <= 1, Fronteira: -1 <= randomR <= 1
+        // Partições: Invalid [-infinity, -1), Valid [-1, 1], Invalid (1, +infinity]
+        if (Double.isNaN(randomR) || randomR < -1 || randomR > 1) {
             throw new IllegalArgumentException("Valor aleatório deve estar entre -1 e 1.");
         }
 
-        this.x += randomR * this.gold; // Move a criatura (X = X + RandomFloat(-1 e 1) * Gold)
+        this.x += randomR * this.gold;
     }
 
     /**
      * Rouba ouro de outra criatura.
      *
      * @param victim     Criatura alvo do roubo.
-     * @param percentage Percentual do ouro a ser roubado (entre 0 e 1, exclusivo de
-     *                   0).
+     * @param percentage Percentual do ouro a ser roubado (onde 0 < percentage <=
+     *                   1).
      * @return Quantidade de ouro roubada da vítima.
      * @pre victim != null && 0 < percentage <= 1
      * @post gold += ouro roubado, se finito e positivo.
      * @throws IllegalArgumentException se precondições forem violadas.
      */
     public double stealGoldFrom(Creature victim, double percentage) {
+        // Domínio: victim != null && 0 < percentage <= 1, Fronteira: victim != null &&
+        // 0 < percentage <= 1
+        // Partições:
+        // Creature: Invalid [null], Valid [!= null]
+        // percentage: Invalid [-infinity, 0], Valid (0 < percentage <= 1] e Invalid (1,
+        // +infinity]
         if (victim == null) {
             throw new IllegalArgumentException("Vítima não pode ser nula.");
         }
@@ -77,13 +85,16 @@ public class Creature {
     /**
      * Reduz a quantidade de ouro com base em um percentual.
      *
-     * @param percentage Percentual a ser perdido (entre 0 e 1, exclusivo de 0).
+     * @param percentage Percentual a ser perdido (onde 0 < percentage <= 1).
      * @return Quantidade de ouro efetivamente perdida.
      * @pre 0 < percentage <= 1
      * @post gold -= (gold * percentage), garantindo que gold >= 0.
      * @throws IllegalArgumentException se percentage for inválido.
      */
     public double loseGold(double percentage) {
+        // Domínio: 0 < percentage <= 1, Fronteira: 0 < percentage <= 1
+        // Partições: Invalid [-infinity, 0], Valid (0 < percentage <= 1] e Invalid (1,
+        // +infinity]
         if (percentage <= 0 || percentage > 1) {
             throw new IllegalArgumentException("Percentual de perda deve estar entre 0 e 1 (exclusivo de 0).");
         }
@@ -95,10 +106,7 @@ public class Creature {
         double amountLost = this.gold * percentage;
         this.gold -= amountLost;
 
-        // Garante que o ouro nunca fique negativo por erro de precisão
-        if (this.gold < 0) {
-            this.gold = 0;
-        }
+        // Como o percentual máximo é 1, o ouro não pode ficar negativo aqui!
 
         return amountLost;
     }

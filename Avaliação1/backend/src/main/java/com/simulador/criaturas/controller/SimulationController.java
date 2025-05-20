@@ -1,6 +1,7 @@
 package com.simulador.criaturas.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +17,7 @@ import com.simulador.criaturas.service.SimulationService;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/simulacao")
+@RequestMapping(value = "/api/simulacao", produces = MediaType.APPLICATION_JSON_VALUE)
 public class SimulationController {
 
   private final SimulationManager simulationManager;
