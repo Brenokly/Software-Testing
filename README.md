@@ -85,51 +85,29 @@ O projeto possui:
 
 ### ✅ **Backend**
 
-```xml
-<dependencies>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-validation</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-devtools</artifactId>
-        <scope>runtime</scope>
-        <optional>true</optional>
-    </dependency>
-    <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <optional>true</optional>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-test</artifactId>
-        <scope>test</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.pitest</groupId>
-        <artifactId>pitest-junit5-plugin</artifactId>
-        <version>1.2.0</version>
-    </dependency>
-</dependencies>
-```
-
+* **pitest**
+* **lombok**
+* **spring validation**
+* **spring web**
+* **spring devtools**
+* **spring test**
+* **AssertJ (Já vem no spring teste)**
+  
 ### ✅ **Frontend**
 
 * **React**
 * **Next.js**
-* **TailwindCSS** (opcional, se utilizado no seu projeto)
+* **TailwindCSS**
 
 ---
 
-## 🏃‍♂️ **Como Executar o Projeto**
+##  **Como Executar o Projeto**
 
-### 🔧 **Backend (Java)**
+## 3. Como executar o projeto
+
+> **Importante:** O comando `npm start` já está configurado para rodar o backend (Java Spring Boot) e o frontend (React/Next.js) juntos.
+
+### Passos
 
 1. Clone o repositório:
 
@@ -138,58 +116,40 @@ git clone https://github.com/Brenokly/Software-Testing.git
 cd Software-Testing
 ```
 
-2. Rode a aplicação:
-
-* No terminal da IDE (IntelliJ, VS Code, Eclipse) ou:
-
-```bash
-./mvnw spring-boot:run
-```
-
-3. A API estará disponível em:
-
-```
-http://localhost:8080
-```
-
-### 📱 **Frontend (React + Next.js)**
-
-1. Acesse a pasta do frontend (`/frontend` ou a pasta onde você criou o front):
-
-```bash
-cd frontend
-```
-
-2. Instale as dependências:
+2. Instale as dependências do frontend:
 
 ```bash
 npm install
 ```
 
-3. Rode a aplicação:
+3. Execute o projeto completo (backend + frontend):
 
 ```bash
-npm run dev
+npm start
 ```
 
-4. Acesse no navegador:
+4. Acesse a interface gráfica em:
 
 ```
 http://localhost:3000
 ```
 
-⚠️ **Observação:** Certifique-se de que o backend esteja rodando em `localhost:8080`, pois o frontend se conecta a essa API.
+O backend estará rodando automaticamente na porta 8080.
 
 ---
 
 ## 🔗 **Endpoints da API**
 
-| Método | Rota                  | Descrição                         |
-| ------ | --------------------- | --------------------------------- |
-| `POST` | `/simulation/start`   | Inicia uma nova simulação         |
-| `POST` | `/simulation/iterate` | Executa uma iteração              |
-| `POST` | `/simulation/reset`   | Reseta a simulação                |
-| `GET`  | `/simulation/status`  | Retorna status atual da simulação |
+Base: `http://localhost:8080/api/simulacao`
+
+| Método | Endpoint          | Descrição                                        | Request Body / Response                                                                 |
+| ------ | ----------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| POST   | `/iniciar`        | Inicia a simulação com quantidade de criaturas   | `{ "quantidade": <int> }` <br> Retorna status da primeira iteração (IterationStatusDTO) |
+| POST   | `/iterar`         | Executa uma iteração da simulação                | Retorna status atualizado (IterationStatusDTO)                                          |
+| POST   | `/resetar`        | Reseta a simulação para estado inicial           | Retorna status inicial (IterationStatusDTO)                                             |
+| GET    | `/status`         | Obtém o status atual da simulação                | Retorna status atual (IterationStatusDTO)                                               |
+| GET    | `/criatura-atual` | Obtém o ID da criatura atual que será processada | Retorna inteiro (ID da criatura atual)                                                  |
+| GET    | `/finalizar`      | Finaliza a simulação, forçando término           | Retorna status final (IterationStatusDTO)                                               |
 
 ---
 
