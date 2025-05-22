@@ -48,11 +48,11 @@ public class Creature {
      *
      * @param victim Criatura alvo do roubo.
      * @param percentage Percentual do ouro a ser roubado (onde 0 < percentage
-     * <= 1). @return Quantidade de o uro roubada da vítima. @pre victim != null
-     * && 0 < percentage <= 1
-     * @p
-     * o
-     * st gold += ouro roubado, se finito e positivo.
+     * <= 1).
+     * @return Quantidade de ouro roubada da vítima.
+     * @pre victim != null && 0 < percentage <= 1
+     * @post Ouro da vítima é reduzido em percentage e o ouro do ladrão é
+     * aumentado.
      * @throws IllegalArgumentException se precondições ou poscondições forem
      * violadas.
      */
