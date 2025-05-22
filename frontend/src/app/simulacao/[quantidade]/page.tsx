@@ -3,20 +3,16 @@ import { redirect } from "next/navigation";
 
 interface Props {
   params: {
-    quantidade: string;
+    quantidade: number;
   };
 }
 
-export default function SimulacaoPage({ params }: Props) {
-  const quantidadeCriaturas = Number(params.quantidade);
+export default async function SimulacaoPage({ params }: Props) {
+  const { quantidade } = await params;
 
-  if (
-    isNaN(quantidadeCriaturas) ||
-    quantidadeCriaturas <= 1 ||
-    quantidadeCriaturas > 10
-  ) {
+  if (isNaN(quantidade) || quantidade <= 1 || quantidade > 10) {
     redirect("/");
   }
 
-  return <SimulacaoPageClient quantidadeCriaturas={quantidadeCriaturas} />;
+  return <SimulacaoPageClient quantidadeCriaturas={quantidade} />;
 }
