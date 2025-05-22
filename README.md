@@ -2,7 +2,15 @@
 
 ## 📜 **Descrição do Projeto**
 
-O **Software-Testing** é uma aplicação que simula uma corrida de criaturas saltitantes, cada uma movendo-se aleatoriamente no horizonte e roubando moedas das criaturas vizinhas. O projeto tem como foco o desenvolvimento de um simulador robusto aliado a uma suíte de testes completa, com cobertura MC/DC de 100%, garantindo alta confiabilidade no comportamento do sistema.
+O **Software-Testing** é uma aplicação que simula uma corrida de criaturas saltitantes, cada uma movendo-se aleatoriamente no horizonte e roubando moedas das criaturas vizinhas. O projeto tem como principal objetivo de aplicar e exercitar práticas robustas de teste de software, incluindo:
+
+    Testes de Domínio
+
+    Testes de Fronteira
+
+    Testes de Cobertura (Linha, Branch, MC/DC)
+
+    Testes de Mutação
 
 O projeto possui:
 
@@ -54,6 +62,7 @@ O projeto possui:
   * **Testes de domínio.**
   * **Testes de fronteira.**
   * **Testes estruturais com cobertura MC/DC de 100%.**
+  * **Testes de mutação com quase 100% das mutações mortas.**
 
 ---
 
@@ -69,6 +78,8 @@ O projeto possui:
   * Iterar a simulação passo a passo.
   * Resetar a simulação.
   * Obter o status atual (posição, ouro e estado das criaturas).
+  * Obter a criatura atual.
+  * Finalizar a simualação.
 
 ### 🎨 **Frontend**
 
@@ -78,6 +89,9 @@ O projeto possui:
   * Exibe as criaturas na simulação.
   * Mostra visualmente sua posição no horizonte.
   * Permite avançar a simulação, resetar e visualizar a criatura vencedora.
+  * Iterações automáticas.
+  * Visualizar as moedas e o X de todas as criaturas.
+  * Visualizar criaturas ativas e inativas.
 
 ---
 
@@ -101,44 +115,61 @@ O projeto possui:
 
 ---
 
-##  **Como Executar o Projeto**
+## 2. Requisitos para Rodar
 
-## 3. Como executar o projeto
+Para executar o projeto completo (backend + frontend) e rodar os testes, é necessário:
 
-> **Importante:** O comando `npm start` já está configurado para rodar o backend (Java Spring Boot) e o frontend (React/Next.js) juntos.
+* **Java 17**
+* **Maven 3.9.9**
+* **Node.js 18 ou superior**
+* **npm** (acompanha o Node.js)
 
-### Passos
+### Verifique se está instalado:
 
-1. Clone o repositório:
+```bash
+java -version
+mvn -v
+node -v
+npm -v
+```
+
+Se não estiver, instale por aqui:
+
+* Java: [https://adoptium.net/](https://adoptium.net/)
+* Maven: [https://maven.apache.org/install.html](https://maven.apache.org/install.html)
+* Node.js + npm: [https://nodejs.org/](https://nodejs.org/)
+
+---
+
+## 3. Como Executar o Projeto
+
+### 3.1 Clonar o repositório
 
 ```bash
 git clone https://github.com/Brenokly/Software-Testing.git
 cd Software-Testing
 ```
 
-2. Instale as dependências do frontend:
+### 3.2 Instalar dependências do frontend (Entre na pasta frontend e rode o comando)
 
 ```bash
 npm install
 ```
 
-3. Execute o projeto completo (backend + frontend):
+### 3.3 Executar o projeto backend + frontend juntos (Execute o comando a baixo partindo da raiz do projeto ##Software-Testing)
 
 ```bash
 npm start
 ```
 
-4. Acesse a interface gráfica em:
+Acesse:
 
-```
-http://localhost:3000
-```
-
-O backend estará rodando automaticamente na porta 8080.
+* Frontend: [http://localhost:3000](http://localhost:3000)
+* Backend: [http://localhost:8080/api/simulacao](http://localhost:8080/api/simulacao)
 
 ---
 
-## 🔗 **Endpoints da API**
+## 4. 🔗 **Endpoints da API**
 
 Base: `http://localhost:8080/api/simulacao`
 
@@ -153,20 +184,67 @@ Base: `http://localhost:8080/api/simulacao`
 
 ---
 
-## 🧪 **Testes**
+## 5. Suite de Testes — Completa e Abrangente ✅
 
-* **Cobertura:** 100% de cobertura MC/DC.
-* **Tipos de testes aplicados:**
+A suite de testes contempla:
 
-  * **Domínio:** Valida regras específicas da simulação.
-  * **Fronteira:** Testa limites, como mínima e máxima quantidade de criaturas.
-  * **Estruturais:** Valida os fluxos de controle interno, como eliminação de criaturas, movimentação e término da simulação.
+### ✔️ Testes de Domínio
+
+* Verificam o comportamento com entradas válidas dentro dos intervalos esperados.
+* Exemplo: Simular com 5 criaturas, verificar interações padrão.
+
+### ✔️ Testes de Fronteira
+
+* Avaliam os limites inferior e superior dos dados.
+* Exemplo: Simular com 2 (mínimo) e 10 (máximo) criaturas, além de testar valores inválidos como 1 ou 11.
+
+### ✔️ Cobertura Total
+
+* **Cobertura de Linha**: 100%
+* **Cobertura de Branch**: 100%
+* **Cobertura MC/DC**: 100%
+
+Garantido por meio da suíte de testes aplicada nos modelos (`model`) e no serviço (`service`), que são os principais responsáveis pela lógica do negócio.
+
+### ✔️ Teste de Mutação
+
+* Garante que os testes não apenas executam código, mas realmente **detectam falhas**, simulando mutações no código.
+
+---
+
+## 8. ✔️ Gerar Teste de Mutação — Passo a Passo
+
+O projeto usa o **PITest**, ferramenta padrão de mercado para teste de mutação em Java.
+
+### 🔧 Executar teste de mutação:
+
+1. No terminal, dentro da pasta do projeto:
+
+```bash
+mvn org.pitest:pitest-maven:mutationCoverage
+```
+
+### 🧠 Interpretação dos resultados:
+
+* Após rodar, acesse o relatório gerado em:
+
+```
+/target/pit-reports/YYYYMMDDHHMM/index.html
+```
+
+* Abra o arquivo `index.html` no navegador.
+
+### 📊 O que você verá no relatório:
+
+* **Mutations Killed (Mortas)**: 🟩 — Testes pegaram a mutação.
+* **Survived (Sobreviventes)**: 🔴 — Alguma mutação passou sem ser pega (indica problema na suite).
+* **No Coverage**: ⚪ — Código não coberto (não acontece neste projeto).
+* **Timeouts / Run Errors**: ⚠️ — Problemas na execução.
 
 **Ferramentas:**
 
 * **JUnit 5**
 * **AssertJ**
-* **JaCoCo** (análise de cobertura)
 * **PITest** (teste de mutação)
 
 ---
@@ -175,7 +253,7 @@ Base: `http://localhost:8080/api/simulacao`
 
 1. **Iniciar simulação com 5 criaturas**
 
-   * Chamada: `POST /simulation/start` com body:
+   * Chamada: `POST /simulation/iniciar` com body:
 
 ```json
 {
@@ -185,22 +263,13 @@ Base: `http://localhost:8080/api/simulacao`
 
 2. **Iterar simulação**
 
-   * Chamada: `POST /simulation/iterate`
+   * Chamada: `POST /simulation/iterar`
 3. **Obter status atual**
 
    * Chamada: `GET /simulation/status`
 4. **Resetar simulação**
 
-   * Chamada: `POST /simulation/reset`
-
----
-
-## 🎯 **Possíveis Melhorias Futuras**
-
-* Sistema de logs para análise detalhada de cada iteração.
-* Exportação dos resultados da simulação (JSON, CSV).
-* Ranking das criaturas em simulações anteriores.
-* Animações mais elaboradas no frontend.
+   * Chamada: `POST /simulation/resetar`
 
 ---
 
@@ -209,5 +278,3 @@ Base: `http://localhost:8080/api/simulacao`
 * **Breno Kly** – [GitHub](https://github.com/Brenokly)
 
 ---
-
-Se quiser, posso gerar um arquivo `README.md` com esse conteúdo formatado profissionalmente para subir no seu GitHub. Quer? 🔥
