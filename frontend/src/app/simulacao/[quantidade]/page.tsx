@@ -1,18 +1,19 @@
 import SimulacaoPageClient from "@/components/SimulacaoPageClient";
 import { redirect } from "next/navigation";
 
-interface Props {
-  params: {
-    quantidade: string; // <- string, porque vem da URL
-  };
-}
+export default async function SimulacaoPage({
+  params,
+}: {
+  params: Promise<{ quantidade: string }>;
+}) {
+  const { quantidade } = await params;
 
-export default function SimulacaoPage({ params }: Props) {
-  const quantidade = Number(params.quantidade);
+  // Converte a quantidade para número
+  const quantidadeNum = Number(quantidade);
 
-  if (isNaN(quantidade) || quantidade <= 1 || quantidade > 10) {
+  if (isNaN(quantidadeNum) || quantidadeNum <= 1 || quantidadeNum > 10) {
     redirect("/");
   }
 
-  return <SimulacaoPageClient quantidadeCriaturas={quantidade} />;
+  return <SimulacaoPageClient quantidadeCriaturas={quantidadeNum} />;
 }
