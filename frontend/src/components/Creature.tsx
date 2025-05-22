@@ -79,7 +79,7 @@ export function Creature({ Creature, isSelected = false }: CriaturaProps) {
       <div
         className="bg-no-repeat"
         style={{
-          backgroundImage: `url(/creature.png)`,
+          backgroundImage: `url(/Creature.png)`,
           backgroundPosition: `-${frame * frameWidth}px 0px`,
           width: `${frameWidth}px`,
           height: `${frameHeight}px`,
