@@ -3,23 +3,24 @@ package com.simulador.criaturas.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 
 /*
  * Essa classe representa um grupo de criaturas.
  * Criei ela para facilitar a manipulação das criaturas a cada iteração.
  * Adicionei métodos para gerenciar a lista de criaturas, como adicionar, remover e buscar criaturas.
-*/
+ */
 @Getter
-@EqualsAndHashCode
-@ToString
 public class Creatures {
 
     private final List<Creature> creatures; // Lista de criaturas
     private int amountOfCreatures; // Quantidade de criaturas
     private int currentIndex = 0; // Índice da criatura corrente
+
+    public Creatures() {
+        this.creatures = new ArrayList<>();
+        this.amountOfCreatures = 0;
+    }
 
     public Creatures(int amount) {
         this.creatures = new ArrayList<>();
@@ -32,16 +33,16 @@ public class Creatures {
      *
      * @param amount quantidade de criaturas a serem criadas
      * @return nenhum valor de retorno.
-     * @pre amount > 0
-     * @post A lista de criaturas será inicializada com a quantidade especificada.
-     * @throws IllegalArgumentException Se a quantidade for menor ou igual a zero.
+     * @pre amount >= 0
+     * @post A lista de criaturas será inicializada com a quantidade
+     * especificada.
+     * @throws IllegalArgumentException Se a quantidade for menor que zero.
      */
     private void initializeCreatures(int amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("A quantidade de criaturas deve ser maior que zero.");
+        if (amount < 0) {
+            throw new IllegalArgumentException("A quantidade de criaturas não pode ser negativa.");
         }
 
-        clearCreatures();
         for (int i = 0; i < amount; i++) {
             creatures.add(new Creature(i));
         }
@@ -71,15 +72,19 @@ public class Creatures {
      * método sem parâmetros.
      *
      * @return A criatura atual, ou null se não houver criaturas.
-     * @pre A lista de criaturas não deve estar vazia.
-     * @post Se retornar não-nulo, a criatura será a que está na posição atual.
-     * @throws IllegalStateException Se a lista de criaturas estiver vazia ou se a
-     *                               criatura atual for nula.
+     * @pre A lista de criaturas não deve estar vazia e a criatura atual não
+     * deve ser nula.
+     * @post Se retornar não-nulo, a criatura será a atual na lista.
+     * @throws IllegalStateException Se a lista de criaturas não estiver vazia e
+     * a criatura atual for nula. Antes o índice atual é resetado (0).
      */
     public Creature getCurrent() {
         if (creatures.isEmpty()) {
             return null;
         } else if (creatures.get(currentIndex) == null) {
+            // Reseta o índice atual se a criatura atual for nula
+            currentIndex = 0;
+
             throw new IllegalStateException("A criatura atual não pode ser nula.");
         }
 
@@ -125,8 +130,8 @@ public class Creatures {
      * @return A criatura removida, ou null se não houver criaturas.
      * @pre A lista de criaturas não deve estar vazia.
      * @post Se retornar não-nulo, a criatura terá sido removida da lista.
-     * @throws IllegalStateException Se a lista de criaturas não estiver vazia e a
-     *                               criatura atual for nula.
+     * @throws IllegalStateException Se a lista de criaturas não estiver vazia e
+     * a criatura atual for nula.
      */
     public Creature removeCurrent() {
         if (creatures.isEmpty()) {
@@ -148,8 +153,8 @@ public class Creatures {
     }
 
     /**
-     * Retorna a próxima criatura (avança o índice). Caso chegue ao final da lista,
-     * retorna a primeira criatura.
+     * Retorna a próxima criatura (avança o índice). Caso chegue ao final da
+     * lista, retorna a primeira criatura.
      *
      * método sem parâmetros.
      *
@@ -163,6 +168,10 @@ public class Creatures {
             return null;
         }
         currentIndex = (currentIndex + 1) % creatures.size();
+        if (creatures.get(currentIndex) == null) {
+            throw new IllegalStateException("A criatura não pode ser nula.");
+        }
+
         return creatures.get(currentIndex);
     }
 
@@ -172,7 +181,7 @@ public class Creatures {
      * @param creature A criatura a ser adicionada.
      * @pre creature != null
      * @post A criatura será adicionada à lista de criaturas e a quantidade será
-     *       incrementada.
+     * incrementada.
      * @throws IllegalArgumentException Se a criatura for nula.
      */
     public void addCreature(Creature creature) {
@@ -180,22 +189,10 @@ public class Creatures {
             throw new IllegalArgumentException("A criatura não pode ser nula.");
         }
         creatures.add(creature);
-        amountOfCreatures++;
+        amountOfCreatures = creatures.size();
     }
 
-    /**
-     * Remove todas as criaturas da lista.
-     *
-     * método sem parâmetros.
-     *
-     * @return nenhum valor de retorno.
-     * @pre A lista de criaturas não deve ser nula.
-     * @post A lista de criaturas estará vazia.
-     * @throws Nenhuma exceção é lançada pelo método.
-     */
-    private void clearCreatures() {
-        creatures.clear();
-        currentIndex = 0;
+    protected void setCurrentIndexForTest(int currentIndex) {
+        this.currentIndex = currentIndex;
     }
-
 }

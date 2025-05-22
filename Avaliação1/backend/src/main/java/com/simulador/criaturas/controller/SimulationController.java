@@ -15,6 +15,8 @@ import com.simulador.criaturas.dtos.SimulationRequestDTO;
 import com.simulador.criaturas.service.SimulationManager;
 import com.simulador.criaturas.service.SimulationService;
 
+// Não sabia se era necessário testar o controller
+
 @CrossOrigin
 @RestController
 @RequestMapping(value = "/api/simulacao", produces = MediaType.APPLICATION_JSON_VALUE)

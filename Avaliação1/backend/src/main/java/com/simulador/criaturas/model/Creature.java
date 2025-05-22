@@ -2,17 +2,14 @@ package com.simulador.criaturas.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /*
  * Classe que representa uma criatura no simulador.
  * Ela possui um identificador único (id), uma posição no mapa (x) e uma quantidade de ouro (gold).
  * Os únicos métodos que fazem sentido criar testes são os métodos moveCreature, stealGoldFrom e loseGold.
  * Pois só eles possuem lógica de negócio. O resto é apenas getters e setters.
-*/
-
+ */
 @AllArgsConstructor
-@NoArgsConstructor
 @Data
 public class Creature {
 
@@ -33,8 +30,8 @@ public class Creature {
      * @return Nada.
      * @pre -1 <= randomR <= 1
      * @post x será atualizado com x + (randomR * gold).
-     * @throws IllegalArgumentException se randomR estiver fora do intervalo [-1,
-     *                                  1] ou se randomR for NaN ou infinito.
+     * @throws IllegalArgumentException se randomR estiver fora do intervalo
+     * [-1, 1] ou se randomR for NaN ou infinito.
      */
     public void moveCreature(double randomR) {
         // Domínio: -1 <= randomR <= 1, Fronteira: -1 <= randomR <= 1
@@ -49,14 +46,15 @@ public class Creature {
     /**
      * Rouba ouro de outra criatura.
      *
-     * @param victim     Criatura alvo do roubo.
-     * @param percentage Percentual do ouro a ser roubado (onde 0 < percentage <=
-     *                   1).
-     * @return Quantidade de ouro roubada da vítima.
-     * @pre victim != null && 0 < percentage <= 1
-     * @post gold += ouro roubado, se finito e positivo.
+     * @param victim Criatura alvo do roubo.
+     * @param percentage Percentual do ouro a ser roubado (onde 0 < percentage
+     * <= 1). @return Quantidade de o uro roubada da vítima. @pre victim != null
+     * && 0 < percentage <= 1
+     * @p
+     * o
+     * st gold += ouro roubado, se finito e positivo.
      * @throws IllegalArgumentException se precondições ou poscondições forem
-     *                                  violadas.
+     * violadas.
      */
     public double stealGoldFrom(Creature victim, double percentage) {
         // Domínio: victim != null && 0 < percentage <= 1, Fronteira: victim != null &&
@@ -105,6 +103,7 @@ public class Creature {
             throw new IllegalArgumentException("Percentual de perda deve estar entre 0 e 1 (exclusivo de 0).");
         }
 
+        // A mutação que sobreviveu aqui não faz sentido 🥸
         if (this.gold <= 0.0) {
             return 0.0; // Ouro já é zero, nada a perder
         }

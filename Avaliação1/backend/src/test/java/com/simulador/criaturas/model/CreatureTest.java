@@ -2,14 +2,19 @@ package com.simulador.criaturas.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.Test;
+
 public class CreatureTest {
 
-    // moveCreature()
+    // moveCreature():
+    // Recebe: randomR
+    // Domínio: -1 <= randomR <= 1
+    // Fronteira: -1 <= randomR <= 1
+    // Partições: Invalid [-infinity, -1), Valid [-1, 1], Invalid (1, +infinity]
 
     @Test
     void moveCreature_givenZero_shouldRemainAtSamePosition() {
@@ -91,6 +96,10 @@ public class CreatureTest {
     }
 
     // loseGold()
+    // Recebe: percentage
+    // Domínio: 0 < percentage <= 1
+    // Fronteira: 0 < percentage <= 1
+    // Partições: Invalid [-infinity, 0], Valid (0 < percentage <= 1] e Invalid (1,
 
     @Test
     void loseGold_givenHalfPercentage_shouldDecreaseGoldByHalf() {
@@ -177,6 +186,13 @@ public class CreatureTest {
     }
 
     // stealGoldFrom()
+    // Recebe: victim, percentage
+    // Domínio: victim != null && 0 < percentage <= 1
+    // Fronteira: victim != null && 0 < percentage <= 1
+    // Partições:
+    // Creature: Invalid [null], Valid [!= null]
+    // percentage: Invalid [-infinity, 0], Valid (0 < percentage <= 1] e Invalid (1,
+    // +infinity]
 
     @Test
     void stealGoldFrom_givenValidVictimAndHalfPercentage_shouldTransferGold() {

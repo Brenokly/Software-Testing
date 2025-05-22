@@ -1,17 +1,21 @@
 package com.simulador.criaturas.service;
 
+import static com.simulador.criaturas.dtos.CreatureResponseDTO.toDTOList;
+
 import java.util.List;
 import java.util.Random;
 
 import org.springframework.stereotype.Service;
 
-import static com.simulador.criaturas.dtos.CreatureResponseDTO.toDTOList;
 import com.simulador.criaturas.dtos.IterationStatusDTO;
 import com.simulador.criaturas.exception.InsufficientCreatures;
 import com.simulador.criaturas.model.Creature;
 import com.simulador.criaturas.model.Creatures;
 
+import lombok.Data;
+
 @Service
+@Data
 public class SimulationService {
 
     private final Random random;
@@ -19,8 +23,8 @@ public class SimulationService {
     private Creatures activeCreatures;
     private Creatures inactiveCreatures;
     private int iterationCount;
-    private boolean isFinished;
-    private boolean isValid = false;
+    private boolean finished;
+    private boolean valid = false;
     private int initialAmountOfCreatures;
 
     public SimulationService() {
@@ -38,9 +42,10 @@ public class SimulationService {
      * @param amountOfCreatures a quantidade de criaturas a serem simuladas
      * @return O status da iteração após o início da simulação
      * @pre amountOfCreatures deve estar entre 2 e 10
-     * @post A simulação é iniciada com a quantidade especificada de criaturas
+     * @post A simulação é iniciada com a quantidade especificada de criaturas e
+     * o status da iteração é retornado
      * @throws InsufficientCreatures se a quantidade de criaturas não estiver no
-     *                               intervalo
+     * intervalo
      */
     public IterationStatusDTO startSimulation(int amountOfCreatures) {
         if (amountOfCreatures < 2 || amountOfCreatures > 10) {
@@ -48,54 +53,49 @@ public class SimulationService {
         }
 
         this.initialAmountOfCreatures = amountOfCreatures;
-        this.isFinished = false;
+        this.finished = false;
         this.iterationCount = 1;
 
         this.activeCreatures = new Creatures(amountOfCreatures);
         this.inactiveCreatures = new Creatures(0);
-        this.isValid = true;
+        this.valid = true;
 
         return getIterationStatus();
     }
 
     /**
-     * Executa uma iteração da simulação. (Move a criatura atual e tenta roubar ouro
-     * de um vizinho)
+     * Executa uma iteração da simulação. (Move a criatura atual e tenta roubar
+     * ouro de um vizinho)
      *
      * método sem parâmetros.
      *
-     * @return o status da iteração após a execução
-     * @pre a simulação deve estar em um estado válido
-     * @post a iteração é executada e o status é atualizado
-     * @throws IllegalStateException    se a simulação não foi iniciada corretamente
-     *                                  ou
-     *                                  IllegalArgumentException caso alguma
-     *                                  criatura
-     *                                  esteja com problema.
+     * @return O status da iteração após a execução
+     * @pre A simulação deve estar em um estado válido e não finalizada.
+     * @post A iteração é executada, atualiza o status da simulação e retorna-o.
+     * @throws IllegalStateException se a simulação não foi iniciada
+     * corretamente.
      * @throws IllegalArgumentException se acontecer algum problema com as
-     *                                  criaturas.
+     * criaturas.
      */
     public IterationStatusDTO iterate() {
-        if (!isValid) {
-            throw new IllegalStateException("A simulação não foi iniciada corretamente.");
-        }
-
-        if (isFinished || shouldFinishDueToCreatureCount()) {
-            isFinished = true;
+        if (finished) {
             return getIterationStatus();
+        } else if (!CheckIfTheSimulationIsValid()) {
+            this.valid = false;
+            throw new IllegalStateException("A simulação não foi iniciada corretamente.");
         }
 
         Creature current = activeCreatures.getCurrent();
         if (current == null) {
-            isFinished = true;
-            return getIterationStatus();
+            this.valid = false;
+            throw new IllegalStateException("A simulação não foi iniciada corretamente.");
         }
 
         current.moveCreature(generateRandomFactor());
 
         Creature neighbor = findClosestNeighbor(current);
         if (neighbor == null) {
-            isFinished = true;
+            this.finished = true;
             return getIterationStatus();
         }
 
@@ -105,14 +105,9 @@ public class SimulationService {
             inactiveCreatures.addCreature(activeCreatures.removeCreature(neighbor.getId()));
         }
 
-        if (shouldFinishDueToCreatureCount()) {
-            isFinished = true;
-        }
+        nextIfValid();
 
         iterationCount++;
-        if (activeCreatures.getAmountOfCreatures() > 1) {
-            activeCreatures.next();
-        }
 
         return getIterationStatus();
     }
@@ -122,13 +117,14 @@ public class SimulationService {
      *
      * método sem parâmetros.
      *
-     * @return o status atual da iteração
-     * @pre A simulação deve estar em um estado válido
-     * @post o status da iteração é retornado
-     * @throws IllegalStateException se a simulação não foi iniciada corretamente
+     * @return O status atual da iteração.
+     * @pre A simulação deve estar em um estado válido.
+     * @post O status da iteração é retornado.
+     * @throws IllegalStateException se a simulação não foi iniciada
+     * corretamente.
      */
     public IterationStatusDTO getIterationStatus() {
-        if (!isValid) {
+        if (!valid) {
             throw new IllegalStateException("A simulação não foi iniciada corretamente.");
         }
 
@@ -136,7 +132,7 @@ public class SimulationService {
                 toDTOList(activeCreatures.getCreatures()),
                 toDTOList(inactiveCreatures.getCreatures()),
                 iterationCount,
-                isFinished);
+                finished);
     }
 
     /**
@@ -147,12 +143,10 @@ public class SimulationService {
      * @return A criatura atual, ou null se não houver criaturas.
      * @pre A simulação deve estar em um estado válido.
      * @post Retorna a criatura atual, ou -1 se não houver criaturas.
-     * @throws IllegalStateException se a simulação não foi iniciada corretamente.
+     * @throws IllegalStateException se a simulação não foi iniciada
+     * corretamente.
      */
     public int getCurrentCreatureId() {
-        if (!isValid) {
-            throw new IllegalStateException("A simulação não foi iniciada corretamente.");
-        }
         Creature current = activeCreatures.getCurrent();
         return current != null ? current.getId() : -1;
     }
@@ -162,16 +156,18 @@ public class SimulationService {
      *
      * método sem parâmetros.
      *
-     * @return o status da iteração após a reinicialização.
-     * @pre startSimulation() deve ter sido chamado.
-     * @post a simulação é reiniciada com a quantidade inicial de criaturas.
+     * @return O status da iteração após a reinicialização.
+     * @pre startSimulation() deve ter sido chamado e deve ter sido executado
+     *
+     * sem problemas.
+     * @post A simulação é reiniciada com a quantidade inicial de criaturas.
      * @throws Nenhuma exceção é lançada pelo método.
      */
     public IterationStatusDTO resetSimulation() {
         this.activeCreatures = new Creatures(initialAmountOfCreatures);
         this.inactiveCreatures = new Creatures(0);
         this.iterationCount = 1;
-        this.isFinished = false;
+        this.finished = false;
 
         return getIterationStatus();
     }
@@ -184,30 +180,27 @@ public class SimulationService {
      * @return o status atual da iteração.
      * @pre nenhuma pré-condição específica.
      * @post a simulação é finalizada e o status é retornado.
-     * @throws IllegalStateException se a simulação não foi iniciada corretamente.
+     * @throws IllegalStateException se a simulação não foi iniciada
+     * corretamente.
      */
     public IterationStatusDTO finishSimulation() {
-        this.isFinished = true;
+        this.finished = true;
         return getIterationStatus();
     }
 
-    // === Métodos auxiliares privados ===
-
     /**
-     * Verifica se a simulação deve ser finalizada com base na contagem de criaturas
+     * Verifica se a simulação está com o número de criaturas válido.
      *
      * método sem parâmetros.
      *
-     * @return true se a simulação deve ser finalizada, false caso contrário.
+     * @return True se o número de criaturas estiver entre 2 e 10, false caso
+     * contrário.
      * @pre nenhuma pré-condição específica.
-     * @post Se retornar true, a simulação será finalizada.
+     * @post retorna true se o número de criaturas for válido.
      * @throws Nenhuma exceção é lançada pelo método.
      */
-    private boolean shouldFinishDueToCreatureCount() {
-        if (!isValid) {
-            return false;
-        }
-        return activeCreatures.getAmountOfCreatures() < 2 || activeCreatures.getAmountOfCreatures() > 10;
+    protected boolean CheckIfTheSimulationIsValid() {
+        return activeCreatures.getAmountOfCreatures() >= 2 && activeCreatures.getAmountOfCreatures() <= 10;
     }
 
     /**
@@ -220,23 +213,22 @@ public class SimulationService {
      * @post um novo fator aleatório é gerado.
      * @throws Nenhuma exceção é lançada pelo método.
      */
-    private double generateRandomFactor() {
+    protected double generateRandomFactor() {
         return random.nextDouble() * 2 - 1; // Gera valor entre -1 e 1
     }
 
     /**
      * Encontra a criatura vizinha mais próxima da criatura atual.
      *
-     * @param current a criatura atual
+     * @param current A criatura atual
      * @return a criatura vizinha mais próxima, ou null se não houver criaturas
-     *         ativas
+     * ativas
      * @pre Deve haver mais de uma criatura ativa.
      * @post Retorna a criatura vizinha mais próxima ou null.
      * @throws Nenhuma exceção é lançada pelo método.
      */
-    private Creature findClosestNeighbor(Creature current) {
-        if (activeCreatures.getAmountOfCreatures() <= 1) {
-            isFinished = true;
+    protected Creature findClosestNeighbor(Creature current) {
+        if (current == null) {
             return null;
         }
 
@@ -258,5 +250,22 @@ public class SimulationService {
         }
 
         return closestCreature;
+    }
+
+    /**
+     * Avança para a próxima iteração se a simulação for válida.
+     *
+     * método sem parâmetros.
+     *
+     * @pre nenhuma pré-condição específica.
+     * @post CurrentCreature é atualizado para a próxima criatura ativa.
+     * @throws Nenhuma exceção é lançada pelo método.
+     */
+    protected void nextIfValid() {
+        if (CheckIfTheSimulationIsValid()) {
+            activeCreatures.next();
+        } else {
+            this.finished = true;
+        }
     }
 }
