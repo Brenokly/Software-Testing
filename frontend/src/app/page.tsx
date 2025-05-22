@@ -31,7 +31,7 @@ export default function Home() {
   const iniciarSimulacao = () => {
     const valorNum = Number(numCriaturas);
     if (!validar(valorNum)) return;
-    router.push(`/simulacao?quantidade=${valorNum}`);
+    router.push(`/simulacao/${valorNum}`);
   };
 
   return (

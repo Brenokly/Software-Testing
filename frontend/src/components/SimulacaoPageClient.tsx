@@ -9,30 +9,26 @@ import {
   resetar,
 } from "@/utils/services/simulacaoService";
 import { IterationStatusDTO } from "@/utils/types/types";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
-export default function SimulacaoPage() {
+interface Props {
+  quantidadeCriaturas: number;
+}
+
+export default function SimulacaoPageClient({ quantidadeCriaturas }: Props) {
   const [status, setStatus] = useState<IterationStatusDTO | null>(null);
   const [criaturaAtualId, setCriaturaAtualId] = useState<number | null>(null);
   const [winner, setWinner] = useState<number | null>(null);
   const [autoIterar, setAutoIterar] = useState(false);
-
-  // Estado para velocidade da iteração (intervalo em ms)
-  // Começa em 500 ms (velocidade normal)
   const [intervaloIteracao, setIntervaloIteracao] = useState(500);
 
-  const searchParams = useSearchParams();
   const router = useRouter();
 
-  const quantidadeCriaturas = useMemo(() => {
-    const qtd = Number(searchParams.get("quantidade"));
-    return isNaN(qtd) ? 10 : qtd;
-  }, [searchParams]);
-
+  // Caso queira, pode validar aqui também (duplicidade para segurança)
   useEffect(() => {
     if (quantidadeCriaturas <= 1 || quantidadeCriaturas > 10) {
-      router.push("/"); // Redireciona para a home
+      router.push("/");
     }
   }, [quantidadeCriaturas, router]);
 
@@ -49,6 +45,8 @@ export default function SimulacaoPage() {
     }
     iniciar();
   }, [quantidadeCriaturas]);
+
+  // ... resto do código idêntico ao original, sem mudança ...
 
   const atualizarStatus = useCallback(
     async (acao: () => Promise<IterationStatusDTO>) => {
@@ -69,7 +67,6 @@ export default function SimulacaoPage() {
 
   const toggleAutoIterar = () => setAutoIterar((v) => !v);
 
-  // Efeito para iteração automática com velocidade variável
   useEffect(() => {
     if (!autoIterar || status?.finished) {
       setAutoIterar(false);
@@ -84,7 +81,6 @@ export default function SimulacaoPage() {
   }, [autoIterar, handleIterar, intervaloIteracao, status]);
 
   const handleResetar = useCallback(() => {
-    // se estiver iterando, para a iteração automática
     if (autoIterar) {
       setAutoIterar(false);
     }
@@ -113,14 +109,11 @@ export default function SimulacaoPage() {
     }
   }, [status?.finished, status?.statusCreatures]);
 
-  // Função para aumentar a velocidade da iteração em até 4x
-  // Velocidade padrão = 500ms
-  // 1x -> 500ms, 2x -> 250ms, 3x -> 167ms
   const aumentarVelocidade = () => {
     setIntervaloIteracao((atual) => {
       if (atual === 500) return 250;
       if (atual === 250) return 167;
-      return 500; // volta para velocidade normal após 3x
+      return 500;
     });
   };
 
