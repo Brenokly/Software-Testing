@@ -3,12 +3,12 @@ import { redirect } from "next/navigation";
 
 interface Props {
   params: {
-    quantidade: number;
+    quantidade: string; // <- string, porque vem da URL
   };
 }
 
-export default async function SimulacaoPage({ params }: Props) {
-  const { quantidade } = await params;
+export default function SimulacaoPage({ params }: Props) {
+  const quantidade = Number(params.quantidade);
 
   if (isNaN(quantidade) || quantidade <= 1 || quantidade > 10) {
     redirect("/");
