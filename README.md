@@ -1,7 +1,3 @@
-Perfeito! Aqui está uma documentação completa, organizada, explicada e profissional para o seu projeto **"Software-Testing"**.
-
----
-
 # 🪙 **Software-Testing: Simulador de Criaturas Saltitantes**
 
 ## 📜 **Descrição do Projeto**
