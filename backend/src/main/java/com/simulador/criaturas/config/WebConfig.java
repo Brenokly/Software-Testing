@@ -1,4 +1,4 @@
-package com.simulador.criaturas.config;
+package com.simulador.criaturas.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
