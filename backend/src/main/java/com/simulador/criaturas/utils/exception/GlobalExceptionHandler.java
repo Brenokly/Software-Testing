@@ -1,4 +1,4 @@
-package com.simulador.criaturas.exception;
+package com.simulador.criaturas.utils.exception;
 
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;

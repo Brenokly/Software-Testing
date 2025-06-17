@@ -1,4 +1,4 @@
-package com.simulador.criaturas.infrastructure.adapter.in.dtos;
+package com.simulador.criaturas.infrastructure.adapter.in.rest.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

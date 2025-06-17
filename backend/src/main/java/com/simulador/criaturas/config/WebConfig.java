@@ -1,4 +1,4 @@
-package com.simulador.criaturas.infrastructure.config;
+package com.simulador.criaturas.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,4 +20,12 @@ public class WebConfig {
             }
         };
     }
+
+//    @Bean
+//    public TransferMoneyUseCase transferMoneyUseCase(
+//            LoadAccountPort loadAccountPort,
+//            UpdateAccountPort updateAccountPort
+//    ) {
+//        return new TransferMoneyService(loadAccountPort, updateAccountPort);
+//    }
 }

@@ -1,9 +1,9 @@
-package com.simulador.criaturas.infrastructure.adapter.in.dtos;
+package com.simulador.criaturas.infrastructure.adapter.in.rest.dto;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.simulador.criaturas.domain.model.Creature;
+import com.simulador.criaturas.domain.model.CreatureUnit;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,11 +23,11 @@ public class CreatureResponseDTO {
     private double x; // Posição da criatura no eixo X (Horizonte)
     private double gold; // Quantidade de ouro da criatura
 
-    public static CreatureResponseDTO toDTO(Creature creature) {
+    public static CreatureResponseDTO toDTO(CreatureUnit creature) {
         return new CreatureResponseDTO(creature.getId(), creature.getX(), creature.getGold());
     }
 
-    public static List<CreatureResponseDTO> toDTOList(List<Creature> creatures) {
+    public static List<CreatureResponseDTO> toDTOList(List<CreatureUnit> creatures) {
         return creatures.stream().map(CreatureResponseDTO::toDTO).collect(Collectors.toList());
     }
 }

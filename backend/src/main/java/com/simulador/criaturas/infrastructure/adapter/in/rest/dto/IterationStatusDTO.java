@@ -1,4 +1,4 @@
-package com.simulador.criaturas.infrastructure.adapter.in.dtos;
+package com.simulador.criaturas.infrastructure.adapter.in.rest.dto;
 
 import java.util.List;
 

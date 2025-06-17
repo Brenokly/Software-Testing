@@ -1,4 +1,4 @@
-package com.simulador.criaturas.exception;
+package com.simulador.criaturas.utils.exception;
 
 public class InsufficientCreatures extends RuntimeException {
 
