@@ -13,11 +13,11 @@ import com.simulador.criaturas.domain.model.Guardian;
 import com.simulador.criaturas.domain.model.Horizon;
 import com.simulador.criaturas.domain.port.out.RandomPort;
 
-public class ServicoDeSimulacao {
+public class Simulation {
 
     private final RandomPort randomPort;
 
-    public ServicoDeSimulacao(RandomPort randomPort) {
+    public Simulation(RandomPort randomPort) {
         this.randomPort = randomPort;
     }
 
