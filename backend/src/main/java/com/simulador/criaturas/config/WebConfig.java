@@ -20,12 +20,4 @@ public class WebConfig {
             }
         };
     }
-
-//    @Bean
-//    public TransferMoneyUseCase transferMoneyUseCase(
-//            LoadAccountPort loadAccountPort,
-//            UpdateAccountPort updateAccountPort
-//    ) {
-//        return new TransferMoneyService(loadAccountPort, updateAccountPort);
-//    }
 }

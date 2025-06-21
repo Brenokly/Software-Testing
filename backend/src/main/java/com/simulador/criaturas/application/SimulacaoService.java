@@ -1,5 +1,7 @@
 package com.simulador.criaturas.application;
 
+import org.springframework.stereotype.Service;
+
 import com.simulador.criaturas.domain.model.Horizon;
 import com.simulador.criaturas.domain.port.in.SimulacaoUseCase;
 import com.simulador.criaturas.domain.service.Simulation;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
  * orquestra o serviço de domínio para executar as ações.
  */
 @RequiredArgsConstructor
+@Service
 public class SimulacaoService implements SimulacaoUseCase {
 
     // O Serviço de Aplicação DEPENDE do Serviço de Domínio
