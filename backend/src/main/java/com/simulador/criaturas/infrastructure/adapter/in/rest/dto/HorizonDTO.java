@@ -2,6 +2,8 @@ package com.simulador.criaturas.infrastructure.adapter.in.rest.dto;
 
 import java.util.List;
 
+import com.simulador.criaturas.utils.SimulationStatus;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,5 +14,5 @@ public class HorizonDTO {
 
     private List<HorizonEntityDTO> entities;
     private GuardianDTO guardiao;
-    private boolean isSimulationSuccessful;
+    private SimulationStatus status;
 }

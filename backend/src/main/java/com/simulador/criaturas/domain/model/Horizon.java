@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.simulador.criaturas.domain.behaviors.HorizonEntities;
+import com.simulador.criaturas.utils.SimulationStatus;
 
 import lombok.Data;
 
@@ -16,13 +17,13 @@ public class Horizon {
 
     private final List<HorizonEntities> entities;
     private final Guardian guardiao;
-    private boolean isSimulationSuccessful;
+    private SimulationStatus status;
 
     public Horizon(int numberEntities, int idGuardiao) {
         this.entities = new ArrayList<>();
         initializeEntities(numberEntities);
         this.guardiao = new Guardian(idGuardiao);
-        this.isSimulationSuccessful = false;
+        this.status = SimulationStatus.RUNNING;
     }
 
     /**

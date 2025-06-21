@@ -6,38 +6,32 @@ import com.simulador.criaturas.domain.model.Horizon;
 import com.simulador.criaturas.domain.port.in.SimulacaoUseCase;
 import com.simulador.criaturas.domain.port.in.UserUseCase;
 import com.simulador.criaturas.domain.service.Simulation;
+import com.simulador.criaturas.utils.SimulationStatus;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * Serviço de Aplicação que implementa os casos de uso da simulação. Ele
- * orquestra o serviço de domínio para executar as ações.
- */
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class SimulacaoService implements SimulacaoUseCase {
 
-    // O Serviço de Aplicação DEPENDE do Serviço de Domínio
     private final Simulation servicoDeDominio;
     private final UserUseCase userUseCase;
 
     @Override
     public Horizon initNewSimulation(int numeroDeCriaturas) {
-        // A lógica de criação do Horizonte pertence ao próprio objeto de domínio
         return new Horizon(numeroDeCriaturas, numeroDeCriaturas + 1);
     }
 
     @Override
     public Horizon runNextSimulation(Horizon estadoAtual, Long userId) {
-        // 1. Executa a lógica de domínio para avançar um turno
+        // 1. Executa a lógica de domínio, que retorna o horizonte com o status atualizado.
         Horizon novoHorizonte = servicoDeDominio.runIteration(estadoAtual);
 
-        // 2. Verifica se a simulação TERMINOU nesta iteração
-        boolean isFinished = novoHorizonte.isSimulationSuccessful(); // Ou uma lógica de "isFinished()"
-
-        if (isFinished) {
-            // Se terminou, atualiza as estatísticas do usuário
-            updateUserStatsAfterSimulation(userId, novoHorizonte.isSimulationSuccessful());
+        // 2. Verifica se a simulação TERMINOU (não está mais em RUNNING).
+        if (novoHorizonte.getStatus() != SimulationStatus.RUNNING) {
+            // 3. Se terminou, atualiza as estatísticas do usuário.
+            //    Passamos 'true' para wasSuccessful apenas se o status final for SUCCESSFUL.
+            updateUserStatsAfterSimulation(userId, novoHorizonte.getStatus() == SimulationStatus.SUCCESSFUL);
         }
 
         return novoHorizonte;
@@ -50,29 +44,34 @@ public class SimulacaoService implements SimulacaoUseCase {
         int maxIteracoes = 10000;
         int contador = 0;
 
-        while (!servicoDeDominio.isSimulationSuccessful(horizonte) && contador < maxIteracoes) {
+        // O loop agora continua ENQUANTO o status for RUNNING.
+        while (horizonte.getStatus() == SimulationStatus.RUNNING && contador < maxIteracoes) {
+            // O próprio runIteration irá atualizar o status dentro do objeto 'horizonte'.
             servicoDeDominio.runIteration(horizonte);
             contador++;
         }
 
-        // Atualiza o estado final do objeto horizonte
-        horizonte.setSimulationSuccessful(servicoDeDominio.isSimulationSuccessful(horizonte));
+        // Ao final do loop, o 'horizonte' já contém o status final (SUCCESSFUL, FAILED, ou RUNNING se atingiu maxIteracoes).
+        // A lógica de atualização de estatísticas é a mesma.
+        // Incrementa 'simulationsRun' se o jogo terminou por qualquer motivo.
+        if (horizonte.getStatus() != SimulationStatus.RUNNING) {
+            userUseCase.incrementSimulationsRun(userId);
+        }
 
-        // Ao final da simulação completa, atualiza as estatísticas do usuário
-        updateUserStatsAfterSimulation(userId, horizonte.isSimulationSuccessful());
+        // Incrementa 'pontuation' apenas em caso de sucesso.
+        if (horizonte.getStatus() == SimulationStatus.SUCCESSFUL) {
+            userUseCase.incrementScore(userId);
+        }
 
         return horizonte;
     }
 
     /**
      * Método auxiliar privado para centralizar a lógica de atualização de
-     * estatísticas.
+     * estatísticas. Este método não precisa de alterações.
      */
     private void updateUserStatsAfterSimulation(Long userId, boolean wasSuccessful) {
-        // Primeiro, sempre incrementamos o número de simulações executadas.
         userUseCase.incrementSimulationsRun(userId);
-
-        // Se a simulação foi bem-sucedida, também incrementamos a pontuação.
         if (wasSuccessful) {
             userUseCase.incrementScore(userId);
         }

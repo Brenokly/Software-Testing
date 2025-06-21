@@ -12,6 +12,7 @@ import com.simulador.criaturas.domain.model.CreatureCluster;
 import com.simulador.criaturas.domain.model.Guardian;
 import com.simulador.criaturas.domain.model.Horizon;
 import com.simulador.criaturas.domain.port.out.RandomPort;
+import com.simulador.criaturas.utils.SimulationStatus;
 
 public class Simulation {
 
@@ -149,12 +150,12 @@ public class Simulation {
      * LÓGICA DE INTERAÇÃO UNIFICADA.
      */
     public Horizon runIteration(Horizon horizonte) {
-        // 1. Criar uma cópia da lista de entidades para servir como "fila de processamento".
+        // 1. Criar uma cópia da lista para um roteiro de iteração seguro
         List<HorizonEntities> toProcess = new ArrayList<>(horizonte.getEntities());
 
         for (HorizonEntities entity : toProcess) {
             if (entity != null) {
-                // 2. Verificar se a entidade ainda existe na simulação "ao vivo".
+                // 2. Verificar se a entidade ainda existe na simulação "ao vivo"
                 if (!horizonte.getEntities().contains(entity)) {
                     continue;
                 }
@@ -164,8 +165,10 @@ public class Simulation {
                     movel.move(randomPort.nextFactor());
                 }
 
-                // 4. Interação: Resolve as colisões na posição atual da entidade.
+                // 4. Interação: Resolve colisões e retorna o sobrevivente
                 HorizonEntities survivor = resolveInteractionsAt(horizonte, entity.getX());
+
+                // 5. Roubo: O sobrevivente age
                 if (survivor != null && !(survivor instanceof Guardian)) {
                     treatNeighborTheft(horizonte, survivor);
                 }
@@ -178,36 +181,49 @@ public class Simulation {
             if (guardiao instanceof Move) {
                 guardiao.move(randomPort.nextFactor());
             }
-            // Após o guardião se mover, resolvemos as interações na sua NOVA posição.
             resolveInteractionsAt(horizonte, guardiao.getX());
         }
 
-        // 5. Verifica se a simulação foi bem-sucedida.
-        horizonte.setSimulationSuccessful(isSimulationSuccessful(horizonte));
+        // 6. Ao final de todas as ações, verifica qual é o novo status do jogo
+        SimulationStatus novoStatus = getStatus(horizonte);
 
-        // 6. Retorna o horizonte atualizado após a iteração.
+        // 7. Atualiza o objeto horizonte com este novo status
+        horizonte.setStatus(novoStatus);
+
+        // 8. Retorna o horizonte com seu estado final atualizado
         return horizonte;
     }
 
     /**
-     * Verifica se a simulação foi bem-sucedida. A simulação é considerada
-     * bem-sucedida se restar apenas o guardião ou se o guardião tiver mais ouro
-     * que a última entidade restante.
+     * Verifica o estado atual da simulação (Em Andamento, Sucesso ou Falha).
+     *
+     * @param horizonte O estado atual do jogo.
+     * @return O status correspondente da simulação.
      */
-    public boolean isSimulationSuccessful(Horizon horizonte) {
-        List<HorizonEntities> entidadesRestantes = horizonte.getEntities();
+    public SimulationStatus getStatus(Horizon horizonte) {
+        List<HorizonEntities> remainingEntities = horizonte.getEntities();
         Guardian guardiao = horizonte.getGuardiao();
 
-        if (entidadesRestantes.isEmpty()) {
-            return true; // Apenas o guardião restou.
+        // --- CONDIÇÕES DE SUCESSO ---
+        if (remainingEntities.isEmpty()) {
+            return SimulationStatus.SUCCESSFUL; // Apenas o guardião restou.
+        }
+        if (remainingEntities.size() == 1) {
+            if (guardiao.getGold() > remainingEntities.get(0).getGold()) {
+                return SimulationStatus.SUCCESSFUL; // Guardião tem mais ouro.
+            }
         }
 
-        if (entidadesRestantes.size() == 1) {
-            HorizonEntities ultimaEntidade = entidadesRestantes.get(0);
-            return guardiao.getGold() > ultimaEntidade.getGold();
+        // --- CONDIÇÃO DE FALHA (STALEMATE) ---
+        if (remainingEntities.size() == 1) {
+            if (guardiao.getGold() <= remainingEntities.get(0).getGold()) {
+                return SimulationStatus.FAILED; // Empate/derrota, o jogo não pode mais ser ganho.
+            }
         }
 
-        return false;
+        // --- CONDIÇÃO PADRÃO ---
+        // Se nenhuma das condições de término foi atingida, a simulação continua.
+        return SimulationStatus.RUNNING;
     }
 
 }

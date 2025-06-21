@@ -2,6 +2,8 @@ package com.simulador.criaturas.infrastructure.adapter.in.rest;
 
 import java.security.Principal;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,7 @@ import com.simulador.criaturas.domain.port.in.SimulacaoUseCase;
 import com.simulador.criaturas.domain.port.in.UserUseCase;
 import com.simulador.criaturas.infrastructure.adapter.in.rest.dto.HorizonDTO;
 import com.simulador.criaturas.infrastructure.adapter.in.rest.mapper.HorizonMapper;
+import com.simulador.criaturas.utils.SimulationStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,15 +41,27 @@ public class SimulacaoController {
 
     /**
      * Executa uma única iteração de uma simulação para o usuário autenticado.
+     * Inclui uma validação "Fail-Fast" para rejeitar iterações em simulações já
+     * concluídas.
      */
     @PostMapping("/iterar")
-    public HorizonDTO iterar(@RequestBody HorizonDTO estadoAtualDTO, Principal principal) {
+    public ResponseEntity<?> iterar(@RequestBody HorizonDTO estadoAtualDTO, Principal principal) {
+
+        // Verifico o status da simulação ANTES de fazer qualquer coisa.
+        if (estadoAtualDTO.getStatus() != SimulationStatus.RUNNING) {
+            String errorMessage = "Não é possível iterar uma simulação que já foi concluída com o status: " + estadoAtualDTO.getStatus();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
+        }
+
+        // Se a validação passar, o fluxo continua normalmente...
         User user = userUseCase.findUserByLogin(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Usuário autenticado não encontrado."));
 
         Horizon horizonDominio = horizonMapper.toDomain(estadoAtualDTO);
         Horizon novoHorizonDominio = simulacaoUseCase.runNextSimulation(horizonDominio, user.getId());
-        return horizonMapper.toDto(novoHorizonDominio);
+
+        // Retornamos o DTO mapeado.
+        return ResponseEntity.ok(horizonMapper.toDto(novoHorizonDominio));
     }
 
     /**
