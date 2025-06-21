@@ -17,6 +17,10 @@ public class StatisticsController {
 
     private final StatisticsUseCase statisticsUseCase;
 
+    /**
+     * Retorna as estatísticas globais. O endpoint é protegido e requer que o
+     * usuário esteja autenticado para acessá-lo.
+     */
     @GetMapping
     public ResponseEntity<GlobalStatisticsDTO> getStatistics() {
         GlobalStatisticsDTO stats = statisticsUseCase.getGlobalStatistics();

@@ -63,11 +63,21 @@ public class UserService implements UserUseCase {
     }
 
     @Override
-    public void deleteUser(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new RuntimeException("Usuário não encontrado para exclusão.");
+    public void deleteUser(Long userIdToDelete, String requesterLogin) {
+        // Busca o usuário que se quer deletar
+        User userToDelete = userRepository.findById(userIdToDelete)
+                .orElseThrow(() -> new RuntimeException("Usuário a ser deletado não encontrado."));
+
+        // Regra de negócio de segurança:
+        // O login do usuário a ser deletado é o mesmo de quem fez a requisição?
+        if (!userToDelete.getLogin().equals(requesterLogin)) {
+            // Se não for, lançamos um erro de acesso negado.
+            // Em um sistema real, usaríamos uma exceção customizada e um status 403 Forbidden.
+            throw new SecurityException("Acesso negado: Você só pode deletar sua própria conta.");
         }
-        userRepository.deleteById(userId);
+
+        // Se a verificação passar, a exclusão é permitida.
+        userRepository.deleteById(userIdToDelete);
     }
 
     @Override

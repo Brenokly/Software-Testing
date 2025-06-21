@@ -36,11 +36,12 @@ public interface UserUseCase {
     void incrementScore(Long userId);
 
     /**
-     * Exclui um usuário do sistema.
+     * Exclui um usuário, verificando se quem pede a exclusão tem permissão.
      *
-     * @param userId O ID do usuário a ser excluído.
+     * @param userIdToDelete O ID do usuário a ser deletado.
+     * @param requesterLogin O login do usuário que está fazendo a requisição.
      */
-    void deleteUser(Long userId);
+    void deleteUser(Long userIdToDelete, String requesterLogin);
 
     /**
      * Busca um usuário pelo seu login.
