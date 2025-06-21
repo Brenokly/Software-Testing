@@ -74,4 +74,16 @@ public class UserService implements UserUseCase {
     public Optional<User> findUserByLogin(String login) {
         return userRepository.findByLogin(login);
     }
+
+    @Override
+    public void incrementSimulationsRun(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado para incrementar simulações."));
+
+        // Incrementa o contador de simulações executadas
+        user.incrementSimulationsRun();
+
+        // Atualiza o usuário no repositório
+        userRepository.update(user);
+    }
 }

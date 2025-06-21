@@ -22,30 +22,21 @@ public interface SimulacaoUseCase {
     Horizon initNewSimulation(int numeroDeCriaturas);
 
     /**
-     * Recebe o estado atual de um Horizonte e executa uma única iteração (um
-     * turno). Ideal para o modelo stateless onde o frontend envia o estado e
-     * recebe o novo.
+     * Recebe o estado atual de um Horizonte e o ID do usuário, e executa uma
+     * única iteração (um turno).
      *
-     * @param estadoAtual O objeto Horizon representando o estado atual da
-     * simulação.
-     * @return O objeto Horizon com o estado atualizado após a iteração.
-     * @pre estadoAtual != null
-     * @post O estado do Horizonte é atualizado com base nas regras de
-     * simulação.
+     * @param estadoAtual O objeto Horizon atual.
+     * @param userId O ID do usuário que está executando a simulação.
+     * @return O objeto Horizon com o estado atualizado.
      */
-    Horizon runNextSimulation(Horizon estadoAtual);
+    Horizon runNextSimulation(Horizon estadoAtual, Long userId);
 
     /**
-     * Cria uma nova simulação e a executa completamente até o fim. Útil para
-     * cenários onde o usuário quer ver o resultado final de uma vez.
+     * Cria e executa uma simulação completa para um usuário específico.
      *
      * @param numeroDeCriaturas O número de criaturas iniciais.
-     * @return O estado final do Horizonte após a simulação ser concluída.
-     * @pre numeroDeCriaturas > 0 && numeroDeCriaturas <= 10
-     * @post O estado do Horizonte é atualizado com o resultado final da
-     * simulação.
-     * @throws IllegalArgumentException Se o número de criaturas não estiver no
-     * intervalo válido.
+     * @param userId O ID do usuário que está executando a simulação.
+     * @return O estado final do Horizonte.
      */
-    Horizon runFullSimulation(int numeroDeCriaturas);
+    Horizon runFullSimulation(int numeroDeCriaturas, Long userId);
 }

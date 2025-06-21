@@ -27,4 +27,5 @@ public class UserEntity {
     private String password;
     private int avatarId;
     private int pontuation;
+    private int simulationsRun;
 }

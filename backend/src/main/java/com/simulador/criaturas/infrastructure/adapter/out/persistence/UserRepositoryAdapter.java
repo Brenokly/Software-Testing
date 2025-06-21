@@ -1,5 +1,6 @@
 package com.simulador.criaturas.infrastructure.adapter.out.persistence;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
@@ -59,5 +60,13 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     @Override
     public boolean existsById(Long id) {
         return jpaRepository.existsById(id);
+    }
+
+    @Override
+    public List<User> findAll() {
+        List<UserEntity> userEntities = jpaRepository.findAll();
+        return userEntities.stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 }

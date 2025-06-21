@@ -16,25 +16,37 @@ public class User {
 
     private Long id;
     private String login;
-    private String password; // Em um sistema real, este campo guardaria a senha criptografada
+    private String password;
     private int avatarId;
     private int pontuation;
+    private int simulationsRun;
 
     public User(String login, String password) {
         this.login = login;
         this.password = password;
         this.avatarId = 0;
         this.pontuation = 0;
+        this.simulationsRun = 0;
     }
 
-    // Exemplo de regra de negócio que vive no domínio:
     public void incrementScore() {
         this.pontuation++;
+    }
+
+    public void incrementSimulationsRun() {
+        this.simulationsRun++;
     }
 
     public void changeAvatar(int newAvatarId) {
         if (newAvatarId >= 0) {
             this.avatarId = newAvatarId;
         }
+    }
+
+    public double getAverageSuccessRate() {
+        if (simulationsRun == 0) {
+            return 0.0;
+        }
+        return (double) pontuation / simulationsRun;
     }
 }

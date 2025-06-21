@@ -1,5 +1,6 @@
 package com.simulador.criaturas.domain.port.out;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.simulador.criaturas.domain.model.User;
@@ -28,4 +29,6 @@ public interface UserRepositoryPort {
     boolean existsByLogin(String login);
 
     boolean existsById(Long id);
+
+    List<User> findAll();
 }

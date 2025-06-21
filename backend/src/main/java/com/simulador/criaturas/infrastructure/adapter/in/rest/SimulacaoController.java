@@ -24,29 +24,20 @@ public class SimulacaoController {
 
     @PostMapping("/iniciar")
     public HorizonDTO iniciar(@RequestParam int numeroDeCriaturas) {
-        // 1. Serviço de aplicação retorna o objeto de DOMÍNIO
         Horizon horizonDominio = simulacaoUseCase.initNewSimulation(numeroDeCriaturas);
-        // 2. Controller usa o Mapper para converter para DTO antes de enviar
         return horizonMapper.toDto(horizonDominio);
     }
 
     @PostMapping("/iterar")
-    public HorizonDTO iterar(@RequestBody HorizonDTO estadoAtualDTO) {
-        // 1. Controller recebe o DTO do frontend
+    public HorizonDTO iterar(@RequestBody HorizonDTO estadoAtualDTO, @RequestParam Long userId) {
         Horizon horizonDominio = horizonMapper.toDomain(estadoAtualDTO);
-
-        // 2. Chama o caso de uso com o objeto de DOMÍNIO
-        Horizon novoHorizonDominio = simulacaoUseCase.runNextSimulation(horizonDominio);
-
-        // 3. Converte o resultado do DOMÍNIO de volta para DTO para a resposta
+        Horizon novoHorizonDominio = simulacaoUseCase.runNextSimulation(horizonDominio, userId);
         return horizonMapper.toDto(novoHorizonDominio);
     }
 
     @PostMapping("/executar-completa")
-    public HorizonDTO executarCompleta(@RequestParam int numeroDeCriaturas) {
-        // 1. Serviço de aplicação retorna o objeto de DOMÍNIO
-        Horizon horizonDominio = simulacaoUseCase.runFullSimulation(numeroDeCriaturas);
-        // 2. Controller usa o Mapper para converter para DTO antes de enviar
+    public HorizonDTO executarCompleta(@RequestParam int numeroDeCriaturas, @RequestParam Long userId) {
+        Horizon horizonDominio = simulacaoUseCase.runFullSimulation(numeroDeCriaturas, userId);
         return horizonMapper.toDto(horizonDominio);
     }
 }

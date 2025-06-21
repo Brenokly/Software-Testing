@@ -50,4 +50,10 @@ public interface UserUseCase {
      */
     Optional<User> findUserByLogin(String login);
 
+    /**
+     * Incrementa o número de simulações executadas por um usuário.
+     *
+     * @param userId O ID do usuário.
+     */
+    void incrementSimulationsRun(Long userId);
 }
