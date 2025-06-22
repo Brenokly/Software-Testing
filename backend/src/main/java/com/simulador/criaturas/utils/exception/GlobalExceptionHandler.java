@@ -51,6 +51,12 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.NOT_FOUND, "Elemento não encontrado", ex.getMessage());
     }
 
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity<ErrorResponse> handleSecurityException(SecurityException ex) {
+        log.error("Erro de segurança capturado: ", ex);
+        return buildErrorResponse(HttpStatus.FORBIDDEN, "Acesso negado", ex.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
         log.error("Erro inesperado capturado: ", ex);

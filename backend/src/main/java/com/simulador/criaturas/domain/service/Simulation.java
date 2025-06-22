@@ -2,6 +2,7 @@ package com.simulador.criaturas.domain.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.simulador.criaturas.domain.behaviors.Fusion;
 import com.simulador.criaturas.domain.behaviors.HorizonEntities;
@@ -18,16 +19,135 @@ public class Simulation {
 
     private final RandomPort randomPort;
 
+    /**
+     * Constrói uma nova instância do serviço de simulação.
+     *
+     * @param randomPort A porta para obter fatores de aleatoriedade, injetada
+     * para garantir a testabilidade da lógica de negócio.
+     * @throws IllegalArgumentException Se a porta de aleatoriedade for nula.
+     * @pre A porta 'randomPort' não pode ser nula.
+     * @post Uma nova instância de Simulation é criada com a dependência
+     * fornecida.
+     */
     public Simulation(RandomPort randomPort) {
-        this.randomPort = randomPort;
+        this.randomPort = Objects.requireNonNull(randomPort, "A porta de aleatoriedade não pode ser nula.");
     }
 
-    // Dentro da classe ServicoDeSimulacao
     /**
-     * Encontra a entidade vizinha mais próxima (esquerda ou direita) de uma
-     * dada entidade.
+     * Cria um novo estado de simulação (Horizon) com um número específico de
+     * criaturas.
+     *
+     * @param numeroDeCriaturas O número de criaturas para iniciar a simulação.
+     * @return Um objeto Horizon inicializado e pronto para a simulação.
+     * @throws IllegalArgumentException Se o número de criaturas estiver fora do
+     * intervalo permitido [1, 10].
+     * @pre O número de criaturas deve ser um valor entre 1 e 10, inclusive.
+     * @post Um novo Horizon é criado com o número especificado de criaturas e
+     * um guardião, com o status inicial 'RUNNING'.
+     */
+    public Horizon createNewSimulation(int numeroDeCriaturas) {
+        if (numeroDeCriaturas <= 0 || numeroDeCriaturas > 10) {
+            throw new IllegalArgumentException("O número de criaturas deve estar entre 1 e 10.");
+        }
+        int idGuardiao = numeroDeCriaturas + 1;
+        return new Horizon(numeroDeCriaturas, idGuardiao);
+    }
+
+    /**
+     * Orquestra uma única iteração completa da simulação.
+     *
+     * @param horizonte O estado atual da simulação a ser avançado.
+     * @return O mesmo objeto Horizon, com seu estado interno atualizado.
+     * @throws IllegalArgumentException Se o horizonte for nulo.
+     * @throws IllegalStateException Se a simulação já terminou (não está
+     * 'RUNNING').
+     * @pre O horizonte não pode ser nulo e deve estar em um estado 'RUNNING'.
+     * @post As entidades no horizonte se movem e interagem. O status do
+     * horizonte é atualizado para RUNNING, SUCCESSFUL ou FAILED.
+     */
+    public Horizon runIteration(Horizon horizonte) {
+        if (horizonte == null) {
+            throw new IllegalArgumentException("Horizon não pode ser nulo.");
+        }
+        if (horizonte.getStatus() != SimulationStatus.RUNNING) {
+            throw new IllegalStateException("A simulação não pode ser executada pois seu status é: " + horizonte.getStatus());
+        }
+
+        // ... Lógica do método ...
+        List<HorizonEntities> toProcess = new ArrayList<>(horizonte.getEntities());
+        for (HorizonEntities entity : toProcess) {
+            if (entity != null) {
+                if (!horizonte.getEntities().contains(entity)) {
+                    continue;
+                }
+                if (entity instanceof Move movel) {
+                    movel.move(randomPort.nextFactor());
+                }
+                HorizonEntities survivor = resolveInteractionsAt(horizonte, entity.getX());
+                if (survivor != null && !(survivor instanceof Guardian)) {
+                    treatNeighborTheft(horizonte, survivor);
+                }
+            }
+        }
+        Guardian guardiao = horizonte.getGuardiao();
+        if (guardiao != null) {
+            if (guardiao instanceof Move) {
+                guardiao.move(randomPort.nextFactor());
+            }
+            resolveInteractionsAt(horizonte, guardiao.getX());
+        }
+        SimulationStatus novoStatus = getStatus(horizonte);
+        horizonte.setStatus(novoStatus);
+        return horizonte;
+    }
+
+    /**
+     * Verifica o estado atual da simulação (Em Andamento, Sucesso ou Falha).
+     *
+     * @param horizonte O estado atual do jogo a ser avaliado.
+     * @return O status correspondente da simulação.
+     * @throws IllegalArgumentException Se o horizonte for nulo.
+     * @pre O horizonte não pode ser nulo.
+     * @post Nenhuma modificação é feita no horizonte. Um status é retornado com
+     * base nas suas propriedades.
+     */
+    public SimulationStatus getStatus(Horizon horizonte) {
+        if (horizonte == null) {
+            throw new IllegalArgumentException("Horizon não pode ser nulo.");
+        }
+
+        List<HorizonEntities> remainingEntities = horizonte.getEntities();
+        Guardian guardiao = horizonte.getGuardiao();
+
+        if (remainingEntities.isEmpty() || (remainingEntities.size() == 1 && guardiao.getGold() > remainingEntities.get(0).getGold())) {
+            return SimulationStatus.SUCCESSFUL;
+        }
+
+        if (remainingEntities.size() == 1 && guardiao.getGold() <= remainingEntities.get(0).getGold()) {
+            return SimulationStatus.FAILED;
+        }
+
+        return SimulationStatus.RUNNING;
+    }
+
+    // --- MÉTODOS PRIVADOS (AUXILIARES) ---
+
+    /**
+     * Encontra a entidade vizinha mais próxima de uma entidade de referência.
+     *
+     * @param horizonte O contexto da simulação contendo todas as entidades.
+     * @param currentEntity A entidade a partir da qual a busca é feita.
+     * @return A entidade vizinha mais próxima, ou null se não houver outros
+     * vizinhos.
+     * @throws IllegalArgumentException Se os parâmetros de entrada forem nulos.
+     * @pre 'horizonte' e 'currentEntity' não podem ser nulos.
+     * @post O estado do horizonte não é modificado.
      */
     private HorizonEntities findNearestNeighbor(Horizon horizonte, HorizonEntities currentEntity) {
+        if (horizonte == null || currentEntity == null) {
+            throw new IllegalArgumentException("Horizon e entidade atual não podem ser nulos.");
+        }
+
         List<HorizonEntities> allEntities = new ArrayList<>(horizonte.getEntities());
 
         // Remove a própria entidade da lista de candidatos a vizinho
@@ -51,8 +171,15 @@ public class Simulation {
     }
 
     /**
-     * Trata a lógica de uma entidade roubar metade do ouro do vizinho mais
-     * próximo.
+     * Gerencia a lógica de uma entidade atacante roubar ouro de seu vizinho.
+     *
+     * @param horizonte O contexto da simulação.
+     * @param attacker A entidade que tenta realizar o roubo.
+     * @return Nenhum retorno.
+     * @pre O atacante deve ser uma instância de StealGold. O vizinho, se
+     * existir, deve ser uma instância de LoseGold.
+     * @post Se as condições forem atendidas, o ouro é transferido da vítima
+     * para o atacante, modificando o estado de ambas as entidades.
      */
     private void treatNeighborTheft(Horizon horizonte, HorizonEntities attacker) {
         // Apenas entidades que podem roubar ouro agem.
@@ -75,12 +202,21 @@ public class Simulation {
         }
     }
 
-    // Dentro da classe ServicoDeSimulacao
     /**
-     * Resolve TODAS as interações em uma dada posição, aplicando a hierarquia
-     * de regras. Substitui os métodos antigos de colisão.
+     * Resolve todas as interações (colisões, fusões) que ocorrem em uma
+     * posição.
      *
-     * @return A entidade "sobrevivente" que agora ocupa a posição.
+     * @param horizonte O contexto da simulação.
+     * @param position A coordenada no eixo X onde as interações devem ser
+     * resolvidas.
+     * @return A entidade sobrevivente que permanece na posição após as
+     * interações.
+     * @throws IllegalArgumentException Se horizonte for nulo ou a posição for
+     * inválida.
+     * @pre 'horizonte' não pode ser nulo e 'position' deve ser um número
+     * finito.
+     * @post Entidades na posição são fundidas ou removidas. A entidade
+     * sobrevivente (se houver) é retornada.
      */
     private HorizonEntities resolveInteractionsAt(Horizon horizonte, double position) {
         if (horizonte == null || Double.isNaN(position) || Double.isInfinite(position)) {
@@ -144,86 +280,4 @@ public class Simulation {
             return novoCluster;
         }
     }
-
-    /**
-     * Orquestra uma única iteração completa da simulação. VERSÃO FINAL COM
-     * LÓGICA DE INTERAÇÃO UNIFICADA.
-     */
-    public Horizon runIteration(Horizon horizonte) {
-        // 1. Criar uma cópia da lista para um roteiro de iteração seguro
-        List<HorizonEntities> toProcess = new ArrayList<>(horizonte.getEntities());
-
-        for (HorizonEntities entity : toProcess) {
-            if (entity != null) {
-                // 2. Verificar se a entidade ainda existe na simulação "ao vivo"
-                if (!horizonte.getEntities().contains(entity)) {
-                    continue;
-                }
-
-                // 3. Movimento
-                if (entity instanceof Move movel) {
-                    movel.move(randomPort.nextFactor());
-                }
-
-                // 4. Interação: Resolve colisões e retorna o sobrevivente
-                HorizonEntities survivor = resolveInteractionsAt(horizonte, entity.getX());
-
-                // 5. Roubo: O sobrevivente age
-                if (survivor != null && !(survivor instanceof Guardian)) {
-                    treatNeighborTheft(horizonte, survivor);
-                }
-            }
-        }
-
-        // --- Processa o Guardião ---
-        Guardian guardiao = horizonte.getGuardiao();
-        if (guardiao != null) {
-            if (guardiao instanceof Move) {
-                guardiao.move(randomPort.nextFactor());
-            }
-            resolveInteractionsAt(horizonte, guardiao.getX());
-        }
-
-        // 6. Ao final de todas as ações, verifica qual é o novo status do jogo
-        SimulationStatus novoStatus = getStatus(horizonte);
-
-        // 7. Atualiza o objeto horizonte com este novo status
-        horizonte.setStatus(novoStatus);
-
-        // 8. Retorna o horizonte com seu estado final atualizado
-        return horizonte;
-    }
-
-    /**
-     * Verifica o estado atual da simulação (Em Andamento, Sucesso ou Falha).
-     *
-     * @param horizonte O estado atual do jogo.
-     * @return O status correspondente da simulação.
-     */
-    public SimulationStatus getStatus(Horizon horizonte) {
-        List<HorizonEntities> remainingEntities = horizonte.getEntities();
-        Guardian guardiao = horizonte.getGuardiao();
-
-        // --- CONDIÇÕES DE SUCESSO ---
-        if (remainingEntities.isEmpty()) {
-            return SimulationStatus.SUCCESSFUL; // Apenas o guardião restou.
-        }
-        if (remainingEntities.size() == 1) { //Apenas o guardião e uma entidade restante e o guardião tem mais ouro.
-            if (guardiao.getGold() > remainingEntities.get(0).getGold()) {
-                return SimulationStatus.SUCCESSFUL; // Guardião tem mais ouro.
-            }
-        }
-
-        // --- CONDIÇÃO DE FALHA (STALEMATE) ---
-        if (remainingEntities.size() == 1) {
-            if (guardiao.getGold() <= remainingEntities.get(0).getGold()) {
-                return SimulationStatus.FAILED; // Empate/derrota, o jogo não pode mais ser ganho.
-            }
-        }
-
-        // --- CONDIÇÃO PADRÃO ---
-        // Se nenhuma das condições de término foi atingida, a simulação continua.
-        return SimulationStatus.RUNNING;
-    }
-
 }

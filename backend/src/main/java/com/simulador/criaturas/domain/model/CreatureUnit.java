@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
  *
  * É uma versão pura, apenas java! Faz parte do domínio da aplicação!
  * Como creature é manipulada por outras classes, não faz sentido criar portas de entrada ou saída para ela.
+ *
  */
 @NoArgsConstructor
 @AllArgsConstructor

@@ -29,15 +29,15 @@ public class Horizon {
     /**
      * Inicializa as entidades do horizonte.
      *
-     * @param amount a quantidade de entidades a serem criadas
+     * @param amount a quantidade de entidades a serem criadas.
      * @return Nenhum retorno.
-     * @pre amount deve ser um número não negativo
-     * @post entidades são criadas e adicionadas ao horizonte
+     * @pre Amount deve ser um número inteiro positivo
+     * @post Entidades são criadas e adicionadas ao horizonte.
      * @throws IllegalArgumentException se amount for negativo
      */
     private void initializeEntities(int amount) {
-        if (amount < 0) {
-            throw new IllegalArgumentException("A quantidade de criaturas não pode ser negativa.");
+        if (amount <= 0) {
+            throw new IllegalArgumentException("A quantidade de criaturas deve ser positiva.");
         }
         for (int i = 1; i <= amount; i++) {
             entities.add(new CreatureUnit(i));
@@ -49,8 +49,8 @@ public class Horizon {
      *
      * @param entity a entidade a ser adicionada
      * @return Nenhum retorno.
-     * @pre entity não pode ser nula
-     * @post a entidade é adicionada ao horizonte
+     * @pre entity não pode ser nula.
+     * @post a entidade é adicionada ao horizonte.
      * @throws IllegalArgumentException se entity for nula
      */
     public void addEntity(HorizonEntities entity) {

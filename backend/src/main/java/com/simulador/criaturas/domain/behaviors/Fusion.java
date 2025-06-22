@@ -1,7 +1,7 @@
 package com.simulador.criaturas.domain.behaviors;
 
 public interface Fusion {
-    // Interface que define o comportamento de fusão de criaturas
+    // Interface que define o comportamento de fusão de criaturas.
 
     public void setGold(double gold);
 

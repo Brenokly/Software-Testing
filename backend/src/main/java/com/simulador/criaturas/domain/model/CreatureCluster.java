@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
  * Ela possui comportamentos de movimentação, roubo de ouro, perda de ouro e fusão com outras entidades.
  *
  * É uma versão pura, apenas java! Faz parte do domínio da aplicação!
+ *
  */
 @NoArgsConstructor
 @AllArgsConstructor

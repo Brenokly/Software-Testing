@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
  * Um guardião é uma criatura que protege um determinado local e pode possuir ouro.
  * Ele é o responsável por derrotar os clusters que se aproximam do seu território.
  * Ele só consegue moedas de ouro se derrotar um cluster.
+ *
  */
 @AllArgsConstructor
 @NoArgsConstructor
