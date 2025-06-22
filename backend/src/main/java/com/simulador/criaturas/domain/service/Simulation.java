@@ -208,7 +208,7 @@ public class Simulation {
         if (remainingEntities.isEmpty()) {
             return SimulationStatus.SUCCESSFUL; // Apenas o guardião restou.
         }
-        if (remainingEntities.size() == 1) {
+        if (remainingEntities.size() == 1) { //Apenas o guardião e uma entidade restante e o guardião tem mais ouro.
             if (guardiao.getGold() > remainingEntities.get(0).getGold()) {
                 return SimulationStatus.SUCCESSFUL; // Guardião tem mais ouro.
             }
