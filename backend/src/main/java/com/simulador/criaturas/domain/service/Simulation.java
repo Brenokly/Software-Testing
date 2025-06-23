@@ -131,7 +131,6 @@ public class Simulation {
     }
 
     // --- MÉTODOS PRIVADOS (AUXILIARES) ---
-
     /**
      * Encontra a entidade vizinha mais próxima de uma entidade de referência.
      *
@@ -225,16 +224,10 @@ public class Simulation {
 
         List<HorizonEntities> entitiesAtPosition = horizonte.getEntitiesInPosition(position);
 
-        // --- REGRA DE PRIORIDADE 1: Houve colisão?
-        if (entitiesAtPosition.size() <= 1) {
-            // Se não houver colisão, não há nada a fazer.
-            return entitiesAtPosition.isEmpty() ? null : entitiesAtPosition.get(0);
-        }
-
         Guardian guardiao = horizonte.getGuardiao();
         boolean guardianIsAtPosition = (guardiao != null && guardiao.getX() == position);
 
-        // --- REGRA DE PRIORIDADE 2: INTERAÇÃO COM O GUARDIÃO ---
+        // --- REGRA DE PRIORIDADE 1: INTERAÇÃO COM O GUARDIÃO ---
         if (guardianIsAtPosition) {
             // Encontra qualquer cluster na mesma posição do guardião
             CreatureCluster clusterVictim = entitiesAtPosition.stream()
@@ -250,6 +243,12 @@ public class Simulation {
                 // O sobrevivente aqui é o Guardião
                 return guardiao;
             }
+        }
+
+        // --- REGRA DE PRIORIDADE 2: Houve colisão?
+        if (entitiesAtPosition.size() <= 1) {
+            // Se não houver colisão, não há nada a fazer.
+            return entitiesAtPosition.isEmpty() ? null : entitiesAtPosition.get(0);
         }
 
         // --- REGRA DE PRIORIDADE 3: FUSÃO DE CLUSTERS OU CRIATURAS ---

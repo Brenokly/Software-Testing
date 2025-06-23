@@ -138,14 +138,12 @@
                 <configuration>
                     <!-- Seu pacote principal de código-fonte -->
                     <targetClasses>
-                        <param>com.simulador.criaturas.model.*</param>
-                        <param>com.simulador.criaturas.service.*</param>
+                        <param>com.simulador.criaturas</param>
                     </targetClasses>
 
                     <!-- Seu pacote principal de testes -->
                     <targetTests>
-                        <param>com.simulador.criaturas.model.*</param>
-                        <param>com.simulador.criaturas.service.*</param>
+                        <param>com.simulador.criaturas</param>
                     </targetTests>
 
                     <!-- Habilita relatórios HTML no diretório target/pit-reports -->

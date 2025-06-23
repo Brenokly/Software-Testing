@@ -16,9 +16,8 @@ import lombok.NoArgsConstructor;
  * Pois só eles possuem lógica de negócio. O resto é apenas getters e setters.
  *
  * É uma versão pura, apenas java! Faz parte do domínio da aplicação!
- * Como creature é manipulada por outras classes, não faz sentido criar portas de entrada ou saída para ela.
- *
  */
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
