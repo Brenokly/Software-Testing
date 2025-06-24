@@ -23,9 +23,7 @@ public interface Fusion {
     default public void fusion(HorizonEntities creature) {
         if (creature == null) {
             throw new IllegalArgumentException("Criatura não pode ser nula.");
-        }
-
-        if (!Double.isFinite(creature.getGold())) {
+        } else if (!Double.isFinite(creature.getGold())) {
             throw new IllegalArgumentException("A quantidade de ouro da criatura deve ser um número finito.");
         }
 

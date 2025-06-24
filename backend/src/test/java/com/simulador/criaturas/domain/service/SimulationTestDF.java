@@ -16,8 +16,8 @@ import com.simulador.criaturas.domain.model.Horizon;
 import com.simulador.criaturas.domain.port.out.RandomPort;
 import com.simulador.criaturas.utils.SimulationStatus;
 
-@DisplayName("Testes de Domínio para a classe Simulation (Serviço de Domínio)")
-class SimulationTest {
+@DisplayName("Testes de Domínio/Fronteira para a classe Simulation (Serviço de Domínio)")
+class SimulationTestDF {
 
     private Simulation simulation;
     private RandomPort deterministicRandomPort;
@@ -108,7 +108,6 @@ class SimulationTest {
         // Simular o movimento da primeira criatura, que vai para x=50
         simulation.runIteration(horizon);
 
-        // Assert
         assertEquals(1, horizon.getEntities().size(), "Deveria haver apenas 1 entidade (o cluster) após a fusão.");
         assertTrue(horizon.getEntities().get(0) instanceof CreatureCluster, "A entidade restante deveria ser um CreatureCluster.");
         assertEquals(300, horizon.getEntities().get(0).getGold(), "O ouro do cluster deveria ser a soma dos ouros.");
@@ -133,10 +132,8 @@ class SimulationTest {
         horizon.getGuardiao().setX(500.0);
         horizon.getGuardiao().setGold(100.0);
 
-        // Act
         simulation.runIteration(horizon);
 
-        // Assert
         // Agora esperamos 0 entidades na lista, pois o único cluster foi removido
         assertEquals(0, horizon.getEntities().size(), "A lista de entidades deveria estar vazia.");
         assertFalse(horizon.getEntities().contains(cluster), "O cluster não deveria mais existir.");
@@ -147,7 +144,6 @@ class SimulationTest {
     @Test
     @DisplayName("runIteration: Deve fazer o sobrevivente de uma colisão roubar do vizinho")
     void runIterationDeveFazerSobreviventeRoubarDoVizinho() {
-        // Arrange (continua o mesmo)
         simulation = new Simulation(new DeterministicRandomPort(0.0));
         Horizon horizon = new Horizon(3, 4); // C1, C2, C3
 
@@ -158,10 +154,8 @@ class SimulationTest {
         horizon.getEntities().get(2).setX(200);
         horizon.getEntities().get(2).setGold(1000);
 
-        // Act
         simulation.runIteration(horizon);
 
-        // Assert
         assertEquals(2, horizon.getEntities().size(), "Deveria haver 2 entidades: o novo cluster e o vizinho.");
 
         // Encontre as entidades pelo TIPO, não pelo índice, para um teste robusto

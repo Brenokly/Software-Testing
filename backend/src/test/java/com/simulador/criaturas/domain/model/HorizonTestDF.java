@@ -12,10 +12,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.simulador.criaturas.domain.behaviors.HorizonEntities;
-import com.simulador.criaturas.utils.SimulationStatus; // Verifique o caminho do seu import
+import com.simulador.criaturas.utils.SimulationStatus;
 
-@DisplayName("Testes de Domínio para a classe Horizon")
-class HorizonTest {
+@DisplayName("Testes de Domínio/Fronteira para a classe Horizon")
+class HorizonTestDF {
 
     // --- CONSTRUTOR ---
     @Test

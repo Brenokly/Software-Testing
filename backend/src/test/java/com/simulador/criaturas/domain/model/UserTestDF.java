@@ -6,8 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("Testes de Domínio para a classe User")
-class UserTest {
+@DisplayName("Testes de Domínio/Fronteira para a classe User")
+class UserTestDF {
 
     private User user;
 

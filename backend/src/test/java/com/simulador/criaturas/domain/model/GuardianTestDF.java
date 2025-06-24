@@ -7,8 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("Testes de Domínio para a classe Guardian")
-public class GuardianTest {
+@DisplayName("Testes de Domínio/Fronteira para a classe Guardian")
+public class GuardianTestDF {
 
     private Guardian guardian;
 
