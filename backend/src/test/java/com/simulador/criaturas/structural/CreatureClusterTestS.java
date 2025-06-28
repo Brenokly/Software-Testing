@@ -2,7 +2,6 @@ package com.simulador.criaturas.structural;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +10,7 @@ import com.simulador.criaturas.domain.model.CreatureCluster;
 import com.simulador.criaturas.domain.model.CreatureUnit;
 
 @DisplayName("Testes Estruturais (MC/DC) para os comportamentos de CreatureCluster")
-public class CreatureClusterTestF {
+public class CreatureClusterTestS {
 
     private CreatureCluster creatureCluster;
 

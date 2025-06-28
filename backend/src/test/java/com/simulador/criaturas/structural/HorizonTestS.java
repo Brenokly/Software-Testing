@@ -16,7 +16,7 @@ import com.simulador.criaturas.domain.model.Horizon;
 import com.simulador.criaturas.utils.SimulationStatus;
 
 @DisplayName("Testes Estruturais (MC/DC) para os comportamentos de Horizon")
-public class HorizonTestF {
+public class HorizonTestS {
 
 // --- TESTES ESTRUTURAIS PARA O CONSTRUTOR (via initializeEntities) ---
     // Decisão: if (amount <= 0)
@@ -33,7 +33,8 @@ public class HorizonTestF {
     @DisplayName("Construtor: Cobre o caminho de exceção (if) com quantidade zero")
     void constructor_caminhoDeExcecao_comQuantidadeZero() {
         // Força a condição 'amount <= 0' a ser VERDADEIRA
-        assertThrows(IllegalArgumentException.class, () -> new Horizon(0, 1));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new Horizon(0, 1));
+        assertEquals("A quantidade de criaturas deve ser positiva.", exception.getMessage());
     }
 
     // --- TESTES ESTRUTURAIS PARA addEntity(entity) ---
@@ -50,7 +51,8 @@ public class HorizonTestF {
     @DisplayName("addEntity: Cobre o caminho de exceção com entidade nula")
     void addEntity_caminhoDeExcecao_comEntidadeNula() {
         Horizon horizon = new Horizon(1, 2);
-        assertThrows(IllegalArgumentException.class, () -> horizon.addEntity(null));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> horizon.addEntity(null));
+        assertEquals("Não é permitido adicionar uma entidade nula ao horizonte.", exception.getMessage());
     }
 
     // --- TESTES ESTRUTURAIS PARA removeEntity(entity) ---
@@ -73,7 +75,8 @@ public class HorizonTestF {
         // Força C1=true. A decisão do 'if' é VERDADEIRA.
         // Par com o teste principal para MC/DC da condição C1.
         Horizon horizon = new Horizon(3, 4);
-        assertThrows(IllegalArgumentException.class, () -> horizon.removeEntity(null));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> horizon.removeEntity(null));
+        assertEquals("Não é permitido remover uma entidade nula do horizonte.", exception.getMessage());
     }
 
     // --- TESTES ESTRUTURAIS PARA removeEntities(toRemove) ---
@@ -96,7 +99,8 @@ public class HorizonTestF {
         // Força C1=true. A decisão do 'if' é VERDADEIRA.
         // Par com o teste principal para MC/DC da condição C1.
         Horizon horizon = new Horizon(3, 4);
-        assertThrows(IllegalArgumentException.class, () -> horizon.removeEntities(null));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> horizon.removeEntities(null));
+        assertEquals("A lista de entidades a serem removidas não pode ser nula nem conter elementos nulos.", exception.getMessage());
     }
 
     @Test
@@ -108,7 +112,8 @@ public class HorizonTestF {
         List<HorizonEntities> toRemove = new ArrayList<>();
         toRemove.add(null);
 
-        assertThrows(IllegalArgumentException.class, () -> horizon.removeEntities(toRemove));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> horizon.removeEntities(toRemove));
+        assertEquals("A lista de entidades a serem removidas não pode ser nula nem conter elementos nulos.", exception.getMessage());
     }
 
     // --- TESTES ESTRUTURAIS PARA getEntitiesInPosition(position) ---
@@ -131,7 +136,8 @@ public class HorizonTestF {
         // Força C1=true. A decisão do 'if' é VERDADEIRA.
         // Par com o teste principal para MC/DC da condição C1.
         Horizon horizon = new Horizon(1, 2);
-        assertThrows(IllegalArgumentException.class, () -> horizon.getEntitiesInPosition(Double.NaN));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> horizon.getEntitiesInPosition(Double.NaN));
+        assertEquals("A posição não pode ser NaN ou Infinita.", exception.getMessage());
     }
 
     @Test
@@ -140,6 +146,7 @@ public class HorizonTestF {
         // Força C1=false, C2=true. A decisão do 'if' é VERDADEIRA.
         // Par com o teste principal para MC/DC da condição C2.
         Horizon horizon = new Horizon(1, 2);
-        assertThrows(IllegalArgumentException.class, () -> horizon.getEntitiesInPosition(Double.POSITIVE_INFINITY));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> horizon.getEntitiesInPosition(Double.POSITIVE_INFINITY));
+        assertEquals("A posição não pode ser NaN ou Infinita.", exception.getMessage());
     }
 }

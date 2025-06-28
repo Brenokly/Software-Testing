@@ -31,7 +31,7 @@ public class Horizon {
      *
      * @param amount a quantidade de entidades a serem criadas.
      * @return Nenhum retorno.
-     * @pre Amount deve ser um número inteiro positivo
+     * @pre Amount deve ser um número inteiro positivo maior que zero.
      * @post Entidades são criadas e adicionadas ao horizonte.
      * @throws IllegalArgumentException se amount for negativo
      */

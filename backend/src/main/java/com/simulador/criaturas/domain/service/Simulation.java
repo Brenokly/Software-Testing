@@ -91,9 +91,7 @@ public class Simulation {
         }
         Guardian guardiao = horizonte.getGuardiao();
         if (guardiao != null) {
-            if (guardiao instanceof Move) {
-                guardiao.move(randomPort.nextFactor());
-            }
+            guardiao.move(randomPort.nextFactor());
             resolveInteractionsAt(horizonte, guardiao.getX());
         }
         SimulationStatus novoStatus = getStatus(horizonte);
@@ -111,6 +109,7 @@ public class Simulation {
      * @post Nenhuma modificação é feita no horizonte. Um status é retornado com
      * base nas suas propriedades.
      */
+    // Versão Segura
     public SimulationStatus getStatus(Horizon horizonte) {
         if (horizonte == null) {
             throw new IllegalArgumentException("Horizon não pode ser nulo.");
@@ -119,12 +118,20 @@ public class Simulation {
         List<HorizonEntities> remainingEntities = horizonte.getEntities();
         Guardian guardiao = horizonte.getGuardiao();
 
-        if (remainingEntities.isEmpty() || (remainingEntities.size() == 1 && guardiao.getGold() > remainingEntities.get(0).getGold())) {
+        // 1. Primeiro, tratamos o caso da lista vazia
+        if (remainingEntities.isEmpty()) {
             return SimulationStatus.SUCCESSFUL;
         }
 
-        if (remainingEntities.size() == 1 && guardiao.getGold() <= remainingEntities.get(0).getGold()) {
-            return SimulationStatus.FAILED;
+        // Se o código chegou até aqui, temos 100% de certeza de que a lista NÃO está vazia.
+        // 2. Agora, podemos tratar com segurança o caso de ter 1 elemento.
+        if (remainingEntities.size() == 1) {
+            // A chamada a .get(0) agora é 100% segura.
+            if (guardiao.getGold() > remainingEntities.get(0).getGold()) {
+                return SimulationStatus.SUCCESSFUL;
+            } else {
+                return SimulationStatus.FAILED;
+            }
         }
 
         return SimulationStatus.RUNNING;
@@ -142,7 +149,7 @@ public class Simulation {
      * @pre 'horizonte' e 'currentEntity' não podem ser nulos.
      * @post O estado do horizonte não é modificado.
      */
-    private HorizonEntities findNearestNeighbor(Horizon horizonte, HorizonEntities currentEntity) {
+    public HorizonEntities findNearestNeighbor(Horizon horizonte, HorizonEntities currentEntity) {
         if (horizonte == null || currentEntity == null) {
             throw new IllegalArgumentException("Horizon e entidade atual não podem ser nulos.");
         }
@@ -180,7 +187,7 @@ public class Simulation {
      * @post Se as condições forem atendidas, o ouro é transferido da vítima
      * para o atacante, modificando o estado de ambas as entidades.
      */
-    private void treatNeighborTheft(Horizon horizonte, HorizonEntities attacker) {
+    public void treatNeighborTheft(Horizon horizonte, HorizonEntities attacker) {
         // Apenas entidades que podem roubar ouro agem.
         if (!(attacker instanceof StealGold ladrao)) {
             return;
@@ -217,32 +224,29 @@ public class Simulation {
      * @post Entidades na posição são fundidas ou removidas. A entidade
      * sobrevivente (se houver) é retornada.
      */
-    private HorizonEntities resolveInteractionsAt(Horizon horizonte, double position) {
+    public HorizonEntities resolveInteractionsAt(Horizon horizonte, double position) {
         if (horizonte == null || Double.isNaN(position) || Double.isInfinite(position)) {
             throw new IllegalArgumentException("Horizon não pode ser nulo e a posição deve ser um número válido.");
         }
 
         List<HorizonEntities> entitiesAtPosition = horizonte.getEntitiesInPosition(position);
 
+        List<CreatureCluster> creatureClusters = entitiesAtPosition.stream()
+                .filter(e -> e instanceof CreatureCluster)
+                .map(e -> (CreatureCluster) e)
+                .toList();
+
         Guardian guardiao = horizonte.getGuardiao();
         boolean guardianIsAtPosition = (guardiao != null && guardiao.getX() == position);
 
         // --- REGRA DE PRIORIDADE 1: INTERAÇÃO COM O GUARDIÃO ---
-        if (guardianIsAtPosition) {
+        if (guardianIsAtPosition && !creatureClusters.isEmpty()) {
             // Encontra qualquer cluster na mesma posição do guardião
-            CreatureCluster clusterVictim = entitiesAtPosition.stream()
-                    .filter(e -> e instanceof CreatureCluster)
-                    .map(e -> (CreatureCluster) e)
-                    .findFirst()
-                    .orElse(null);
+            CreatureCluster clusterVictim = creatureClusters.get(0);
 
-            if (clusterVictim != null && guardiao instanceof StealGold) {
-                // Guardião elimina o cluster e absorve o ouro
-                ((StealGold) guardiao).stealGold(clusterVictim.getGold());
-                horizonte.removeEntity(clusterVictim);
-                // O sobrevivente aqui é o Guardião
-                return guardiao;
-            }
+            ((StealGold) guardiao).stealGold(clusterVictim.getGold());
+            horizonte.removeEntity(clusterVictim);
+            return guardiao;
         }
 
         // --- REGRA DE PRIORIDADE 2: Houve colisão?

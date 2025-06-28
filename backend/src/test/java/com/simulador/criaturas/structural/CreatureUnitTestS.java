@@ -37,7 +37,8 @@ public class CreatureUnitTestS {
     void move_caminhoDeExcecao_quandoFatorIsNaN() {
         // Este teste força C1=true. A decisão do 'if' é VERDADEIRA.
         // Par com o teste acima para MC/DC da condição C1.
-        assertThrows(IllegalArgumentException.class, () -> creature.move(Double.NaN));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> creature.move(Double.NaN));
+        assertEquals("Valor aleatório deve estar entre -1 e 1.", exception.getMessage());
     }
 
     @Test
@@ -45,7 +46,8 @@ public class CreatureUnitTestS {
     void move_caminhoDeExcecao_quandoFatorMenorQueMenosUm() {
         // Este teste força C2=true. A decisão do 'if' é VERDADEIRA.
         // Par com o teste de caminho principal para MC/DC da condição C2.
-        assertThrows(IllegalArgumentException.class, () -> creature.move(-1.1));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> creature.move(-1.1));
+        assertEquals("Valor aleatório deve estar entre -1 e 1.", exception.getMessage());
     }
 
     @Test
@@ -53,7 +55,8 @@ public class CreatureUnitTestS {
     void move_caminhoDeExcecao_quandoFatorMaiorQueUm() {
         // Este teste força C3=true. A decisão do 'if' é VERDADEIRA.
         // Par com o teste de caminho principal para MC/DC da condição C3.
-        assertThrows(IllegalArgumentException.class, () -> creature.move(1.1));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> creature.move(1.1));
+        assertEquals("Valor aleatório deve estar entre -1 e 1.", exception.getMessage());
     }
 
     // --- TESTES ESTRUTURAIS PARA O MÉTODO stealGold(amountStolen) ---
@@ -71,7 +74,8 @@ public class CreatureUnitTestS {
     @DisplayName("stealGold: Cobre o caminho da exceção para valor não finito")
     void stealGold_caminhoDeExcecao_quandoQuantiaNaoFinita() {
         // Cobre o 'if' da Decisão 1.
-        assertThrows(IllegalArgumentException.class, () -> creature.stealGold(Double.POSITIVE_INFINITY));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> creature.stealGold(Double.POSITIVE_INFINITY));
+        assertEquals("Roubo inválido: valor roubado não pode ser infinito.", exception.getMessage());
     }
 
     @Test
@@ -107,15 +111,19 @@ public class CreatureUnitTestS {
     @DisplayName("loseGold: Cobre o caminho da exceção, isolando a condição <= 0")
     void loseGold_caminhoDeExcecao_quandoPercentualMenorOuIgualAZero() {
         // Cobre o 'if' da Decisão 1, focando na condição C1 (<= 0). Par com o teste principal.
-        assertThrows(IllegalArgumentException.class, () -> creature.loseGold(0.0));
-        assertThrows(IllegalArgumentException.class, () -> creature.loseGold(-0.1));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> creature.loseGold(0.0));
+        assertEquals("Percentual de perda deve estar entre 0 e 1 (exclusivo de 0).", exception.getMessage());
+
+        exception = assertThrows(IllegalArgumentException.class, () -> creature.loseGold(-0.1));
+        assertEquals("Percentual de perda deve estar entre 0 e 1 (exclusivo de 0).", exception.getMessage());
     }
 
     @Test
     @DisplayName("loseGold: Cobre o caminho da exceção, isolando a condição > 1")
     void loseGold_caminhoDeExcecao_quandoPercentualMaiorQueUm() {
         // Cobre o 'if' da Decisão 1, focando na condição C2 (> 1). Par com o teste principal.
-        assertThrows(IllegalArgumentException.class, () -> creature.loseGold(1.1));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> creature.loseGold(1.1));
+        assertEquals("Percentual de perda deve estar entre 0 e 1 (exclusivo de 0).", exception.getMessage());
     }
 
     @Test

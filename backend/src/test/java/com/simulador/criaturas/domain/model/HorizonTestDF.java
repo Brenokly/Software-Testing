@@ -1,11 +1,13 @@
 package com.simulador.criaturas.domain.model;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -137,6 +139,66 @@ class HorizonTestDF {
         assertEquals(expectedMessage, exception.getMessage());
     }
 
+    @Test
+    @DisplayName("removeEntities: [MC/DC] Cobre o caminho de exceção isolando a condição C1 (lista nula)")
+    void removeEntities_caminhoExcecao_quandoListaENula() {
+        // Cenário: C1 = true. O resultado da decisão deve ser 'true'.
+        // Este teste forma um par com o 'caminhoPrincipal' para validar C1.
+
+        // Arrange
+        Horizon horizon = new Horizon(3, 4);
+        String expectedMessage = "A lista de entidades a serem removidas não pode ser nula nem conter elementos nulos.";
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            horizon.removeEntities(null);
+        });
+
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("removeEntities: [MC/DC] Cobre o caminho de exceção isolando a condição C2 (item nulo na lista)")
+    void removeEntities_caminhoExcecao_quandoItemNaListaENulo() {
+        // Cenário: C1 = false, C2 = true. O resultado da decisão deve ser 'true'.
+        // Este teste forma um par com o 'caminhoPrincipal' para validar C2.
+
+        // Arrange
+        Horizon horizon = new Horizon(3, 4);
+        List<HorizonEntities> listaComNulo = new ArrayList<>();
+        listaComNulo.add(horizon.getEntities().get(0));
+        listaComNulo.add(null);
+
+        String expectedMessage = "A lista de entidades a serem removidas não pode ser nula nem conter elementos nulos.";
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            horizon.removeEntities(listaComNulo);
+        });
+
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("removeEntities: [MC/DC] Cobre o caminho principal (else) quando a lista é válida")
+    void removeEntities_caminhoPrincipal_quandoListaEValida() {
+        // Cenário: C1 = false, C2 = false. O resultado da decisão deve ser 'false'.
+        // Este é o teste base que forma par com os outros dois.
+
+        // Arrange
+        Horizon horizon = new Horizon(3, 4);
+        List<HorizonEntities> listaValida = List.of(horizon.getEntities().get(0), horizon.getEntities().get(2));
+        int expectedSize = horizon.getEntities().size() - listaValida.size();
+
+        // Act
+        // A asserção aqui é que nenhuma exceção é lançada.
+        assertDoesNotThrow(() -> horizon.removeEntities(listaValida));
+
+        // Assert (Verificação do estado final)
+        assertEquals(expectedSize, horizon.getEntities().size());
+        assertFalse(horizon.getEntities().containsAll(listaValida));
+    }
+
     // --- MÉTODO getEntitiesInPosition ---
     @Test
     @DisplayName("Deve retornar a lista correta de entidades em uma dada posição")
@@ -172,6 +234,19 @@ class HorizonTestDF {
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             horizon.getEntitiesInPosition(Double.NaN);
+        });
+
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção para posição Infinita (Teste de Fronteira)")
+    void deveLancarExcecaoParaPosicaoInfinita() {
+        Horizon horizon = new Horizon(1, 2);
+        String expectedMessage = "A posição não pode ser NaN ou Infinita.";
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            horizon.getEntitiesInPosition(Double.POSITIVE_INFINITY);
         });
 
         assertEquals(expectedMessage, exception.getMessage());
