@@ -2,20 +2,19 @@ package com.simulador.criaturas.stuntdoubles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.simulador.criaturas.application.SimulacaoService;
@@ -130,8 +129,6 @@ class SimulacaoServiceStuntDoublesTest {
     @Test
     @DisplayName("runFullSimulation: [ESTRUTURAL] Deve parar por maxIteracoes e NÃO atualizar stats")
     void runFullSimulation_paraPorTimeout() {
-        // Arrange
-        Long userId = 1L;
         // Simulamos um horizonte que, mesmo após as iterações, continua RUNNING.
         Horizon horizonte = new Horizon(5, 6);
         horizonte.setStatus(SimulationStatus.RUNNING); // Estado final simulado após o loop
