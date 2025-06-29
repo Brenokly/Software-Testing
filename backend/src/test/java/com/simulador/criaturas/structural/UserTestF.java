@@ -28,8 +28,19 @@ public class UserTestF {
         // Para métodos sem 'if' ou loops, basta chamá-los uma vez para obter 100% de cobertura de linha/ramo.
 
         // Testando construtores (verificando se não lançam exceções e inicializam)
-        assertNotNull(new User("login", "pass"));
-        assertNotNull(new User("login", "pass", 1));
+        User user1 = new User();
+        user1.setLogin("login");
+        user1.setPassword("pass");
+        user1.setAvatarId(1);
+
+        assertNotNull(user1);
+
+        User user2 = new User();
+        user2.setLogin("login2");
+        user2.setPassword("pass2");
+        user2.setAvatarId(2);
+
+        assertNotNull(user2);
 
         // Testando incrementadores
         int initialScore = user.getPontuation();

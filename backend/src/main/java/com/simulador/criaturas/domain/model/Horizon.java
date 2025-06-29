@@ -6,21 +6,24 @@ import java.util.List;
 import com.simulador.criaturas.domain.behaviors.HorizonEntities;
 import com.simulador.criaturas.utils.SimulationStatus;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /*
  * Classe que representa o horizonte, contendo uma lista de entidades do horizonte
  * (que podem ser tanto unidades de criaturas, aglomerados de criaturas e Guardiões).
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Horizon {
 
-    private final List<HorizonEntities> entities;
-    private final Guardian guardiao;
+    private List<HorizonEntities> entities = new ArrayList<>();
+    private Guardian guardiao;
     private SimulationStatus status;
 
     public Horizon(int numberEntities, int idGuardiao) {
-        this.entities = new ArrayList<>();
         initializeEntities(numberEntities);
         this.guardiao = new Guardian(idGuardiao);
         this.status = SimulationStatus.RUNNING;

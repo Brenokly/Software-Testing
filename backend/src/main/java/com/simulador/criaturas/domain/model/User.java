@@ -21,22 +21,6 @@ public class User {
     private int pontuation;
     private int simulationsRun;
 
-    public User(String login, String password) {
-        this.login = login;
-        this.password = password;
-        this.avatarId = 0;
-        this.pontuation = 0;
-        this.simulationsRun = 0;
-    }
-
-    public User(String login, String password, int avatarId) {
-        this.login = login;
-        this.password = password;
-        this.avatarId = avatarId;
-        this.pontuation = 0;
-        this.simulationsRun = 0;
-    }
-
     /**
      * Incrementa a pontuação do usuário.
      *

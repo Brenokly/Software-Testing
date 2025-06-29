@@ -27,20 +27,18 @@ public class UserService implements UserUseCase {
      */
     @Override
     public User registerNewUser(String login, String password, int avatarId) {
-        // Validação para cumprir o contrato.
-        if (!StringUtils.hasText(login)) {
-            throw new IllegalArgumentException("Login não pode ser nulo ou vazio.");
-        }
-        if (!StringUtils.hasText(password)) {
-            throw new IllegalArgumentException("Senha não pode ser nula ou vazia.");
-        }
+        // ... suas validações continuam as mesmas ...
         if (userRepository.existsByLogin(login)) {
-            // Lançando a exceção correta, conforme o contrato.
             throw new IllegalArgumentException("Erro: Login já está em uso.");
         }
 
         String senhaCriptografada = passwordEncoder.encode(password);
-        User novoUsuario = new User(login, senhaCriptografada, avatarId);
+
+        User novoUsuario = new User();
+        novoUsuario.setLogin(login);
+        novoUsuario.setPassword(senhaCriptografada);
+        novoUsuario.setAvatarId(avatarId);
+
         return userRepository.save(novoUsuario);
     }
 

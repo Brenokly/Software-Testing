@@ -22,5 +22,6 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "avatarId", ignore = true)
     @Mapping(target = "pontuation", ignore = true)
+    @Mapping(target = "simulationsRun", ignore = true)
     User toDomain(UserRequestDTO userRequestDTO);
 }

@@ -1,8 +1,5 @@
 package com.simulador.criaturas.infrastructure.adapter.in.rest.mapper;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.mapstruct.Mapper;
 
 import com.simulador.criaturas.domain.behaviors.HorizonEntities;
@@ -19,32 +16,26 @@ import com.simulador.criaturas.infrastructure.adapter.in.rest.dto.HorizonEntityD
 @Mapper(componentModel = "spring")
 public interface HorizonMapper {
 
-    // Métodos de conversão principais
-    HorizonDTO toDto(Horizon horizon);
+    // --- Conversões DTO -> DOMÍNIO ---
+    Horizon toDomain(HorizonDTO dto);
 
-    Horizon toDomain(HorizonDTO horizonDTO);
+    Guardian toDomain(GuardianDTO dto);
 
-    // Métodos auxiliares para as entidades internas
-    GuardianDTO toDto(Guardian guardian);
+    CreatureUnit toDomain(CreatureUnitDTO dto);
 
-    Guardian toDomain(GuardianDTO guardianDTO);
+    CreatureCluster toDomain(CreatureClusterDTO dto);
 
-    CreatureUnitDTO toDto(CreatureUnit creatureUnit);
+    // --- Conversões DOMÍNIO -> DTO ---
+    HorizonDTO toDto(Horizon domain);
 
-    CreatureUnit toDomain(CreatureUnitDTO creatureUnitDTO);
+    GuardianDTO toDto(Guardian domain);
 
-    CreatureClusterDTO toDto(CreatureCluster creatureCluster);
+    CreatureUnitDTO toDto(CreatureUnit domain);
 
-    CreatureCluster toDomain(CreatureClusterDTO creatureClusterDTO);
+    CreatureClusterDTO toDto(CreatureCluster domain);
 
-    // Método customizado para lidar com a lista polimórfica
-    default List<HorizonEntityDTO> toEntityDtoList(List<HorizonEntities> list) {
-        if (list == null) {
-            return null;
-        }
-        return list.stream().map(this::toEntityDto).collect(Collectors.toList());
-    }
-
+    // --- LÓGICA POLIMÓRFICA CUSTOMIZADA ---
+    // Este método ensina o MapStruct a converter do Domínio para o DTO correto
     default HorizonEntityDTO toEntityDto(HorizonEntities entity) {
         if (entity instanceof CreatureUnit creatureUnit) {
             return toDto(creatureUnit);
@@ -52,11 +43,17 @@ public interface HorizonMapper {
         if (entity instanceof CreatureCluster creatureCluster) {
             return toDto(creatureCluster);
         }
+        throw new IllegalArgumentException("Tipo de entidade de domínio desconhecido: " + entity.getClass().getName());
+    }
 
-        if (entity != null) {
-            throw new IllegalArgumentException("Tipo de entidade desconhecido: " + entity.getClass());
+    // ESTE NOVO MÉTODO ENSINA O MAPSTRUCT A FAZER O CAMINHO INVERSO
+    default HorizonEntities toEntityDomain(HorizonEntityDTO dto) {
+        if (dto instanceof CreatureUnitDTO creatureUnitDTO) {
+            return toDomain(creatureUnitDTO);
         }
-
-        return null;
+        if (dto instanceof CreatureClusterDTO creatureClusterDTO) {
+            return toDomain(creatureClusterDTO);
+        }
+        throw new IllegalArgumentException("Tipo de DTO de entidade desconhecido: " + dto.getClass().getName());
     }
 }

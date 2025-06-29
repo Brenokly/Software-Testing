@@ -1,7 +1,6 @@
 package com.simulador.criaturas.domain.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,9 @@ class UserTestDF {
         String login = "newUser";
         String password = "newPassword";
 
-        User newUser = new User(login, password);
+        User newUser = new User();
+        newUser.setLogin(login);
+        newUser.setPassword(password);
 
         assertEquals(login, newUser.getLogin());
         assertEquals(password, newUser.getPassword());
@@ -40,7 +41,10 @@ class UserTestDF {
         String password = "newPassword";
         int avatarId = 7;
 
-        User newUser = new User(login, password, avatarId);
+        User newUser = new User();
+        newUser.setLogin(login);
+        newUser.setPassword(password);
+        newUser.setAvatarId(avatarId);
 
         assertEquals(login, newUser.getLogin());
         assertEquals(password, newUser.getPassword());
