@@ -17,4 +17,5 @@ public class UserResponseDTO {
     private String login;
     private int avatarId;
     private int pontuation;
+    private int simulationsRun;
 }

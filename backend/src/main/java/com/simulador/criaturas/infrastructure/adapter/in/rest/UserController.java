@@ -1,6 +1,7 @@
 package com.simulador.criaturas.infrastructure.adapter.in.rest;
 
 import java.security.Principal;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,13 +52,24 @@ public class UserController {
                 )
         );
 
-        // Se a autenticação passar, buscamos o usuário para gerar o token
-        var user = userUseCase.findUserByLogin(requestDTO.getLogin())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        Optional<User> userOptional = userUseCase.authenticateUser(requestDTO.getLogin(), requestDTO.getPassword());
 
-        var jwtToken = jwtService.generateToken(user.getLogin()); // Passa apenas o login
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
 
-        return ResponseEntity.ok(new LoginResponseDTO(jwtToken));
+            // Mapeia o usuário do domínio para o DTO de resposta
+            UserResponseDTO userResponseDTO = userMapper.toResponseDto(user);
+
+            // Gera o token
+            String token = jwtService.generateToken(user.getLogin());
+
+            // Cria o DTO de resposta final com o token E os dados do usuário
+            LoginResponseDTO loginResponse = new LoginResponseDTO(token, userResponseDTO);
+
+            return ResponseEntity.ok(loginResponse);
+        } else {
+            throw new RuntimeException("Login ou senha inválidos.");
+        }
     }
 
     @DeleteMapping("/{id}")
