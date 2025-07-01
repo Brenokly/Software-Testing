@@ -21,13 +21,7 @@ public class Horizon {
 
     private List<HorizonEntities> entities = new ArrayList<>();
     private Guardian guardiao;
-    private SimulationStatus status;
-
-    public Horizon(int numberEntities, int idGuardiao) {
-        initializeEntities(numberEntities);
-        this.guardiao = new Guardian(idGuardiao);
-        this.status = SimulationStatus.RUNNING;
-    }
+    private SimulationStatus status = SimulationStatus.RUNNING;
 
     /**
      * Inicializa as entidades do horizonte.
@@ -38,7 +32,7 @@ public class Horizon {
      * @post Entidades são criadas e adicionadas ao horizonte.
      * @throws IllegalArgumentException se amount for negativo
      */
-    private void initializeEntities(int amount) {
+    public void initializeEntities(int amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException("A quantidade de criaturas deve ser positiva.");
         }

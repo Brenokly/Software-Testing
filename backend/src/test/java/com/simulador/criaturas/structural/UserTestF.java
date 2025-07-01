@@ -2,14 +2,12 @@ package com.simulador.criaturas.structural;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.simulador.criaturas.domain.model.User;
 
-@DisplayName("Testes Estruturais (MC/DC) para os comportamentos de User")
 public class UserTestF {
 
     private User user;
@@ -65,7 +63,6 @@ public class UserTestF {
     }
 
     @Test
-    @DisplayName("changeAvatar: Cobre o caminho ELSE implícito (condição falsa)")
     void changeAvatar_caminhoIfFalso_quandoIdEInvalido() {
         // Este teste força a condição do 'if' a ser falsa, pulando o bloco de código.
 
@@ -79,7 +76,6 @@ public class UserTestF {
     // --- TESTES ESTRUTURAIS PARA O MÉTODO getAverageSuccessRate() ---
     // Decisão: if (simulationsRun == 0)
     @Test
-    @DisplayName("getAverageSuccessRate: Cobre o caminho IF (condição verdadeira)")
     void getAverageSuccessRate_caminhoIfVerdadeiro_quandoSimulationsRunEZero() {
         // Este teste força a execução do bloco 'if' que retorna 0.0.
 
@@ -91,7 +87,6 @@ public class UserTestF {
     }
 
     @Test
-    @DisplayName("getAverageSuccessRate: Cobre o caminho ELSE (condição falsa)")
     void getAverageSuccessRate_caminhoElse_quandoSimulationsRunNaoEZero() {
         // Este teste força a condição do 'if' a ser falsa, executando o cálculo da divisão.
         // O setup inicial tem pontuation=10 e simulationsRun=20.

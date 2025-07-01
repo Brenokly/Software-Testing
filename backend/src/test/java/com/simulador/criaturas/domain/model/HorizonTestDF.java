@@ -26,7 +26,9 @@ class HorizonTestDF {
         int numeroDeCriaturas = 5;
         int idDoGuardiao = 6;
 
-        Horizon horizon = new Horizon(numeroDeCriaturas, idDoGuardiao);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(numeroDeCriaturas);
+        horizon.setGuardiao(new Guardian(idDoGuardiao));
 
         assertNotNull(horizon.getEntities(), "A lista de entidades não deveria ser nula.");
         assertEquals(numeroDeCriaturas, horizon.getEntities().size(), "Deveria ter o número correto de criaturas.");
@@ -40,8 +42,10 @@ class HorizonTestDF {
     void deveLancarExcecaoParaNumeroDeCriaturasZero() {
         String expectedMessage = "A quantidade de criaturas deve ser positiva.";
 
+        Horizon horizon = new Horizon();
+
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Horizon(0, 1);
+            horizon.initializeEntities(0);
         });
 
         assertEquals(expectedMessage, exception.getMessage());
@@ -52,8 +56,10 @@ class HorizonTestDF {
     void deveLancarExcecaoParaNumeroDeCriaturasNegativo() {
         String expectedMessage = "A quantidade de criaturas deve ser positiva.";
 
+        Horizon horizon = new Horizon();
+
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Horizon(-5, 6);
+            horizon.initializeEntities(-5);
         });
 
         assertEquals(expectedMessage, exception.getMessage());
@@ -63,7 +69,10 @@ class HorizonTestDF {
     @Test
     @DisplayName("Deve adicionar uma nova entidade com sucesso")
     void deveAdicionarEntidadeComSucesso() {
-        Horizon horizon = new Horizon(2, 3);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(2);
+        horizon.setGuardiao(new Guardian(3));
+
         CreatureUnit novaCriatura = new CreatureUnit(100);
         int tamanhoInicial = horizon.getEntities().size();
 
@@ -76,7 +85,10 @@ class HorizonTestDF {
     @Test
     @DisplayName("Deve lançar exceção ao tentar adicionar uma entidade nula")
     void deveLancarExcecaoAoAdicionarEntidadeNula() {
-        Horizon horizon = new Horizon(2, 3);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(2);
+        horizon.setGuardiao(new Guardian(3));
+
         String expectedMessage = "Não é permitido adicionar uma entidade nula ao horizonte.";
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -90,7 +102,10 @@ class HorizonTestDF {
     @Test
     @DisplayName("Deve remover uma entidade existente com sucesso")
     void deveRemoverEntidadeExistente() {
-        Horizon horizon = new Horizon(3, 4);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(3);
+        horizon.setGuardiao(new Guardian(4));
+
         HorizonEntities entidadeParaRemover = horizon.getEntities().get(1);
         int tamanhoInicial = horizon.getEntities().size();
 
@@ -103,7 +118,10 @@ class HorizonTestDF {
     @Test
     @DisplayName("Deve lançar exceção ao tentar remover uma entidade nula")
     void deveLancarExcecaoAoRemoverEntidadeNula() {
-        Horizon horizon = new Horizon(3, 4);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(3);
+        horizon.setGuardiao(new Guardian(4));
+
         String expectedMessage = "Não é permitido remover uma entidade nula do horizonte.";
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -117,7 +135,10 @@ class HorizonTestDF {
     @Test
     @DisplayName("Deve remover uma lista de entidades com sucesso")
     void deveRemoverListaDeEntidadesComSucesso() {
-        Horizon horizon = new Horizon(5, 6);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(5);
+        horizon.setGuardiao(new Guardian(6));
+
         List<HorizonEntities> aRemover = List.of(horizon.getEntities().get(0), horizon.getEntities().get(2));
 
         horizon.removeEntities(aRemover);
@@ -129,7 +150,10 @@ class HorizonTestDF {
     @Test
     @DisplayName("Deve lançar exceção ao tentar remover uma lista nula")
     void deveLancarExcecaoAoRemoverListaNula() {
-        Horizon horizon = new Horizon(3, 4);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(3);
+        horizon.setGuardiao(new Guardian(4));
+
         String expectedMessage = "A lista de entidades a serem removidas não pode ser nula nem conter elementos nulos.";
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -146,7 +170,10 @@ class HorizonTestDF {
         // Este teste forma um par com o 'caminhoPrincipal' para validar C1.
 
         // Arrange
-        Horizon horizon = new Horizon(3, 4);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(3);
+        horizon.setGuardiao(new Guardian(4));
+
         String expectedMessage = "A lista de entidades a serem removidas não pode ser nula nem conter elementos nulos.";
 
         // Act & Assert
@@ -164,7 +191,10 @@ class HorizonTestDF {
         // Este teste forma um par com o 'caminhoPrincipal' para validar C2.
 
         // Arrange
-        Horizon horizon = new Horizon(3, 4);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(3);
+        horizon.setGuardiao(new Guardian(4));
+
         List<HorizonEntities> listaComNulo = new ArrayList<>();
         listaComNulo.add(horizon.getEntities().get(0));
         listaComNulo.add(null);
@@ -186,7 +216,10 @@ class HorizonTestDF {
         // Este é o teste base que forma par com os outros dois.
 
         // Arrange
-        Horizon horizon = new Horizon(3, 4);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(3);
+        horizon.setGuardiao(new Guardian(4));
+
         List<HorizonEntities> listaValida = List.of(horizon.getEntities().get(0), horizon.getEntities().get(2));
         int expectedSize = horizon.getEntities().size() - listaValida.size();
 
@@ -203,7 +236,10 @@ class HorizonTestDF {
     @Test
     @DisplayName("Deve retornar a lista correta de entidades em uma dada posição")
     void deveRetornarEntidadesNaPosicaoCorreta() {
-        Horizon horizon = new Horizon(3, 4);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(3);
+        horizon.setGuardiao(new Guardian(4));
+
         horizon.getEntities().get(0).setX(50.0);
         horizon.getEntities().get(1).setX(100.0);
         horizon.getEntities().get(2).setX(50.0);
@@ -218,7 +254,10 @@ class HorizonTestDF {
     @Test
     @DisplayName("Deve retornar lista vazia se nenhuma entidade estiver na posição")
     void deveRetornarListaVaziaParaPosicaoSemEntidades() {
-        Horizon horizon = new Horizon(3, 4);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(3);
+        horizon.setGuardiao(new Guardian(4));
+
         horizon.getEntities().get(0).setX(50.0);
 
         List<HorizonEntities> encontradas = horizon.getEntitiesInPosition(999.0);
@@ -229,7 +268,10 @@ class HorizonTestDF {
     @Test
     @DisplayName("Deve lançar exceção para posição NaN (Teste de Fronteira)")
     void deveLancarExcecaoParaPosicaoNaN() {
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         String expectedMessage = "A posição não pode ser NaN ou Infinita.";
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -242,7 +284,10 @@ class HorizonTestDF {
     @Test
     @DisplayName("Deve lançar exceção para posição Infinita (Teste de Fronteira)")
     void deveLancarExcecaoParaPosicaoInfinita() {
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         String expectedMessage = "A posição não pode ser NaN ou Infinita.";
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {

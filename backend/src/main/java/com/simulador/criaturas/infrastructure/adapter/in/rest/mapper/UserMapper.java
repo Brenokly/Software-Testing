@@ -10,14 +10,12 @@ import com.simulador.criaturas.infrastructure.adapter.in.rest.dto.UserResponseDT
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    /**
-     * Converte um User do domínio para um DTO de resposta (seguro para enviar
-     * ao frontend).
-     */
     UserResponseDTO toResponseDto(User user);
 
     /**
-     * Converte um DTO de requisição para um objeto User de domínio.
+     * Converte um DTO de requisição para um objeto User de domínio. Ignoramos
+     * explicitamente os campos que não vêm da requisição e que devem ser
+     * inicializados com valores padrão (0 ou null).
      */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "avatarId", ignore = true)

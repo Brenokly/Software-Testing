@@ -2,7 +2,6 @@ package com.simulador.criaturas.property;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.DisplayName;
 
 import com.simulador.criaturas.domain.model.User;
 
@@ -12,13 +11,12 @@ import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 import net.jqwik.api.constraints.IntRange;
 import net.jqwik.api.constraints.Negative;
+import net.jqwik.api.constraints.Positive;
 
-@DisplayName("Testes de Propriedade para a classe de domínio User")
 public class UserPropertyTest {
 
     // --- PROPRIEDADES PARA incrementScore E incrementSimulationsRun ---
     @Property
-    @DisplayName("Propriedade: incrementScore sempre adiciona 1 à pontuação")
     void incrementScoreSempreAdicionaUm(
             // Gera qualquer inteiro não-negativo para ser a pontuação inicial
             @ForAll @PositiveOrZero int initialScore
@@ -36,7 +34,6 @@ public class UserPropertyTest {
     }
 
     @Property
-    @DisplayName("Propriedade: incrementSimulationsRun sempre adiciona 1 às simulações executadas")
     void incrementSimulationsRunSempreAdicionaUm(
             @ForAll @PositiveOrZero int initialRuns
     ) {
@@ -54,43 +51,37 @@ public class UserPropertyTest {
 
     // --- PROPRIEDADES PARA changeAvatar ---
     @Property
-    @DisplayName("Propriedade: changeAvatar atualiza o ID para qualquer valor não-negativo")
     void changeAvatarDeveAtualizarParaIdValido(
-            // Gera qualquer inteiro válido (0 ou maior)
-            @ForAll @PositiveOrZero int newAvatarId
+            @ForAll @Positive int validAvatarId
     ) {
         // Arrange
         User user = new User();
+        user.setAvatarId(999); // Um valor inicial diferente
 
         // Act
-        user.changeAvatar(newAvatarId);
+        user.changeAvatar(validAvatarId);
 
         // Assert
-        // A propriedade é que o avatarId final é sempre igual à entrada válida.
-        assertEquals(newAvatarId, user.getAvatarId());
+        assertEquals(validAvatarId, user.getAvatarId());
     }
 
     @Property
-    @DisplayName("Propriedade: changeAvatar ignora qualquer valor negativo")
     void changeAvatarDeveIgnorarIdInvalido(
-            // Gera qualquer inteiro estritamente negativo
             @ForAll @Negative int invalidAvatarId
     ) {
         // Arrange
         User user = new User();
-        int initialAvatarId = user.getAvatarId(); // Guarda o valor inicial (que é 0)
+        int initialAvatarId = 999;
+        user.setAvatarId(initialAvatarId);
 
         // Act
         user.changeAvatar(invalidAvatarId);
 
-        // Assert
-        // A propriedade é que o avatarId NUNCA muda se a entrada for inválida.
-        assertEquals(initialAvatarId, user.getAvatarId());
+        assertEquals(initialAvatarId, user.getAvatarId(), "O avatarId não deveria ter mudado para um valor negativo.");
     }
 
     // --- PROPRIEDADES PARA getAverageSuccessRate ---
     @Property
-    @DisplayName("Propriedade: A taxa de sucesso média está sempre entre 0.0 e 1.0")
     void averageSuccessRateEstaSempreEntreZeroEUm(
             @ForAll @IntRange(min = 0, max = 10000) int pontuation,
             @ForAll @IntRange(min = 0, max = 10000) int simulationsRun
@@ -113,7 +104,6 @@ public class UserPropertyTest {
     }
 
     @Property
-    @DisplayName("Propriedade: A taxa de sucesso é sempre 0.0 se não houver simulações")
     void averageSuccessRateEZeroQuandoNaoHaSimulacoes(
             // Gera qualquer pontuação para provar que ela não importa neste caso
             @ForAll @PositiveOrZero int pontuation

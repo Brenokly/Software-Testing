@@ -3,7 +3,6 @@ package com.simulador.criaturas.property;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.DisplayName;
 
 import com.simulador.criaturas.domain.model.Guardian;
 
@@ -13,12 +12,10 @@ import net.jqwik.api.Property;
 import net.jqwik.api.constraints.DoubleRange;
 import net.jqwik.api.constraints.Positive;
 
-@DisplayName("Testes de Propriedade para os Comportamentos de Guardian")
 public class GuardianPropertyTest {
 
     // --- PROPRIEDADE PARA O MÉTODO move ---
     @Property
-    @DisplayName("Propriedade: Mover um guardian nunca deve alterar seu ouro.")
     void moveNuncaAlteraOuro(
             // @ForAll gera valores aleatórios para este parâmetro.
             // @DoubleRange limita os valores gerados ao intervalo válido do nosso método.
@@ -38,7 +35,6 @@ public class GuardianPropertyTest {
     }
 
     @Property
-    @DisplayName("Propriedade: move() NUNCA deve lançar exceção para entradas válidas")
     void moveNaoLancaExcecaoParaEntradasValidas(
             // Gerador: Fornece QUALQUER double VÁLIDO entre -1 e 1
             @ForAll @DoubleRange(min = -1, max = 1) double validRandomR
@@ -55,7 +51,6 @@ public class GuardianPropertyTest {
     }
 
     @Property
-    @DisplayName("Propriedade: move() SEMPRE deve lançar exceção para entradas inválidas")
     void moveSempreLancaExcecaoParaEntradasInvalidas(
             // Gerador: Fornece QUALQUER double
             @ForAll double anyRandomR
@@ -76,7 +71,7 @@ public class GuardianPropertyTest {
 
     // --- PROPRIEDADES PARA O MÉTODO stealGold ---
     @Property
-    @DisplayName("Propriedade: Roubar uma quantia positiva sempre resulta na soma exata.")
+
     void stealGoldResultaNaSomaExata(
             @ForAll @Positive double initialGold,
             @ForAll @Positive double amountToSteal
@@ -97,7 +92,6 @@ public class GuardianPropertyTest {
     }
 
     @Property
-    @DisplayName("Propriedade: Roubar ouro negativo ou zero não altera o ouro do guardian.")
     void stealGoldNaoAlteraOuroParaValoresInvalidos(
             @ForAll double initialGold,
             @ForAll double amountToSteal

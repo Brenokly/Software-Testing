@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import com.simulador.criaturas.domain.behaviors.HorizonEntities;
 import com.simulador.criaturas.domain.model.CreatureCluster;
 import com.simulador.criaturas.domain.model.CreatureUnit;
+import com.simulador.criaturas.domain.model.Guardian;
 import com.simulador.criaturas.domain.model.Horizon;
 import com.simulador.criaturas.domain.port.out.RandomPort;
 import com.simulador.criaturas.utils.SimulationStatus;
@@ -48,7 +49,10 @@ class SimulationTestDF {
     @Test
     @DisplayName("getStatus: Deve retornar SUCCESSFUL quando só resta o guardião")
     void getStatusDeveRetornarSuccessfulQuandoSoRestaGuardiao() {
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.getEntities().clear(); // Remove todas as criaturas
 
         SimulationStatus status = simulation.getStatus(horizon);
@@ -59,7 +63,10 @@ class SimulationTestDF {
     @Test
     @DisplayName("getStatus: Deve retornar SUCCESSFUL quando resta 1 criatura e o guardião tem mais ouro")
     void getStatusDeveRetornarSuccessfulQuandoGuardiaoTemMaisOuro() {
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.getGuardiao().setGold(1000);
         horizon.getEntities().get(0).setGold(500);
 
@@ -71,7 +78,10 @@ class SimulationTestDF {
     @Test
     @DisplayName("getStatus: Deve retornar FAILED quando resta 1 criatura e o guardião tem menos ouro")
     void getStatusDeveRetornarFailedQuandoGuardiaoTemMenosOuro() {
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.getGuardiao().setGold(500);
         horizon.getEntities().get(0).setGold(1000);
 
@@ -83,7 +93,9 @@ class SimulationTestDF {
     @Test
     @DisplayName("getStatus: Deve retornar RUNNING quando há múltiplas criaturas")
     void getStatusDeveRetornarRunningQuandoHaMultiplasCriaturas() {
-        Horizon horizon = new Horizon(3, 4);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(3);
+        horizon.setGuardiao(new Guardian(4));
 
         SimulationStatus status = simulation.getStatus(horizon);
 
@@ -97,7 +109,10 @@ class SimulationTestDF {
         // Arrange
         // Criamos um RandomPort que força o movimento para o mesmo lugar
         simulation = new Simulation(new DeterministicRandomPort(0.5));
-        Horizon horizon = new Horizon(2, 3);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(2);
+        horizon.setGuardiao(new Guardian(3));
+
         // Criatura 1: x=0, gold=100. Move para x=50
         horizon.getEntities().get(0).setGold(100);
         horizon.getEntities().get(0).setX(0);
@@ -120,7 +135,10 @@ class SimulationTestDF {
         simulation = new Simulation(new DeterministicRandomPort(0.0)); // Ninguém se move
 
         // Crie um horizonte com uma criatura qualquer, apenas para o construtor funcionar
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         // AGORA, LIMPE A LISTA para garantir um cenário 100% controlado
         horizon.getEntities().clear();
 
@@ -145,7 +163,9 @@ class SimulationTestDF {
     @DisplayName("runIteration: Deve fazer o sobrevivente de uma colisão roubar do vizinho")
     void runIterationDeveFazerSobreviventeRoubarDoVizinho() {
         simulation = new Simulation(new DeterministicRandomPort(0.0));
-        Horizon horizon = new Horizon(3, 4); // C1, C2, C3
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(3);
+        horizon.setGuardiao(new Guardian(4));
 
         horizon.getEntities().get(0).setX(100);
         horizon.getEntities().get(0).setGold(100);
@@ -178,7 +198,10 @@ class SimulationTestDF {
     @Test
     @DisplayName("runIteration: Deve lançar IllegalStateException se a simulação já terminou")
     void runIterationDeveLancarExcecaoSeJaTerminou() {
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.setStatus(SimulationStatus.SUCCESSFUL);
 
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {

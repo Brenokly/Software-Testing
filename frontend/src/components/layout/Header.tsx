@@ -1,54 +1,55 @@
 "use client";
 
+import { getAvatarById } from "@/utils/services/avatarService"; // Importa nossa nova função
 import {
   clearAuthData,
   getToken,
   getUserData,
 } from "@/utils/services/tokenManager";
 import { UserData } from "@/utils/types/authTypes";
+import Image from "next/image"; // Importa o componente Image do Next.js
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export const Header = () => {
-  // Usamos null como estado inicial para saber que a verificação ainda não ocorreu
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string>("/avatares/1.png"); // Um avatar padrão enquanto carrega
   const router = useRouter();
-  const pathname = usePathname(); // Hook para saber a rota atual
+  const pathname = usePathname();
 
   useEffect(() => {
-    // Esta função verifica o estado de autenticação no cliente
     const checkAuthStatus = () => {
       const token = getToken();
       const user = getUserData();
       setIsAuthenticated(!!token);
       setUserData(user);
+
+      // Se o usuário existir, define a URL do avatar correspondente
+      if (user) {
+        setAvatarUrl(getAvatarById(user.avatarId));
+      }
     };
 
     checkAuthStatus();
 
-    // Adiciona um listener para o evento de storage, para que se o usuário
-    // logar ou deslogar em outra aba, esta aba se atualize.
     window.addEventListener("storage", checkAuthStatus);
     return () => {
       window.removeEventListener("storage", checkAuthStatus);
     };
-  }, [pathname]); // Re-executa a verificação sempre que a rota muda
+  }, [pathname]);
 
   const handleLogout = () => {
-    clearAuthData(); // Limpa o token e dados do usuário
+    clearAuthData();
     setIsAuthenticated(false);
     setUserData(null);
-    // Dispara o evento de storage para atualizar outras abas
     window.dispatchEvent(new Event("storage"));
     router.push("/login");
   };
 
-  // Enquanto o estado de autenticação está sendo verificado, não mostramos nada
-  // para evitar o "piscar" dos botões.
   if (isAuthenticated === null) {
-    return <header className="h-[80px] w-full bg-[#3B82F6]"></header>; // Placeholder com a mesma altura
+    return <header className="h-[80px] w-full bg-[#3B82F6]"></header>;
   }
 
   return (
@@ -65,15 +66,25 @@ export const Header = () => {
           Criaturas
         </Link>
         <div className="flex items-center space-x-2 md:space-x-4">
-          {isAuthenticated ? (
+          {isAuthenticated && userData ? (
             <>
-              {/* Mostra os dados do usuário logado */}
-              <div className="hidden md:flex items-center gap-2 text-white font-bold">
-                <span>{userData?.login}</span>
-                <span className="text-yellow-300">
-                  | 💰 {userData?.pontuation}
-                </span>
+              {/* Perfil do Usuário com Avatar */}
+              <div className="flex items-center gap-3">
+                <Image
+                  src={avatarUrl}
+                  alt={`Avatar de ${userData.login}`}
+                  width={48}
+                  height={48}
+                  className="rounded-full border-2 border-yellow-300 object-cover"
+                />
+                <div className="hidden md:flex flex-col text-white font-bold leading-tight">
+                  <span>{userData.login}</span>
+                  <span className="text-yellow-300 text-sm">
+                    💰 {userData.pontuation}
+                  </span>
+                </div>
               </div>
+
               <Link
                 href="/simulacao"
                 className="text-white hover:text-yellow-300 transition-colors duration-200"
@@ -86,6 +97,7 @@ export const Header = () => {
               >
                 Ranking
               </Link>
+
               <button
                 onClick={handleLogout}
                 className="px-3 py-2 bg-red-600 text-white border-2 border-black rounded-md hover:bg-red-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
@@ -95,6 +107,7 @@ export const Header = () => {
             </>
           ) : (
             <>
+              {/* Botões de Login e Registro */}
               <Link
                 href="/login"
                 className="px-3 py-2 bg-green-500 text-white border-2 border-black rounded-md hover:bg-green-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"

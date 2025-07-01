@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils; // Helper para checar strings
+import org.springframework.util.StringUtils;
 
 import com.simulador.criaturas.domain.model.User;
 import com.simulador.criaturas.domain.port.in.UserUseCase;
@@ -27,7 +27,14 @@ public class UserService implements UserUseCase {
      */
     @Override
     public User registerNewUser(String login, String password, int avatarId) {
-        // ... suas validações continuam as mesmas ...
+        // CORREÇÃO: Restaurando as validações de guarda (Fail-Fast).
+        // Elas garantem que dados inválidos sejam rejeitados imediatamente.
+        if (!StringUtils.hasText(login)) {
+            throw new IllegalArgumentException("Login não pode ser nulo ou vazio.");
+        }
+        if (!StringUtils.hasText(password)) {
+            throw new IllegalArgumentException("Senha não pode ser nula ou vazia.");
+        }
         if (userRepository.existsByLogin(login)) {
             throw new IllegalArgumentException("Erro: Login já está em uso.");
         }
@@ -38,6 +45,7 @@ public class UserService implements UserUseCase {
         novoUsuario.setLogin(login);
         novoUsuario.setPassword(senhaCriptografada);
         novoUsuario.setAvatarId(avatarId);
+        // pontuation e simulationsRun são inicializados com 0 por padrão para o tipo 'int'.
 
         return userRepository.save(novoUsuario);
     }
@@ -47,12 +55,9 @@ public class UserService implements UserUseCase {
      */
     @Override
     public Optional<User> authenticateUser(String login, String password) {
-        // Validação para cumprir o contrato.
-        if (login == null) {
-            throw new IllegalArgumentException("Login não pode ser nulo.");
-        }
-        if (password == null) {
-            throw new IllegalArgumentException("Senha não pode ser nula.");
+        // É uma boa prática manter a validação aqui também.
+        if (!StringUtils.hasText(login) || !StringUtils.hasText(password)) {
+            return Optional.empty(); // Retorna vazio se a entrada for inválida.
         }
 
         return userRepository.findByLogin(login)
@@ -76,13 +81,11 @@ public class UserService implements UserUseCase {
     public void deleteUser(Long userIdToDelete, String requesterLogin) {
         User userToDelete = findUserByIdOrThrow(userIdToDelete);
 
-        // Validação do parâmetro do caso de uso.
         if (!StringUtils.hasText(requesterLogin)) {
             throw new IllegalArgumentException("Login do solicitante não pode ser nulo ou vazio.");
         }
 
         if (!userToDelete.getLogin().equals(requesterLogin)) {
-            // Lançando a exceção correta, conforme o contrato.
             throw new SecurityException("Acesso negado: Você só pode deletar sua própria conta.");
         }
 
@@ -94,9 +97,8 @@ public class UserService implements UserUseCase {
      */
     @Override
     public Optional<User> findUserByLogin(String login) {
-        // Validação para cumprir o contrato.
-        if (login == null) {
-            throw new IllegalArgumentException("Login não pode ser nulo.");
+        if (!StringUtils.hasText(login)) {
+            return Optional.empty();
         }
         return userRepository.findByLogin(login);
     }

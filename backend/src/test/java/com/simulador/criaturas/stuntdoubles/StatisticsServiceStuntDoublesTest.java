@@ -1,16 +1,16 @@
 package com.simulador.criaturas.stuntdoubles;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.DisplayName;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.simulador.criaturas.application.StatisticsService;
@@ -20,7 +20,6 @@ import com.simulador.criaturas.infrastructure.adapter.in.rest.dto.GlobalStatisti
 import com.simulador.criaturas.infrastructure.adapter.in.rest.dto.UserStatisticsDTO;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("Testes (Dublês/Estruturais) para o Serviço de Aplicação StatisticsService")
 public class StatisticsServiceStuntDoublesTest {
 
     @Mock
@@ -31,7 +30,6 @@ public class StatisticsServiceStuntDoublesTest {
 
     // --- MÉTODO getGlobalStatistics ---
     @Test
-    @DisplayName("getGlobalStatistics: Cobre o caminho principal com usuários e dados válidos")
     void getGlobalStatistics_caminhoPrincipal_comDadosValidos() {
         // Este teste cobre o 'else' de 'allUsers.isEmpty()' e os 'else's dos
         // operadores ternários, testando o fluxo de cálculo principal.
@@ -67,7 +65,6 @@ public class StatisticsServiceStuntDoublesTest {
     }
 
     @Test
-    @DisplayName("getGlobalStatistics: Cobre o caminho de borda quando não há usuários no sistema")
     void getGlobalStatistics_caminhoDeBorda_quandoNaoHaUsuarios() {
         // Este teste cobre o 'if (allUsers.isEmpty())'
 
@@ -86,7 +83,6 @@ public class StatisticsServiceStuntDoublesTest {
     }
 
     @Test
-    @DisplayName("getGlobalStatistics: Cobre o caminho com divisão por zero (nenhuma simulação executada)")
     void getGlobalStatistics_caminhoDeBorda_comDivisaoPorZero() {
         // Este teste cobre o 'true' dos operadores ternários, tanto para o usuário quanto para o global.
 

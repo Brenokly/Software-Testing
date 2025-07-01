@@ -78,7 +78,10 @@ public class SimulationTestS {
     @DisplayName("runIteration: [CAMINHO DE EXCEÇÃO] Deve lançar exceção se o status não for RUNNING")
     void runIteration_caminhoExcecao_statusNaoRunning() {
         // Cobre: if (horizonte.getStatus() != SimulationStatus.RUNNING)
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.setStatus(SimulationStatus.SUCCESSFUL);
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> simulation.runIteration(horizon));
         assertEquals("A simulação não pode ser executada pois seu status é: Successful", exception.getMessage());
@@ -89,7 +92,10 @@ public class SimulationTestS {
     void runIteration_caminhoLogico_pulaEntidadeRemovida() {
         // Cobre: if (!horizonte.getEntities().contains(entity))
         when(randomPort.nextFactor()).thenReturn(0.5);
-        Horizon horizon = new Horizon(2, 3);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(2);
+        horizon.setGuardiao(new Guardian(3));
+
         horizon.getEntities().get(0).setGold(200);
         horizon.getEntities().get(0).setX(0); // Com r=0.5, vai para x=100
         horizon.getEntities().get(1).setX(100);
@@ -103,7 +109,10 @@ public class SimulationTestS {
     void runIteration_caminhoLogico_survivorNulo() {
         // Cobre o caso 'survivor == null' na condição 'if (survivor != null && ...)'
         when(randomPort.nextFactor()).thenReturn(0.0);
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(0));
+
         horizon.getEntities().get(0).setX(999); // Posição isolada
 
         horizon.getEntities().clear(); // Limpa a lista
@@ -116,7 +125,10 @@ public class SimulationTestS {
     void runIteration_caminhoLogico_survivorEGuardião() {
         // Cobre o caso '!(survivor instanceof Guardian)' sendo FALSO.
         when(randomPort.nextFactor()).thenReturn(0.0);
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.getEntities().clear();
         CreatureCluster cluster = new CreatureCluster(10, 100.0, 1000.0);
         horizon.addEntity(cluster);
@@ -136,7 +148,10 @@ public class SimulationTestS {
     void runIteration_caminhoLogico_survivorValido() {
         // Cobre o caso 'survivor != null && !(survivor instanceof Guardian)' sendo VERDADEIRO.
         when(randomPort.nextFactor()).thenReturn(0.0);
-        Horizon horizon = new Horizon(2, 3); // C1 e C2
+        Horizon horizon = new Horizon(); // C1 e C2
+        horizon.initializeEntities(2);
+        horizon.setGuardiao(new Guardian(3));
+
         horizon.getEntities().get(0).setX(100); // Vizinho
         horizon.getEntities().get(1).setX(200); // Atacante
 
@@ -219,7 +234,9 @@ public class SimulationTestS {
     @DisplayName("runIteration: [ESTRUTURAL] Cobre o caminho quando a entidade não pode se mover")
     void runIteration_caminhoQuandoEntidadeNaoImplementaMove() {
         // Arrange
-        Horizon horizon = new Horizon(1, 2); // Começa com C1 na posição x=0
+        Horizon horizon = new Horizon(); // Começa com C1 na posição x=0
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
 
         NonMovableEntity nonMovable = new NonMovableEntity();
 
@@ -246,7 +263,10 @@ public class SimulationTestS {
 
         // Arrange
         when(randomPort.nextFactor()).thenReturn(0.1);
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         // Forçamos a remoção da única entidade, fazendo com que a interação
         // em sua posição antiga retorne um sobrevivente nulo.
         horizon.getEntities().get(0).setX(0);
@@ -277,7 +297,10 @@ public class SimulationTestS {
         // Este teste isola o caso de fronteira exato do operador '<='.
 
         // Arrange
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.getGuardiao().setGold(500);
         horizon.getEntities().get(0).setGold(500); // Ouro é exatamente igual
 
@@ -291,8 +314,9 @@ public class SimulationTestS {
     @Test
     @DisplayName("getStatus: [MC/DC] Cobre o caminho FAILED pela condição de ouro maior")
     void getStatus_caminhoFailed_pelaCondicaoIsEmpty() {
-
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
 
         horizon.getGuardiao().setGold(100);
 
@@ -304,8 +328,9 @@ public class SimulationTestS {
     @Test
     @DisplayName("getStatus: [MC/DC] Cobre o caminho FAILED pela condição de ouro igual")
     void getStatus_caminhoFailed_pelaCondicaoDeOuroIgual() {
-
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
 
         horizon.getGuardiao().setGold(100);
 
@@ -318,7 +343,10 @@ public class SimulationTestS {
     @DisplayName("getStatus: [MC/DC] Cobre o caminho RUNNING pela condição de tamanho")
     void getStatus_caminhoRunning_pelaCondicaoDeTamanho() {
         // Cobre a Decisão 1, forçando a primeira parte do || a ser FALSA.
-        Horizon horizon = new Horizon(2, 3);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(2);
+        horizon.setGuardiao(new Guardian(3));
+
         assertEquals(SimulationStatus.RUNNING, simulation.getStatus(horizon));
     }
 
@@ -326,7 +354,10 @@ public class SimulationTestS {
     @DisplayName("getStatus: [MC/DC] Cobre o caminho SUCCESSFUL pela condição 'isEmpty'")
     void getStatus_caminhoSuccessful_pelaCondicaoIsEmpty() {
         // Cobre a Decisão 2, forçando a primeira parte do || a ser VERDADEIRA.
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.getEntities().clear();
         assertEquals(SimulationStatus.SUCCESSFUL, simulation.getStatus(horizon));
     }
@@ -335,7 +366,10 @@ public class SimulationTestS {
     @DisplayName("getStatus: [MC/DC] Cobre o caminho SUCCESSFUL pela condição de ouro")
     void getStatus_caminhoSuccessful_pelaCondicaoDeOuro() {
         // Cobre a Decisão 2, forçando a primeira parte do || a ser FALSA e a segunda VERDADEIRA.
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.getGuardiao().setGold(100);
         horizon.getEntities().get(0).setGold(50);
         assertEquals(SimulationStatus.SUCCESSFUL, simulation.getStatus(horizon));
@@ -345,7 +379,10 @@ public class SimulationTestS {
     @DisplayName("getStatus: [MC/DC] Cobre o caminho FAILED")
     void getStatus_caminhoFailed() {
         // Cobre a Decisão 3 sendo VERDADEIRA (o que implica que a Decisão 2 foi FALSA).
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.getGuardiao().setGold(100);
         horizon.getEntities().get(0).setGold(150); // gold > guardião.gold
         assertEquals(SimulationStatus.FAILED, simulation.getStatus(horizon));
@@ -355,7 +392,9 @@ public class SimulationTestS {
     @DisplayName("getStatus: Cobre o caminho RUNNING (caminho 'else' final)")
     void getStatus_caminhoRunning() {
         // Força todas as decisões de término a serem FALSAS.
-        Horizon horizon = new Horizon(2, 3);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(2);
+        horizon.setGuardiao(new Guardian(3));
         assertEquals(SimulationStatus.RUNNING, simulation.getStatus(horizon));
     }
 
@@ -364,7 +403,10 @@ public class SimulationTestS {
     @DisplayName("getStatus: Cobre o caminho RUNNING (caminho 'else' final)")
     void getStatus_caminhoRunningFinal() {
         // Força todas as decisões de término a serem FALSAS.
-        Horizon horizon = new Horizon(2, 3);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(2);
+        horizon.setGuardiao(new Guardian(3));
+
         assertEquals(SimulationStatus.RUNNING, simulation.getStatus(horizon));
     }
 
@@ -373,7 +415,10 @@ public class SimulationTestS {
     @DisplayName("getStatus: Cobre o caminho FAILED (Decisão 3 sendo VERDADEIRA)")
     void getStatus_caminhoFailedDecisao3() {
         // Cobre o caso onde remainingEntities.size() == 1 e a entidade restante é o guardião.
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.getGuardiao().setGold(100);
         horizon.getEntities().get(0).setGold(150); // gold > guardião.gold
         assertEquals(SimulationStatus.FAILED, simulation.getStatus(horizon));
@@ -384,7 +429,10 @@ public class SimulationTestS {
     @DisplayName("getStatus: Cobre o caminho SUCCESSFUL (Decisão 2 sendo VERDADEIRA)")
     void getStatus_caminhoSuccessfulDecisao2() {
         // Cobre o caso onde remainingEntities.isEmpty() é VERDADEIRO.
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.getEntities().clear(); // Limpa as entidades
         assertEquals(SimulationStatus.SUCCESSFUL, simulation.getStatus(horizon));
     }
@@ -403,7 +451,10 @@ public class SimulationTestS {
     @DisplayName("findNearestNeighbor: Cobre o caminho de exceção onde entidade atual é nula")
     void findNearestNeighbor_caminhoExcecao_entidadeAtualNula() {
         // Cobre o caso 'if (horizonte == null || entidadeAtual == null)'
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> simulation.findNearestNeighbor(horizon, null));
         assertEquals("Horizon e entidade atual não podem ser nulos.", exception.getMessage());
     }
@@ -413,7 +464,9 @@ public class SimulationTestS {
     void findNearestNeighbor_caminhoSemVizinhos_deveRetornarNulo() {
         // Este teste força 'if (allEntities.isEmpty())' a ser true em findNearestNeighbor
         when(randomPort.nextFactor()).thenReturn(0.0);
-        Horizon horizon = new Horizon(1, 2); // Apenas uma criatura
+        Horizon horizon = new Horizon(); // Apenas uma criatura
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
 
         simulation.runIteration(horizon);
 
@@ -427,7 +480,10 @@ public class SimulationTestS {
     @DisplayName("findNearestNeighbor: Cobre o caminho onde há vizinhos")
     void findNearestNeighbor_caminhoComVizinhos_deveRetornarVizinho() {
         // Este teste cobre o caso onde há vizinhos e o método retorna um vizinho válido.
-        Horizon horizon = new Horizon(2, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(2);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.getEntities().get(0).setX(100.0); // C1
         horizon.getEntities().get(1).setX(200.0); // C2 (vizinho)
 
@@ -441,7 +497,10 @@ public class SimulationTestS {
     @DisplayName("findNearestNeighbor: Cobre o caminho onde há vizinhos, mas a entidade atual é nula")
     void findNearestNeighbor_caminhoComVizinhosMasEntidadeAtualNula() {
         // Este teste cobre o caso onde há vizinhos, mas a entidade atual é nula.
-        Horizon horizon = new Horizon(2, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(2);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.getEntities().get(0).setX(100.0); // C1
         horizon.getEntities().get(1).setX(200.0); // C2 (vizinho)
 
@@ -456,7 +515,9 @@ public class SimulationTestS {
         // Cobre o caso 'victim == null' no if do treatNeighborTheft
         // Este cenário é o mesmo do teste acima.
         when(randomPort.nextFactor()).thenReturn(0.0);
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
 
         simulation.runIteration(horizon);
 
@@ -469,7 +530,10 @@ public class SimulationTestS {
         // Cobre o caso 'victim instanceof LoseGold' sendo falso
         when(randomPort.nextFactor()).thenReturn(0.0);
         // Cenário: C1 e uma entidade que não perde ouro (nosso stub)
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         HorizonEntities fakeVictim = new NonMovableEntity2(); // Usando o stub do teste anterior
         fakeVictim.setX(200.0);
         fakeVictim.setGold(5000.0);
@@ -487,7 +551,10 @@ public class SimulationTestS {
     @DisplayName("treatNeighborTheft: Cobre o caminho onde a vítima perde ouro")
     void treatNeighborTheft_caminhoVitimaPerdeOuro() {
         // Cenário: C1 e uma entidade que perde ouro (implementa LoseGold)
-        Horizon horizon = new Horizon(2, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(2);
+        horizon.setGuardiao(new Guardian(2));
+
         HorizonEntities victim = new NonMovableEntity2();
         victim.setX(200.0);
         victim.setGold(5000.0);
@@ -508,7 +575,10 @@ public class SimulationTestS {
         // Cobre o caso '!(attacker instanceof StealGold)' sendo verdadeiro
         when(randomPort.nextFactor()).thenReturn(0.0);
         // Cenário: C1 e uma entidade que não pode roubar ouro (não implementa StealGold)
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         HorizonEntities attacker = new NonMovableEntity2(); // Usando o stub do teste anterior
         attacker.setX(100.0);
         horizon.addEntity(attacker);
@@ -534,7 +604,11 @@ public class SimulationTestS {
     @DisplayName("resolveInteractionsAt: Cobre o caminho de exceção onde posição é NaN")
     void resolveInteractionsAt_caminhoExcecao_posicaoNaN() {
         // Cobre o caso 'Double.isNaN(posição)'
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> simulation.resolveInteractionsAt(new Horizon(1, 2), Double.NaN));
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> simulation.resolveInteractionsAt(horizon, Double.NaN));
         assertEquals("Horizon não pode ser nulo e a posição deve ser um número válido.", exception.getMessage());
     }
 
@@ -542,7 +616,11 @@ public class SimulationTestS {
     @DisplayName("resolveInteractionsAt: Cobre o caminho de exceção onde posição é infinita")
     void resolveInteractionsAt_caminhoExcecao_posicaoInfinita() {
         // Cobre o caso 'Double.isInfinite(posição)'
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> simulation.resolveInteractionsAt(new Horizon(1, 2), Double.POSITIVE_INFINITY));
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> simulation.resolveInteractionsAt(horizon, Double.POSITIVE_INFINITY));
         assertEquals("Horizon não pode ser nulo e a posição deve ser um número válido.", exception.getMessage());
     }
 
@@ -550,7 +628,9 @@ public class SimulationTestS {
     @DisplayName("resolveInteractionsAt: Cobre o caminho onde não há colisão (size <= 1)")
     void resolveInteractionsAt_caminhoSemColisao() {
         when(randomPort.nextFactor()).thenReturn(0.0);
-        Horizon horizon = new Horizon(2, 3);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(2);
+        horizon.setGuardiao(new Guardian(3));
         // Coloca as criaturas em posições diferentes
         horizon.getEntities().get(0).setX(100.0);
         horizon.getEntities().get(1).setX(200.0);
@@ -566,7 +646,10 @@ public class SimulationTestS {
     void resolveInteractionsAt_caminhoFusaoComClusterExistente() {
         // Cobre o 'if (baseFusion != null)'
         when(randomPort.nextFactor()).thenReturn(0.0);
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         CreatureCluster cluster = new CreatureCluster(10, 100.0, 1000.0);
         horizon.addEntity(cluster);
         // Coloca a C1 na mesma posição do cluster
@@ -624,7 +707,10 @@ public class SimulationTestS {
     void resolveInteractionsAt_caminhoFusaoComClusterNovo() {
         // Cobre o 'if (baseFusion == null)'
         when(randomPort.nextFactor()).thenReturn(0.0);
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         // Coloca a C1 na mesma posição do cluster
         horizon.getEntities().get(0).setX(100.0);
         CreatureCluster newCluster = new CreatureCluster(10, 100.0, 1000.0);
@@ -641,7 +727,10 @@ public class SimulationTestS {
     @DisplayName("resolveInteractionsAt: Cobre o caminho onde não há sobrevivente")
     void resolveInteractionsAt_caminhoSemSobrevivente() {
         // Para realizar esse testes, precisamos colocar um guardião na mesma posição de um cluster!
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.getEntities().clear(); // Limpa as entidades
 
         horizon.addEntity(new CreatureCluster(10, 100.0, 1000.0)); // Adiciona um cluster
@@ -661,7 +750,10 @@ public class SimulationTestS {
     @DisplayName("resolveInteractionsAt: Cobre o caminho onde há sobrevivente")
     void resolveInteractionsAt_caminhoComSobrevivente() {
         // Cobre o caso onde há sobrevivente (survivor != null)
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.getEntities().get(0).setX(100.0); // Posição isolada
 
         HorizonEntities survivor = simulation.resolveInteractionsAt(horizon, 100.0);
@@ -674,7 +766,10 @@ public class SimulationTestS {
     @DisplayName("resolveInteractionsAt: Cobre o caminho onde há sobrevivente e é um Guardião")
     void resolveInteractionsAt_caminhoComSobreviventeGuardiao() {
         // Cobre o caso onde o sobrevivente é um Guardião
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.getEntities().get(0).setX(100.0); // Posição isolada
 
         HorizonEntities survivor = simulation.resolveInteractionsAt(horizon, 100.0);
@@ -687,7 +782,10 @@ public class SimulationTestS {
     @DisplayName("resolveInteractionsAt: Cobre o caminho onde há sobrevivente e não é um Guardião")
     void resolveInteractionsAt_caminhoComSobreviventeNaoGuardiao() {
         // Cobre o caso onde o sobrevivente não é um Guardião
-        Horizon horizon = new Horizon(1, 2);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
         horizon.getEntities().get(0).setX(100.0); // Posição isolada
 
         HorizonEntities survivor = simulation.resolveInteractionsAt(horizon, 100.0);

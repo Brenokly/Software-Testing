@@ -49,8 +49,14 @@ public class Simulation {
         if (numeroDeCriaturas <= 0 || numeroDeCriaturas > 10) {
             throw new IllegalArgumentException("O número de criaturas deve estar entre 1 e 10.");
         }
+
         int idGuardiao = numeroDeCriaturas + 1;
-        return new Horizon(numeroDeCriaturas, idGuardiao);
+
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(numeroDeCriaturas);
+        horizon.setGuardiao(new Guardian(idGuardiao));
+
+        return horizon;
     }
 
     /**

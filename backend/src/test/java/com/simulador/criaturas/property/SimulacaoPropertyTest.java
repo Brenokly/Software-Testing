@@ -3,7 +3,6 @@ package com.simulador.criaturas.property;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.DisplayName;
 
 import com.simulador.criaturas.domain.behaviors.HorizonEntities;
 import com.simulador.criaturas.domain.model.Horizon;
@@ -18,7 +17,6 @@ import net.jqwik.api.Property;
 import net.jqwik.api.Provide;
 import net.jqwik.api.constraints.IntRange;
 
-@DisplayName("Testes de Propriedade para a classe de serviço Simulation")
 class SimulationPropertyTest {
 
     // --- Dublê de Teste (Stub) para controlar a aleatoriedade ---
@@ -38,7 +36,6 @@ class SimulationPropertyTest {
 
     // --- PROPRIEDADES PARA createNewSimulation ---
     @Property
-    @DisplayName("Propriedade: A criação de uma simulação sempre resulta em um estado inicial válido")
     void createNewSimulationSempreResultaEmEstadoValido(
             // Gera um número de criaturas dentro do intervalo permitido pelo método
             @ForAll @IntRange(min = 1, max = 10) int numeroDeCriaturas
@@ -59,7 +56,6 @@ class SimulationPropertyTest {
 
     // --- PROPRIEDADES PARA runIteration ---
     @Property
-    @DisplayName("Propriedade: O número de entidades nunca aumenta após uma iteração")
     void numeroDeEntidadesNuncaAumentaAposIteracao(
             // Usa nosso gerador customizado de Horizontes
             @ForAll("horizonsValidosParaIteracao") Horizon horizon
@@ -79,7 +75,6 @@ class SimulationPropertyTest {
     }
 
     @Property
-    @DisplayName("Propriedade: A quantidade total de ouro no sistema é sempre conservada")
     void quantidadeTotalDeOuroESempreConservada(
             @ForAll("horizonsValidosParaIteracao") Horizon horizon
     ) {

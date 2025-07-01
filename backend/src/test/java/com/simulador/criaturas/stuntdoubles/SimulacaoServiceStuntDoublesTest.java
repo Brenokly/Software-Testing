@@ -2,7 +2,6 @@ package com.simulador.criaturas.stuntdoubles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -18,13 +17,13 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.simulador.criaturas.application.SimulacaoService;
+import com.simulador.criaturas.domain.model.Guardian;
 import com.simulador.criaturas.domain.model.Horizon;
 import com.simulador.criaturas.domain.port.in.UserUseCase;
 import com.simulador.criaturas.domain.service.Simulation;
 import com.simulador.criaturas.utils.SimulationStatus;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("Testes (Dublês/Estruturais) para o Serviço de Aplicação SimulacaoService")
 class SimulacaoServiceStuntDoublesTest {
 
     @Mock
@@ -38,9 +37,10 @@ class SimulacaoServiceStuntDoublesTest {
 
     // --- MÉTODO initNewSimulation ---
     @Test
-    @DisplayName("initNewSimulation: Deve delegar a criação e retornar o resultado")
     void initNewSimulation_deveDelegarCriacao() {
-        Horizon horizonEsperado = new Horizon(5, 6);
+        Horizon horizonEsperado = new Horizon();
+        horizonEsperado.initializeEntities(5);
+        horizonEsperado.setGuardiao(new Guardian(6));
         when(servicoDeDominio.createNewSimulation(5)).thenReturn(horizonEsperado);
         Horizon resultado = simulacaoService.initNewSimulation(5);
         assertEquals(horizonEsperado, resultado);
@@ -49,10 +49,11 @@ class SimulacaoServiceStuntDoublesTest {
 
     // --- MÉTODO runNextSimulation ---
     @Test
-    @DisplayName("runNextSimulation: Deve executar e NÃO atualizar stats se a simulação continua RUNNING")
     void runNextSimulation_quandoSimulacaoContinua() {
         Long userId = 1L;
-        Horizon horizonteEntrada = new Horizon(2, 3);
+        Horizon horizonteEntrada = new Horizon();
+        horizonteEntrada.initializeEntities(2);
+        horizonteEntrada.setGuardiao(new Guardian(3));
         when(servicoDeDominio.runIteration(horizonteEntrada)).thenReturn(horizonteEntrada); // Retorna o mesmo estado
 
         simulacaoService.runNextSimulation(horizonteEntrada, userId);
@@ -62,11 +63,16 @@ class SimulacaoServiceStuntDoublesTest {
     }
 
     @Test
-    @DisplayName("runNextSimulation: Deve atualizar stats (RUN e SCORE) quando termina com SUCESSO")
     void runNextSimulation_quandoTerminaComSucesso() {
         Long userId = 1L;
-        Horizon horizonteEntrada = new Horizon(1, 2);
-        Horizon horizonteSaida = new Horizon(1, 2);
+        Horizon horizonteEntrada = new Horizon();
+        horizonteEntrada.initializeEntities(2);
+        horizonteEntrada.setGuardiao(new Guardian(3));
+
+        Horizon horizonteSaida = new Horizon();
+        horizonteSaida.initializeEntities(2);
+        horizonteSaida.setGuardiao(new Guardian(3));
+
         horizonteSaida.setStatus(SimulationStatus.SUCCESSFUL);
         when(servicoDeDominio.runIteration(horizonteEntrada)).thenReturn(horizonteSaida);
 
@@ -77,11 +83,16 @@ class SimulacaoServiceStuntDoublesTest {
     }
 
     @Test
-    @DisplayName("runNextSimulation: Deve atualizar stats (só RUN) quando termina com FALHA")
     void runNextSimulation_quandoTerminaComFalha() {
         Long userId = 1L;
-        Horizon horizonteEntrada = new Horizon(1, 2);
-        Horizon horizonteSaida = new Horizon(1, 2);
+        Horizon horizonteEntrada = new Horizon();
+        horizonteEntrada.initializeEntities(2);
+        horizonteEntrada.setGuardiao(new Guardian(3));
+
+        Horizon horizonteSaida = new Horizon();
+        horizonteSaida.initializeEntities(2);
+        horizonteSaida.setGuardiao(new Guardian(3));
+
         horizonteSaida.setStatus(SimulationStatus.FAILED);
         when(servicoDeDominio.runIteration(horizonteEntrada)).thenReturn(horizonteSaida);
 
@@ -92,26 +103,30 @@ class SimulacaoServiceStuntDoublesTest {
     }
 
     @Test
-    @DisplayName("runNextSimulation: [CAMINHO DE EXCEÇÃO] Deve lançar exceção quando userId é nulo")
     void runNextSimulation_excecaoQuandoUserIdNulo() {
-        assertThrows(IllegalArgumentException.class, () -> simulacaoService.runNextSimulation(new Horizon(1, 2), null));
+        Horizon horizonteEntrada = new Horizon();
+        horizonteEntrada.initializeEntities(2);
+        horizonteEntrada.setGuardiao(new Guardian(3));
+
+        assertThrows(IllegalArgumentException.class, () -> simulacaoService.runNextSimulation(horizonteEntrada, null));
     }
 
     // --- MÉTODO runFullSimulation ---
     @Test
-    @DisplayName("runFullSimulation: [CAMINHO DE EXCEÇÃO] Deve lançar exceção quando userId é nulo")
     void runFullSimulation_excecaoQuandoUserIdNulo() {
         // Cobre: if (userId == null)
         assertThrows(IllegalArgumentException.class, () -> simulacaoService.runFullSimulation(5, null));
     }
 
     @Test
-    @DisplayName("runFullSimulation: [ESTRUTURAL] Loop não deve executar se o status inicial não for RUNNING")
     void runFullSimulation_naoExecutaLoopSeStatusNaoForRunning() {
         // Cobre o caso em que a condição 'while' é falsa na primeira verificação.
         // Arrange
         Long userId = 1L;
-        Horizon horizonte = new Horizon(1, 2);
+        Horizon horizonte = new Horizon();
+        horizonte.initializeEntities(1);
+        horizonte.setGuardiao(new Guardian(2));
+
         horizonte.setStatus(SimulationStatus.SUCCESSFUL); // Estado inicial já finalizado
         when(servicoDeDominio.createNewSimulation(anyInt())).thenReturn(horizonte);
 
@@ -127,24 +142,30 @@ class SimulacaoServiceStuntDoublesTest {
     }
 
     @Test
-    @DisplayName("runFullSimulation: [ESTRUTURAL] Deve parar por maxIteracoes e NÃO atualizar stats")
     void runFullSimulation_paraPorTimeout() {
         // Simulamos um horizonte que, mesmo após as iterações, continua RUNNING.
-        Horizon horizonte = new Horizon(5, 6);
+        Horizon horizonte = new Horizon();
+        horizonte.initializeEntities(5);
+        horizonte.setGuardiao(new Guardian(6));
+
         horizonte.setStatus(SimulationStatus.RUNNING); // Estado final simulado após o loop
 
-        Horizon horizontePosLoop = new Horizon(5, 6);
+        Horizon horizontePosLoop = new Horizon();
+        horizontePosLoop.initializeEntities(5);
+        horizontePosLoop.setGuardiao(new Guardian(6));
         horizontePosLoop.setStatus(SimulationStatus.RUNNING); // Simulando que o loop terminou por timeout
 
         runNextSimulation_quandoSimulacaoContinua(); // Reutiliza o teste que prova que nada acontece se o status é RUNNING.
     }
 
     @Test
-    @DisplayName("runFullSimulation: [ESTRUTURAL] Deve executar loop e terminar com SUCESSO")
     void runFullSimulation_executaLoopEterminaComSucesso() {
         // Cobre o caminho onde o 'while' executa e o 'if' pós-loop é verdadeiro com sucesso.
         Long userId = 1L;
-        Horizon horizonte = new Horizon(1, 2);
+
+        Horizon horizonte = new Horizon();
+        horizonte.initializeEntities(1);
+        horizonte.setGuardiao(new Guardian(2));
 
         when(servicoDeDominio.createNewSimulation(anyInt())).thenReturn(horizonte);
         // Simula o comportamento do motor: na primeira chamada, continua, na segunda, termina.
