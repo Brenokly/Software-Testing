@@ -59,18 +59,6 @@ public class Simulation {
         return horizon;
     }
 
-    /**
-     * Orquestra uma única iteração completa da simulação.
-     *
-     * @param horizonte O estado atual da simulação a ser avançado.
-     * @return O mesmo objeto Horizon, com seu estado interno atualizado.
-     * @throws IllegalArgumentException Se o horizonte for nulo.
-     * @throws IllegalStateException Se a simulação já terminou (não está
-     * 'RUNNING').
-     * @pre O horizonte não pode ser nulo e deve estar em um estado 'RUNNING'.
-     * @post As entidades no horizonte se movem e interagem. O status do
-     * horizonte é atualizado para RUNNING, SUCCESSFUL ou FAILED.
-     */
     public Horizon runIteration(Horizon horizonte) {
         if (horizonte == null) {
             throw new IllegalArgumentException("Horizon não pode ser nulo.");
@@ -79,7 +67,6 @@ public class Simulation {
             throw new IllegalStateException("A simulação não pode ser executada pois seu status é: " + horizonte.getStatus());
         }
 
-        // ... Lógica do método ...
         List<HorizonEntities> toProcess = new ArrayList<>(horizonte.getEntities());
         for (HorizonEntities entity : toProcess) {
             if (entity != null) {
@@ -88,18 +75,41 @@ public class Simulation {
                 }
                 if (entity instanceof Move movel) {
                     movel.move(randomPort.nextFactor());
+
+                    // ===================================================================
+                    // Arredondo a posição para o inteiro mais próximo para facilitar colisões.
+                    // ===================================================================
+                    long roundedX = Math.round(movel.getX());
+                    movel.setX(roundedX);
                 }
+
                 HorizonEntities survivor = resolveInteractionsAt(horizonte, entity.getX());
+
                 if (survivor != null && !(survivor instanceof Guardian)) {
                     treatNeighborTheft(horizonte, survivor);
                 }
             }
         }
+
         Guardian guardiao = horizonte.getGuardiao();
         if (guardiao != null) {
-            guardiao.move(randomPort.nextFactor());
+            if (guardiao instanceof Move) {
+                guardiao.move(randomPort.nextFactor());
+
+                // CORREÇÃO 1 (APLICADA AO GUARDIÃO TAMBÉM)
+                long roundedX = Math.round(guardiao.getX());
+                guardiao.setX(roundedX);
+            }
             resolveInteractionsAt(horizonte, guardiao.getX());
         }
+
+        // ===================================================================
+        // Removo todas as entidades (que não são o Guardião) com ouro <= 0.
+        // ===================================================================
+        horizonte.setEntities(horizonte.getEntities().stream()
+                .filter(e -> e.getGold() >= 1.0)
+                .toList());
+
         SimulationStatus novoStatus = getStatus(horizonte);
         horizonte.setStatus(novoStatus);
         return horizonte;

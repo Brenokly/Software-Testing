@@ -1,12 +1,11 @@
 package com.simulador.criaturas.structural;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -160,6 +159,20 @@ public class HorizonTestS {
 
         List<HorizonEntities> result = horizon.getEntitiesInPosition(100.0);
         assertEquals(1, result.size());
+    }
+
+    @Test
+    @DisplayName("getEntitiesInPosition: [MC/DC] Deve retornar entidades com posição válida")
+    void getEntitiesInPosition_caminhoPrincipal_comPosicaoValida2() {
+        // Cenário: C1=false, C2=false -> Decisão é FALSA.
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(2);
+        horizon.setGuardiao(new Guardian(3));
+
+        horizon.getEntities().get(0).setX(100.0);
+        horizon.getEntities().get(1).setX(100.0);
+
+        assertEquals(2, horizon.getEntitiesInPosition(100.0).size());
     }
 
     @Test
