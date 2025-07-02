@@ -37,7 +37,9 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> register(@Valid @RequestBody UserRequestDTO requestDTO) {
+
         User newUser = userUseCase.registerNewUser(requestDTO.getLogin(), requestDTO.getPassword(), requestDTO.getAvatarId());
+
         UserResponseDTO responseDTO = userMapper.toResponseDto(newUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }

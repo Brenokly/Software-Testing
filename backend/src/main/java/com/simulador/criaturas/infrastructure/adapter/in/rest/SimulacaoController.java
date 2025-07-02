@@ -14,12 +14,13 @@ import com.simulador.criaturas.domain.model.Horizon;
 import com.simulador.criaturas.domain.model.User;
 import com.simulador.criaturas.domain.port.in.SimulacaoUseCase;
 import com.simulador.criaturas.domain.port.in.UserUseCase;
-import com.simulador.criaturas.infrastructure.adapter.in.rest.dto.AmountCreatures;
 import com.simulador.criaturas.infrastructure.adapter.in.rest.dto.HorizonDTO;
 import com.simulador.criaturas.infrastructure.adapter.in.rest.mapper.HorizonMapper;
 import com.simulador.criaturas.utils.SimulationStatus;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -36,8 +37,8 @@ public class SimulacaoController {
      * usuários logados possam iniciar simulações.
      */
     @PostMapping("/iniciar")
-    public HorizonDTO iniciar(@Valid @RequestParam AmountCreatures numeroDeCriaturas, Principal principal) {
-        Horizon horizonDominio = simulacaoUseCase.initNewSimulation(numeroDeCriaturas.getAmount());
+    public HorizonDTO iniciar(@RequestParam @Min(1) @Max(10) int numeroDeCriaturas, Principal principal) {
+        Horizon horizonDominio = simulacaoUseCase.initNewSimulation(numeroDeCriaturas);
         return horizonMapper.toDto(horizonDominio);
     }
 
@@ -71,11 +72,11 @@ public class SimulacaoController {
      * autenticado.
      */
     @PostMapping("/executar-completa")
-    public HorizonDTO executarCompleta(@Valid @RequestParam AmountCreatures numeroDeCriaturas, Principal principal) {
+    public HorizonDTO executarCompleta(@RequestParam @Min(1) @Max(10) int numeroDeCriaturas, Principal principal) {
         User user = userUseCase.findUserByLogin(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Usuário autenticado não encontrado."));
 
-        Horizon horizonDominio = simulacaoUseCase.runFullSimulation(numeroDeCriaturas.getAmount(), user.getId());
+        Horizon horizonDominio = simulacaoUseCase.runFullSimulation(numeroDeCriaturas, user.getId());
         return horizonMapper.toDto(horizonDominio);
     }
 }

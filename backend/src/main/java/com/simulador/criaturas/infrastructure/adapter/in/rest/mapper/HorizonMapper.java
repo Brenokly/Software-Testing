@@ -43,7 +43,7 @@ public interface HorizonMapper {
         if (entity instanceof CreatureCluster creatureCluster) {
             return toDto(creatureCluster);
         }
-        throw new IllegalArgumentException("Tipo de entidade de domínio desconhecido: " + entity.getClass().getName());
+        throw new IllegalArgumentException("Tipo de entidade de domínio desconhecido: ");
     }
 
     // ESTE NOVO MÉTODO ENSINA O MAPSTRUCT A FAZER O CAMINHO INVERSO
@@ -54,6 +54,6 @@ public interface HorizonMapper {
         if (dto instanceof CreatureClusterDTO creatureClusterDTO) {
             return toDomain(creatureClusterDTO);
         }
-        throw new IllegalArgumentException("Tipo de DTO de entidade desconhecido: " + dto.getClass().getName());
+        throw new IllegalArgumentException("Tipo de DTO de entidade desconhecido: ");
     }
 }
