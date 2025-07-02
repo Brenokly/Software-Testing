@@ -27,8 +27,7 @@ public class UserService implements UserUseCase {
      */
     @Override
     public User registerNewUser(String login, String password, int avatarId) {
-        // CORREÇÃO: Restaurando as validações de guarda (Fail-Fast).
-        // Elas garantem que dados inválidos sejam rejeitados imediatamente.
+
         if (!StringUtils.hasText(login)) {
             throw new IllegalArgumentException("Login não pode ser nulo ou vazio.");
         }

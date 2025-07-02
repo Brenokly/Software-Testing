@@ -3,6 +3,9 @@ package com.simulador.criaturas.domain.port.out;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.simulador.criaturas.domain.model.User;
 
 /*
@@ -31,4 +34,10 @@ public interface UserRepositoryPort {
     boolean existsById(Long id);
 
     List<User> findAll();
+
+    Page<User> findAll(Pageable pageable);
+
+    long countTotalSimulations();
+
+    long countTotalSuccesses();
 }

@@ -18,11 +18,11 @@ const SPRITE_CONFIG = {
     scale: 2,
   },
   cluster: {
-    url: "/images/Cluster.png",
-    frames: 8,
+    url: "/images/Creature.png",
+    frames: 7,
     width: 32,
     height: 32,
-    scale: 2.5,
+    scale: 3.0,
   },
   guardian: {
     url: "/images/Guardian.png",

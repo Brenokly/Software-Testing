@@ -8,5 +8,8 @@ export interface UserStatisticsDTO {
 export interface GlobalStatisticsDTO {
     totalSimulationsRun: number;
     overallSuccessRate: number;
-    userStatistics: UserStatisticsDTO[];
+    userRankingPage: UserStatisticsDTO[];
+    currentPage: number;
+    totalPages: number;
+    totalUsers: number;
 }

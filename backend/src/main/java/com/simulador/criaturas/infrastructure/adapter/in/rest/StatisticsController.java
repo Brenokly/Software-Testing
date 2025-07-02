@@ -1,5 +1,8 @@
 package com.simulador.criaturas.infrastructure.adapter.in.rest;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,8 +25,10 @@ public class StatisticsController {
      * usuário esteja autenticado para acessá-lo.
      */
     @GetMapping
-    public ResponseEntity<GlobalStatisticsDTO> getStatistics() {
-        GlobalStatisticsDTO stats = statisticsUseCase.getGlobalStatistics();
+    public ResponseEntity<GlobalStatisticsDTO> getStatistics(
+            @PageableDefault(size = 5, sort = "pontuation", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        GlobalStatisticsDTO stats = statisticsUseCase.getGlobalStatistics(pageable);
         return ResponseEntity.ok(stats);
     }
 }

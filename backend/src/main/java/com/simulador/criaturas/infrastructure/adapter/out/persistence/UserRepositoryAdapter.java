@@ -3,6 +3,8 @@ package com.simulador.criaturas.infrastructure.adapter.out.persistence;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.simulador.criaturas.domain.model.User;
@@ -68,5 +70,22 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         return userEntities.stream()
                 .map(mapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public Page<User> findAll(Pageable pageable) {
+        return jpaRepository.findAll(pageable).map(mapper::toDomain);
+    }
+
+    @Override
+    public long countTotalSimulations() {
+        Long total = jpaRepository.sumTotalSimulationsRun();
+        return total != null ? total : 0L;
+    }
+
+    @Override
+    public long countTotalSuccesses() {
+        Long total = jpaRepository.sumTotalSuccesses();
+        return total != null ? total : 0L;
     }
 }

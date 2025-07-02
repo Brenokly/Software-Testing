@@ -12,10 +12,12 @@ import { InfoPanel } from "./InfoPanel";
 
 interface SimulationClientProps {
   initialCreatureCount: number;
+  onReturnToSetup: () => void;
 }
 
 export const SimulationClient = ({
   initialCreatureCount,
+  onReturnToSetup,
 }: SimulationClientProps) => {
   const [horizon, setHorizon] = useState<HorizonDTO | null>(null);
   const [iterationCount, setIterationCount] = useState(0);
@@ -23,7 +25,11 @@ export const SimulationClient = ({
   const [error, setError] = useState<string | null>(null);
   const [isAutoRunning, setIsAutoRunning] = useState(false);
 
-  const handleStartOrReset = useCallback(async () => {
+  const handleReset = () => {
+    onReturnToSetup();
+  };
+
+  const handleStart = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     setIsAutoRunning(false);
@@ -42,8 +48,8 @@ export const SimulationClient = ({
   }, [initialCreatureCount]);
 
   useEffect(() => {
-    handleStartOrReset();
-  }, [handleStartOrReset]);
+    handleStart();
+  }, [handleStart]);
 
   const handleIterate = useCallback(async () => {
     if (!horizon || horizon.status !== SimulationStatus.RUNNING) {
@@ -99,7 +105,7 @@ export const SimulationClient = ({
 
       <Controls
         onIterate={handleIterate}
-        onReset={handleStartOrReset}
+        onReset={handleReset}
         onToggleAuto={() => setIsAutoRunning((prev) => !prev)}
         isAutoRunning={isAutoRunning}
         isFinished={horizon?.status !== SimulationStatus.RUNNING}

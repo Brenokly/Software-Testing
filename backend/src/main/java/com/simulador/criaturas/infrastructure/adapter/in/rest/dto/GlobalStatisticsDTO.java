@@ -11,7 +11,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GlobalStatisticsDTO {
 
+    // Estatísticas globais
     private long totalSimulationsRun;
     private double overallSuccessRate;
-    private List<UserStatisticsDTO> userStatistics;
+
+    // Dados da página atual
+    private List<UserStatisticsDTO> userRankingPage;
+
+    // Informações de paginação
+    private int currentPage;
+    private int totalPages;
+    private long totalUsers;
 }

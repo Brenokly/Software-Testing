@@ -1,17 +1,21 @@
 package com.simulador.criaturas.stuntdoubles;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.simulador.criaturas.application.StatisticsService;
 import com.simulador.criaturas.domain.model.User;
@@ -28,79 +32,86 @@ public class StatisticsServiceStuntDoublesTest {
     @InjectMocks
     private StatisticsService statisticsService;
 
-    // --- MÉTODO getGlobalStatistics ---
     @Test
+    @DisplayName("getGlobalStatistics: Deve retornar dados paginados e estatísticas globais corretamente")
     void getGlobalStatistics_caminhoPrincipal_comDadosValidos() {
-        // Este teste cobre o 'else' de 'allUsers.isEmpty()' e os 'else's dos
-        // operadores ternários, testando o fluxo de cálculo principal.
-
         // Arrange
-        User userA = new User(1L, "userA", "pass", 1, 10, 20); // Taxa de sucesso: 0.5
-        User userB = new User(2L, "userB", "pass", 1, 3, 5);  // Taxa de sucesso: 0.6
+        Pageable pageable = PageRequest.of(0, 5); // Simula a requisição da página 0 com 5 itens
+        User userA = new User(1L, "userA", "pass", 1, 10, 20);
+        User userB = new User(2L, "userB", "pass", 1, 3, 5);
+        List<User> userList = List.of(userA, userB);
 
-        // "Treina" o mock para retornar uma lista com estes dois usuários.
-        when(userRepository.findAll()).thenReturn(List.of(userA, userB));
+        // Cria um objeto Page para simular o retorno do repositório
+        Page<User> userPage = new PageImpl<>(userList, pageable, userList.size());
+
+        // "Treina" os mocks
+        when(userRepository.findAll(pageable)).thenReturn(userPage);
+        when(userRepository.countTotalSimulations()).thenReturn(25L);
+        when(userRepository.countTotalSuccesses()).thenReturn(13L);
 
         // Act
-        GlobalStatisticsDTO result = statisticsService.getGlobalStatistics();
+        GlobalStatisticsDTO result = statisticsService.getGlobalStatistics(pageable);
 
         // Assert
         assertNotNull(result);
 
         // Verifica as estatísticas globais
-        // Total de simulações = 20 (userA) + 5 (userB) = 25
         assertEquals(25, result.getTotalSimulationsRun());
-        // Total de sucessos = 10 + 3 = 13. Taxa = 13 / 25 = 0.52
         assertEquals(0.52, result.getOverallSuccessRate());
 
-        // Verifica a lista de estatísticas individuais
-        assertNotNull(result.getUserStatistics());
-        assertEquals(2, result.getUserStatistics().size());
+        // Verifica os dados de paginação
+        assertEquals(0, result.getCurrentPage());
+        assertEquals(1, result.getTotalPages());
+        assertEquals(2, result.getTotalUsers());
 
-        // Verifica os dados do userA
-        UserStatisticsDTO statsA = result.getUserStatistics().stream().filter(u -> u.getLogin().equals("userA")).findFirst().get();
-        assertEquals(10, statsA.getScore());
-        assertEquals(20, statsA.getSimulationsRun());
-        assertEquals(0.5, statsA.getSuccessRate());
+        // Verifica o conteúdo da página
+        assertEquals(2, result.getUserRankingPage().size());
+        assertEquals("userA", result.getUserRankingPage().get(0).getLogin());
     }
 
     @Test
+    @DisplayName("getGlobalStatistics: Deve retornar estado vazio quando não há usuários")
     void getGlobalStatistics_caminhoDeBorda_quandoNaoHaUsuarios() {
-        // Este teste cobre o 'if (allUsers.isEmpty())'
-
         // Arrange
-        // "Treina" o mock para retornar uma lista vazia.
-        when(userRepository.findAll()).thenReturn(List.of());
+        Pageable pageable = PageRequest.of(0, 5);
+        Page<User> emptyPage = Page.empty(pageable);
+
+        when(userRepository.findAll(pageable)).thenReturn(emptyPage);
+        when(userRepository.countTotalSimulations()).thenReturn(0L);
+        when(userRepository.countTotalSuccesses()).thenReturn(0L);
 
         // Act
-        GlobalStatisticsDTO result = statisticsService.getGlobalStatistics();
+        GlobalStatisticsDTO result = statisticsService.getGlobalStatistics(pageable);
 
         // Assert
         assertNotNull(result);
         assertEquals(0, result.getTotalSimulationsRun());
         assertEquals(0.0, result.getOverallSuccessRate());
-        assertTrue(result.getUserStatistics().isEmpty());
+        assertTrue(result.getUserRankingPage().isEmpty());
+        assertEquals(0, result.getTotalPages());
     }
 
     @Test
+    @DisplayName("getGlobalStatistics: Deve calcular taxa de sucesso como 0 quando não há simulações")
     void getGlobalStatistics_caminhoDeBorda_comDivisaoPorZero() {
-        // Este teste cobre o 'true' dos operadores ternários, tanto para o usuário quanto para o global.
-
         // Arrange
-        // Usuário existe mas nunca jogou
+        Pageable pageable = PageRequest.of(0, 5);
         User userA = new User(1L, "userA", "pass", 1, 0, 0);
-        when(userRepository.findAll()).thenReturn(List.of(userA));
+        Page<User> userPage = new PageImpl<>(List.of(userA), pageable, 1);
+
+        when(userRepository.findAll(pageable)).thenReturn(userPage);
+        when(userRepository.countTotalSimulations()).thenReturn(0L);
+        when(userRepository.countTotalSuccesses()).thenReturn(0L);
 
         // Act
-        GlobalStatisticsDTO result = statisticsService.getGlobalStatistics();
+        GlobalStatisticsDTO result = statisticsService.getGlobalStatistics(pageable);
 
         // Assert
         assertNotNull(result);
-        assertEquals(0, result.getTotalSimulationsRun());
-        assertEquals(0.0, result.getOverallSuccessRate(), "A taxa geral deveria ser 0 para evitar divisão por zero.");
+        assertEquals(0.0, result.getOverallSuccessRate(), "A taxa geral deveria ser 0.");
 
-        assertEquals(1, result.getUserStatistics().size());
-        UserStatisticsDTO statsA = result.getUserStatistics().get(0);
-        assertEquals(0.0, statsA.getSuccessRate(), "A taxa do usuário deveria ser 0 para evitar divisão por zero.");
+        assertEquals(1, result.getUserRankingPage().size());
+        UserStatisticsDTO statsA = result.getUserRankingPage().get(0);
+        assertEquals(0.0, statsA.getSuccessRate(), "A taxa do usuário deveria ser 0.");
     }
 }

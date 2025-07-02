@@ -16,7 +16,7 @@ export const InfoPanel = ({ horizon, iterationCount }: InfoPanelProps) => {
 
   return (
     <div
-      className="w-full h-full bg-amber-50 flex flex-col gap-4 p-4 border-2 border-black rounded overflow-auto"
+      className="w-full h-full bg-amber-50 flex flex-col gap-4 pb-55 border-2 border-black rounded overflow-auto"
       style={{
         backgroundImage: "url('/images/terra.png')",
         imageRendering: "pixelated",
