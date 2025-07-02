@@ -19,7 +19,7 @@ public interface LoseGold {
     default public double loseGold(double percentage) {
         // Domínio: 0 < percentage <= 1
         // Partições: Invalid [-infinity, 0], Valid (0 < percentage <= 1] e Invalid (1, +infinity]
-        if (percentage <= 0 || percentage > 1 || Double.isInfinite(percentage)) {
+        if (percentage <= 0 || percentage > 1) {
             throw new IllegalArgumentException("Percentual de perda deve estar entre 0 e 1 (exclusivo de 0).");
         }
 
