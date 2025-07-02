@@ -1,143 +1,77 @@
-"use client";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { FeatureSection } from "@/components/home/FeatureSection";
+import Link from "next/link";
+import { GiChessRook, GiCrossedSwords, GiLaurelsTrophy } from "react-icons/gi";
 
-export default function Home() {
-  const [numCriaturas, setNumCriaturas] = useState("10"); // string para controlar input texto
-  const [erro, setErro] = useState("");
-  const router = useRouter();
-
-  const validar = (valor: number) => {
-    if (valor <= 1 || valor > 10) {
-      setErro("Quantidade deve ser entre 2 e 10.");
-      return false;
-    }
-    setErro("");
-    return true;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const valorTexto = e.target.value;
-    if (/^\d*$/.test(valorTexto)) {
-      setNumCriaturas(valorTexto);
-      if (valorTexto === "") {
-        setErro("Quantidade deve ser entre 2 e 10.");
-        return;
-      }
-      validar(Number(valorTexto));
-    }
-  };
-
-  const iniciarSimulacao = () => {
-    const valorNum = Number(numCriaturas);
-    if (!validar(valorNum)) return;
-    router.push(`/simulacao/${valorNum}`);
-  };
-
+export default function HomePage() {
   return (
-    <div
-      className="min-h-screen w-full flex items-end justify-center"
-      style={{
-        backgroundImage: "url('/ceu.png')",
-        backgroundRepeat: "repeat-x",
-        backgroundSize: "cover",
-        imageRendering: "pixelated",
-        position: "relative",
-      }}
-    >
-      {/* Chão com grama */}
-      <div
+    <div className="bg-gray-50 text-gray-800">
+      {/* Seção Hero */}
+      <main
+        className="pt-24 min-h-screen flex items-center justify-center bg-cover bg-center"
         style={{
-          backgroundImage: "url('/grass.png')",
-          backgroundRepeat: "repeat-x",
-          backgroundSize: "contain",
-          height: "100px",
-          width: "100%",
-          position: "absolute",
-          bottom: 0,
-          imageRendering: "pixelated",
-        }}
-      ></div>
-
-      {/* Painel de controle */}
-      <div
-        className="z-10 p-8 w-[90%] max-w-md flex flex-col items-center justify-between"
-        style={{
-          backgroundImage: "url('/painel-madeira.jpg')",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          imageRendering: "pixelated",
-          border: "4px solid #333",
-          borderRadius: "12px",
-          boxShadow: "4px 4px 0px #000",
-          minHeight: "260px",
-          maxWidth: "400px",
-          marginBottom: "40px",
+          backgroundImage: "url('/images/ceu.png')",
         }}
       >
-        <div>
+        <div className="text-center bg-white bg-opacity-80 p-10 rounded-lg shadow-2xl border-4 border-black max-w-2xl mx-4">
           <h1
-            className="text-3xl mb-8 text-center"
-            style={{
-              fontFamily: "'Press Start 2P', cursive",
-              color: "#fff",
-              textShadow: "2px 2px #000",
-            }}
+            className="text-4xl md:text-6xl font-bold mb-4 text-gray-900"
+            style={{ fontFamily: '"Press Start 2P", cursive' }}
           >
             Simulador de Criaturas
           </h1>
-
-          <label
-            htmlFor="numCriaturas"
-            className="block mb-4 text-sm font-bold text-center"
-            style={{ letterSpacing: "0.05em" }}
+          <p className="text-lg md:text-xl mb-8 text-gray-700">
+            Uma aventura estratégica onde apenas o mais astuto sobrevive. Crie
+            sua conta, desafie o horizonte e suba no ranking!
+          </p>
+          <Link
+            href="/register"
+            className="inline-block text-lg px-8 py-4 bg-green-500 text-white border-2 border-black rounded-md hover:bg-green-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all font-bold"
           >
-            Quantas criaturas você quer simular?
-          </label>
-
-          <input
-            id="numCriaturas"
-            type="text"
-            value={numCriaturas}
-            onChange={handleChange}
-            className="w-full mx-auto px-6 py-4 rounded border-2 border-gray-600 bg-black text-white text-center"
-            style={{
-              fontFamily: "'Press Start 2P', cursive",
-              fontSize: "16px",
-              marginBottom: "15px",
-            }}
-            inputMode="numeric"
-            pattern="[0-9]*"
-            maxLength={2}
-          />
-
-          {erro && (
-            <p
-              className="text-black text-x font-bold mb-4 min-h-[20px]"
-              style={{ width: "100%", textAlign: "center" }}
-            >
-              {erro}
-            </p>
-          )}
+            Comece sua Jornada Agora!
+          </Link>
         </div>
+      </main>
 
-        {/* Botão alinhado à direita no final do painel */}
-        <div className="w-full flex justify-center">
-          <button
-            onClick={iniciarSimulacao}
-            disabled={!!erro}
-            className="py-3 px-8 rounded-2xl border-4 border-black font-bold cursor-pointer bg-gradient-to-r from-[#ff7e5f] to-[#feb47b] hover:from-[#feb47b] hover:to-[#ff7e5f] transition duration-300"
-            style={{
-              fontFamily: "'Press Start 2P', cursive",
-              fontSize: "14px",
-              boxShadow: "2px 2px 0px #000",
-              userSelect: "none",
-            }}
-          >
-            Iniciar Simulação
-          </button>
-        </div>
+      {/* Seção 1: O Que é a Simulação? */}
+      <div className="bg-[#a7f3d0]">
+        <FeatureSection
+          Icon={GiCrossedSwords}
+          title="Explore e Conquiste"
+          description="Controle um exército de criaturas em um horizonte dinâmico. A cada turno, suas criaturas saltam pelo mapa, impulsionadas por sua fortuna em ouro. O objetivo é simples: dominar as outras e acumular ainda mais riquezas."
+          imageUrl="/images/feature-explore.png"
+          imageAlt="Criaturas pixel art em um campo verde"
+        />
       </div>
+
+      {/* Seção 2: Clusters e Guardiões (Alternado) */}
+      <div className="bg-[#fef9c3]">
+        <FeatureSection
+          Icon={GiChessRook}
+          title="Alianças e Perigos"
+          description="Quando criaturas se encontram, elas se unem em um poderoso Cluster, somando suas forças. Mas cuidado! O misterioso Guardião do Horizonte vaga pelo mapa, eliminando clusters para absorver seu poder. Apenas os mais fortes sobrevivem."
+          imageUrl="/images/feature-alliances.png"
+          imageAlt="Um cluster de criaturas enfrentando um guardião"
+          reverse={true} // Alterna a ordem
+        />
+      </div>
+
+      {/* Seção 3: Competição e Estatísticas */}
+      <div className="bg-[#dbeafe]">
+        <FeatureSection
+          Icon={GiLaurelsTrophy}
+          title="Suba no Ranking"
+          description="Crie sua conta para competir. Cada simulação bem-sucedida aumenta sua pontuação global. Acompanhe as estatísticas, veja quem são os mestres da simulação e lute para cravar seu nome no topo do ranking da guilda!"
+          imageUrl="/images/feature-ranking.png"
+          imageAlt="Um quadro de líderes no estilo pixel art"
+        />
+      </div>
+
+      <footer className="text-center p-8 bg-gray-800 text-white border-t-4 border-black">
+        <p>
+          &copy; 2025 Simulador de Criaturas. Desenvolvido para a disciplina de
+          Teste de Software.
+        </p>
+      </footer>
     </div>
   );
 }
