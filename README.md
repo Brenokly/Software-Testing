@@ -1,129 +1,145 @@
-# 🪙 **Software-Testing: Simulador de Criaturas Saltitantes**
+````markdown
+# 🪙 Software-Testing: Simulador de Criaturas e Guardiões
 
-## 📜 **Descrição do Projeto**
+## 📜 Descrição do Projeto
 
-O **Software-Testing** é uma aplicação que simula uma corrida de criaturas saltitantes, onde cada criatura se move aleatoriamente no horizonte e rouba moedas das criaturas vizinhas.
+O **Software-Testing** é uma aplicação que simula um ecossistema dinâmico onde criaturas saltitantes competem por recursos, se fundem em clusters mais fortes e interagem com um guardião poderoso.
 
-O objetivo principal é **aplicar e exercitar práticas robustas de teste de software**, incluindo:
+O objetivo principal é **aplicar e exercitar um conjunto completo de práticas de teste de software**, incluindo:
 
-* ✅ **Testes de Domínio**
+* ✅ **Testes de Unidade e Domínio**
 * ✅ **Testes de Fronteira**
-* ✅ **Testes de Cobertura (Linha, Branch, MC/DC)**
-* ✅ **Testes de Mutação**
+* ✅ **Testes Estruturais (Cobertura de Linha, Branch, MC/DC)**
+* ✅ **Testes de Mutação com PITest**
+* ✅ **Testes Baseados em Propriedades e uso de Dublês de Teste (Mocks/Stubs)**
 
 O projeto é composto por:
 
-* 🎯 **Backend:** Desenvolvido em **Java 17** com **Spring Boot**.
-* 🎨 **Frontend:** Desenvolvido em **React + Next.js**, permitindo uma visualização interativa da simulação.
+* 🎯 **Backend:** Desenvolvido em **Java 17** com **Spring Boot**, expondo uma API REST completa.
+* 🎨 **Frontend:** Desenvolvido em **React + Next.js** com **TailwindCSS**, permitindo uma visualização interativa da simulação.
 
 ---
 
-## 🚀 **Regras da Simulação**
+## 🚀 Regras da Simulação
 
-* Existem entre **2 e 10 criaturas**, numeradas de `0` a `n-1`.
-* Cada criatura começa com:
+A simulação envolve **criaturas**, **clusters** e um **guardião**.
 
-  * 🪙 **1.000.000 moedas de ouro** (`gi`).
-  * 📍 Uma **posição inicial no horizonte** (`xi`), número decimal (ponto flutuante).
+* Existem entre **1 e 10 criaturas** iniciais.
+* **Usuários** podem se cadastrar para salvar suas pontuações de simulações bem-sucedidas.
 
-### 🔄 A cada iteração:
+### 🧬 Entidades
 
-1. A criatura calcula um novo ponto no horizonte:
+#### Criaturas
+* Começam com 🪙 **1.000.000 de moedas de ouro** (`gi`).
+* Possuem uma 📍 **posição inicial no horizonte** (`xi`), um número de ponto flutuante.
 
-   ```
-   xi ← xi + r * gi
-   ```
+#### Guardião
+* Uma criatura especial com ID `n+1`.
+* Começa com 🪙 **0 moedas de ouro**.
+* Sua missão é eliminar os clusters e proteger o horizonte.
 
-   * Onde `r` é um valor aleatório no intervalo `[-1, 1]`.
-2. A criatura **rouba metade das moedas da criatura mais próxima** em **um dos lados**.
+#### Clusters
+* São formados quando duas ou mais criaturas (ou clusters) ocupam a mesma posição.
+* O ouro de um cluster é a **soma do ouro** de todas as entidades que o formaram.
+* Atuam como uma única entidade poderosa.
 
-### ⚰️ Eliminação:
+### 🔄 A Cada Iteração
 
-* Se uma criatura tiver menos de **1.0 moeda**, ela:
+1.  **Movimento:** Todas as criaturas, clusters e o guardião calculam uma nova posição:
+    ```
+    xi ← xi + r * gi
+    ```
+    * Onde `r` é um valor aleatório no intervalo `[-1, 1]`.
 
-  * É **eliminada da simulação**.
-  * Move-se da lista de criaturas **ativas** para **inativas**.
+2.  **Interações de Colisão:**
+    * **Criatura + Criatura/Cluster → Fusão:** Se entidades colidem, elas se fundem em um único cluster, somando seus ouros.
+    * **Guardião + Cluster → Absorção:** Se o guardião colide com um cluster, o cluster é **eliminado**, e todo o seu ouro é transferido para o guardião.
 
-### 🏁 Condições de término:
+3.  **Roubo do Vizinho:** Após o movimento e as colisões, cada criatura/cluster restante rouba **metade do ouro** da entidade mais próxima.
 
-* A simulação encerra quando:
+### ⚰️ Eliminação
 
-  * Alguma criatura atinge uma posição `xi >= 10.000.000`.
-  * Ou resta apenas **uma criatura ativa**.
+* Se o ouro de uma criatura ou cluster chegar a **0 ou menos**, a entidade é **eliminada** da simulação.
+
+### 🏁 Condições de Término
+
+A simulação termina quando resta apenas o guardião e no máximo uma outra entidade. O resultado é então decidido:
+
+* 🏆 **Vitória:** A simulação é bem-sucedida se:
+    * Resta apenas o guardião no horizonte.
+    * OU, restam o guardião e uma criatura, e o **ouro do guardião é maior** que o ouro da criatura.
+
+* 💔 **Derrota:** A simulação falha se:
+    * Restam o guardião e uma criatura, mas o **ouro da criatura é maior ou igual** ao ouro do guardião.
 
 ---
 
-## 🔥 **Funcionalidades**
+## 🔥 Funcionalidades
 
-* 🔢 Suporte de **2 a 10 criaturas**.
-* 📊 Relatórios em tempo real de:
-
-  * Posições (`xi`)
-  * Quantidade de ouro (`gi`)
-  * Estado (**ativa** ou **eliminada**)
-* 🌐 Interface gráfica interativa.
-* 📡 API REST para controle total da simulação.
-* 🧪 **Suíte de testes completa:**
-
-  * Testes de domínio.
-  * Testes de fronteira.
-  * **Cobertura MC/DC de 100%.**
-  * Testes de mutação com quase todas as mutações mortas.
+* 🔢 Suporte de **1 a 10 criaturas** iniciais.
+* 뭉 **Fusão de Criaturas:** Entidades colidindo formam clusters mais fortes.
+* 🛡️ **Guardião do Horizonte:** Uma entidade especial com mecânicas únicas de absorção.
+* 👤 **Gestão de Usuários:** Cadastro, login e pontuação individual.
+* 📈 **Painel de Estatísticas:** Acompanhamento de pontuações, médias e quantidade de simulações.
+* 📊 Relatórios em tempo real de posições (`xi`), ouro (`gi`) e estado das entidades.
+* 🌐 Interface gráfica interativa e reativa.
+* 📡 API REST para controle total da simulação e gestão de usuários.
+* 🧪 **Suíte de Testes Abrangente:**
+    * Testes de domínio, fronteira e estruturais.
+    * **Cobertura MC/DC de 100%.**
+    * Testes de mutação para garantir a robustez da suíte.
 
 ---
 
-## 🗺️ **Arquitetura do Projeto**
+## 🗺️ Arquitetura do Projeto
 
-### 🏗️ **Backend**
+### 🏗️ Backend
 
-* **Java 17**
-* **Spring Boot**
-* API REST com os seguintes recursos:
+* **Java 17** e **Spring Boot**.
+* Arquitetura Hexagonal (Portas e Adaptadores).
+* API REST com recursos para:
+    * Controle do ciclo de vida da simulação (iniciar, iterar, resetar).
+    * Gestão de Usuários (CRUD).
+    * Consulta de estatísticas globais e por usuário.
 
-  * Iniciar simulação.
-  * Iterar simulação.
-  * Resetar simulação.
-  * Obter status atual.
-  * Obter criatura atual.
-  * Finalizar a simulação.
+### 🎨 Frontend
 
-### 🎨 **Frontend**
-
-* **React + Next.js**
+* **React + Next.js** e **TailwindCSS**.
 * Interface que permite:
-
-  * Visualizar criaturas na simulação.
-  * Acompanhar a posição no horizonte.
-  * Ver moedas e status (ativo/inativo).
-  * Executar iterações manual ou automaticamente.
-  * Resetar a simulação.
-  * Verificar a criatura vencedora.
+    * Visualizar todas as entidades na simulação.
+    * Acompanhar ouro e posições em tempo real.
+    * Executar iterações manual ou automaticamente.
+    * Registrar-se e fazer login.
+    * Visualizar o placar de estatísticas.
 
 ---
 
-## 🧰 **Dependências**
+## 🧰 Dependências
 
-### ✅ **Backend**
+### ✅ Backend
 
-* **Spring Boot** (`web`, `validation`, `devtools`, `test`)
+* **Spring Boot** (`web`, `validation`, `data-jpa`, `devtools`, `test`)
+* **Spring Security** (para gestão de usuários)
 * **Lombok**
+* **MapStruct** (para mapeamento de DTOs)
+* **JaCoCo** (cobertura de código)
 * **PITest** (teste de mutação)
-* **AssertJ** (via Spring Test)
+* **AssertJ**
 
-### ✅ **Frontend**
+### ✅ Frontend
 
-* **React**
-* **Next.js**
+* **React** & **Next.js**
+* **TypeScript**
 * **TailwindCSS**
 
 ---
 
-## ⚙️ **Requisitos para Executar**
+## ⚙️ Requisitos para Executar
 
-* **Java 17**
-* **Maven 3.9.9**
+* **Java 17+** (Adoptium Temurin é recomendado)
+* **Maven 3.9+**
 * **Node.js 18+**
-* **npm** (acompanha o Node.js)
+* **npm** (geralmente acompanha o Node.js)
 
 ### Verificar instalações:
 
@@ -132,22 +148,16 @@ java -version
 mvn -v
 node -v
 npm -v
-```
+````
 
-### Instalação dos ambientes:
+-----
 
-* [Java](https://adoptium.net/)
-* [Maven](https://maven.apache.org/install.html)
-* [Node.js + npm](https://nodejs.org/)
-
----
-
-## 🚀 **Execução do Projeto**
+## 🚀 Execução do Projeto
 
 ### 1️⃣ Clonar o repositório
 
 ```bash
-git clone https://github.com/Brenokly/Software-Testing.git
+git clone [https://github.com/Brenokly/Software-Testing.git](https://github.com/Brenokly/Software-Testing.git)
 cd Software-Testing
 ```
 
@@ -160,94 +170,80 @@ npm install
 
 ### 3️⃣ Executar backend + frontend juntos
 
-(No diretório raiz do projeto)
+A partir do diretório raiz (`Software-Testing`):
 
 ```bash
-npm start
+mvn spring-boot:run
+```
+
+Em outro terminal, a partir da pasta `frontend`:
+
+```bash
+npm run dev
 ```
 
 Acesse:
 
-* Frontend → [http://localhost:3000](http://localhost:3000)
-* Backend → [http://localhost:8080/api/simulacao](http://localhost:8080/api/simulacao)
+  * **Frontend** → [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000)
+  * **Backend API** → `http://localhost:8080`
 
----
+-----
 
-## 🔗 **API - Endpoints**
+## 🔗 API - Endpoints
 
 Base URL → `http://localhost:8080/api/simulacao`
 
-| Método | Endpoint          | Descrição                                      | Request / Response                               |
-| ------ | ----------------- | ---------------------------------------------- | ------------------------------------------------ |
-| POST   | `/iniciar`        | Inicia simulação com `quantidade` de criaturas | `{ "quantidade": <int> }` → `IterationStatusDTO` |
-| POST   | `/iterar`         | Executa uma iteração                           | → `IterationStatusDTO`                           |
-| POST   | `/resetar`        | Reseta a simulação                             | → `IterationStatusDTO`                           |
-| GET    | `/status`         | Consulta status atual da simulação             | → `IterationStatusDTO`                           |
-| GET    | `/criatura-atual` | Retorna o ID da criatura atual                 | → `int`                                          |
-| GET    | `/finalizar`      | Finaliza a simulação manualmente               | → `IterationStatusDTO`                           |
+| Método | Endpoint     | Descrição                                    | Corpo da Requisição (se houver)     |
+| :----- | :----------- | :------------------------------------------- | :---------------------------------- |
+| POST   | `/iniciar`   | Inicia simulação com `numeroDeCriaturas`       | `{ "numeroDeCriaturas": <int> }`      |
+| POST   | `/iterar`    | Executa a próxima iteração da simulação ativa | `{ DTO do Horizonte atual }`          |
+| POST   | `/resetar`   | Reseta a simulação para o estado inicial     | -                                   |
+| GET    | `/status`    | Consulta o estado atual da simulação         | -                                   |
 
----
+*Observação: Endpoints adicionais para gestão de usuários (`/api/usuarios`) e estatísticas (`/api/estatisticas`) também foram implementados.*
 
-## 🧪 **Suíte de Testes — Abrangente e Completa ✅**
+-----
 
-### ✔️ **Testes de Domínio**
+## 🧪 Executando a Suíte de Testes
 
-* Avaliam comportamento com entradas dentro dos limites esperados.
+Todos os comandos devem ser executados a partir da pasta `backend`.
 
-### ✔️ **Testes de Fronteira**
+### ✔️ Testes Unitários e de Integração
 
-* Avaliam limites:
-
-  * Mínimo → 2 criaturas.
-  * Máximo → 10 criaturas.
-  * E também entradas inválidas (ex.: 1 ou 11 criaturas).
-
-### ✔️ **Cobertura de Código**
-
-* **Linha:** 100%
-* **Branch:** 100%
-* **MC/DC:** 100%
-
-### ✔️ **Testes de Mutação**
-
-* **PITest** garante que os testes detectem alterações sutis e potenciais erros.
-
----
-
-## 🧠 **Executar Teste de Mutação**
-
-1️⃣ No terminal, na raiz do projeto:
+Este comando roda todos os testes (unidade e integração) e valida as regras de cobertura do JaCoCo.
 
 ```bash
-mvn org.pitest:pitest-maven:mutationCoverage
+mvn clean verify
 ```
 
-2️⃣ Acesse o relatório:
+### ✔️ Testes de Mutação (PITest)
 
+Este comando executa a suíte completa e, em seguida, roda a análise de mutação.
+
+```bash
+mvn clean verify pitest:mutationCoverage
 ```
-/target/pit-reports/YYYYMMDDHHMM/index.html
-```
 
-### 🔍 Interpretação:
+Acesse o relatório gerado em:
+`backend/target/pit-reports/YYYYMMDDHHMM/index.html`
 
-| Status | Significado                                                 |
-| ------ | ----------------------------------------------------------- |
-| 🟩     | **Killed** — Testes capturaram a mutação                    |
-| 🔴     | **Survived** — Mutação sobreviveu (possível falha na suite) |
-| ⚪      | **No Coverage** — Código não coberto (não ocorre aqui)      |
-| ⚠️     | **Timeout / Run Error** — Erro na execução                  |
+| Status   | Significado                                            |
+| :------- | :----------------------------------------------------- |
+| 🟩 **Killed** | Perfeito\! Seus testes detectaram e "mataram" a mutação.   |
+| 🔴 **Survived** | Atenção\! A mutação sobreviveu. Seus testes precisam ser melhorados. |
 
----
+-----
 
-## ▶️ **Exemplos de Uso via API**
+## ▶️ Exemplos de Uso via API
 
 1️⃣ **Iniciar simulação com 5 criaturas**
 
 ```http
 POST /api/simulacao/iniciar
-Body:
+Content-Type: application/json
+
 {
-  "quantidade": 5
+  "numeroDeCriaturas": 5
 }
 ```
 
@@ -255,24 +251,23 @@ Body:
 
 ```http
 POST /api/simulacao/iterar
+Content-Type: application/json
+
+// Body contém o estado atual do 'Horizonte' retornado pela chamada anterior
+{
+  "entities": [...],
+  "guardiao": {...},
+  "status": "RUNNING"
+}
 ```
 
-3️⃣ **Obter status**
+-----
 
-```http
-GET /api/simulacao/status
+## 🏅 Autor
+
+  * **Breno Kly** – [GitHub](https://github.com/Brenokly)
+
+<!-- end list -->
+
 ```
-
-4️⃣ **Resetar simulação**
-
-```http
-POST /api/simulacao/resetar
 ```
-
----
-
-## 🏅 **Autor**
-
-* **Breno Kly** – [GitHub](https://github.com/Brenokly)
-
----
