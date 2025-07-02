@@ -197,8 +197,6 @@ Base URL → `http://localhost:8080/api/simulacao`
 | :----- | :----------- | :------------------------------------------- | :---------------------------------- |
 | POST   | `/iniciar`   | Inicia simulação com `numeroDeCriaturas`       | `{ "numeroDeCriaturas": <int> }`      |
 | POST   | `/iterar`    | Executa a próxima iteração da simulação ativa | `{ DTO do Horizonte atual }`          |
-| POST   | `/resetar`   | Reseta a simulação para o estado inicial     | -                                   |
-| GET    | `/status`    | Consulta o estado atual da simulação         | -                                   |
 
 *Observação: Endpoints adicionais para gestão de usuários (`/api/usuarios`) e estatísticas (`/api/estatisticas`) também foram implementados.*
 
