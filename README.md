@@ -191,14 +191,42 @@ Acesse:
 
 ## 🔗 API - Endpoints
 
-Base URL → `http://localhost:8080/api/simulacao`
+### 🌌 Simulação
 
-| Método | Endpoint     | Descrição                                    | Corpo da Requisição (se houver)     |
-| :----- | :----------- | :------------------------------------------- | :---------------------------------- |
-| POST   | `/iniciar`   | Inicia simulação com `numeroDeCriaturas`       | `{ "numeroDeCriaturas": <int> }`      |
-| POST   | `/iterar`    | Executa a próxima iteração da simulação ativa | `{ DTO do Horizonte atual }`          |
+Base URL: `http://localhost:8080/api/simulacao`
 
-*Observação: Endpoints adicionais para gestão de usuários (`/api/usuarios`) e estatísticas (`/api/estatisticas`) também foram implementados.*
+| Método | Endpoint                  | Descrição                                                       | Corpo da Requisição                          |
+|--------|---------------------------|------------------------------------------------------------------|----------------------------------------------|
+| POST   | `/iniciar`                | Inicia uma nova simulação com N criaturas                        | `?numeroDeCriaturas=<1-10>` (query param)    |
+| POST   | `/iterar`                 | Executa uma única iteração da simulação ativa                    | JSON com o `HorizonDTO` atual                |
+| POST   | `/executar-completa`      | Executa a simulação do início ao fim para o usuário autenticado | `?numeroDeCriaturas=<1-10>` (query param)    |
+
+---
+
+### 📊 Estatísticas
+
+Base URL: `http://localhost:8080/api/statistics`
+
+| Método | Endpoint   | Descrição                                 | Parâmetros                                |
+|--------|------------|--------------------------------------------|-------------------------------------------|
+| GET    | `/`        | Retorna as estatísticas globais da simulação | `page`, `size`, `sort` (paginação padrão) |
+
+---
+
+### 👤 Usuários
+
+Base URL: `http://localhost:8080/api/users`
+
+| Método | Endpoint       | Descrição                            | Corpo da Requisição                        |
+|--------|----------------|---------------------------------------|--------------------------------------------|
+| POST   | `/register`    | Cadastra um novo usuário              | `{ "login", "password", "avatarId" }`      |
+| POST   | `/login`       | Realiza login e retorna token + dados | `{ "login", "password" }`                  |
+| DELETE | `/{id}`        | Deleta um usuário (autenticado)       | Nenhum (usa `id` na URL + `Principal`)     |
+
+---
+
+> 🔒 **Todos os endpoints são protegidos por autenticação JWT.**  
+> Para acessá-los, você deve incluir o token no header `Authorization: Bearer <token>` após o login.
 
 -----
 
@@ -264,8 +292,3 @@ Content-Type: application/json
 ## 🏅 Autor
 
   * **Breno Kly** – [GitHub](https://github.com/Brenokly)
-
-<!-- end list -->
-
-```
-```
