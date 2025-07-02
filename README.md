@@ -1,4 +1,3 @@
-````markdown
 # 🪙 Software-Testing: Simulador de Criaturas e Guardiões
 
 ## 📜 Descrição do Projeto
