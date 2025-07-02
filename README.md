@@ -35,7 +35,7 @@ A simulação envolve **criaturas**, **clusters** e um **guardião**.
 #### Guardião
 * Uma criatura especial com ID `n+1`.
 * Começa com 🪙 **0 moedas de ouro**.
-* E com o X == 5_000000.0.
+* E com o **X == 5_000000.0**.
 * Sua missão é eliminar os clusters e proteger o horizonte.
 
 #### Clusters
