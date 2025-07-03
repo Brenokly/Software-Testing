@@ -35,12 +35,11 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // O AuthenticationProvider diz ao Spring como obter os usuários e verificar as senhas
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService); // Usa nosso serviço customizado
-        authProvider.setPasswordEncoder(passwordEncoder());   // Usa nosso codificador de senhas
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
 
@@ -52,37 +51,33 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Permite requisições do seu frontend em desenvolvimento
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-        // Permite os métodos HTTP mais comuns
+
+        // Lista de origens permitidas para acessar sua API
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "https://software-testing-one.vercel.app"
+        ));
+
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        // Permite todos os cabeçalhos (incluindo Authorization)
         configuration.setAllowedHeaders(List.of("*"));
-        // Permite o envio de credenciais (cookies, tokens)
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", configuration); // Aplica a configuração a todos os endpoints /api/**
+        source.registerCorsConfiguration("/api/**", configuration);
         return source;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Aplica a configuração de CORS que definimos acima
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                // Desabilita CSRF, que não é necessário para APIs REST com token
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                // Permite acesso público aos endpoints de registro e login
                 .requestMatchers("/api/users/register", "/api/users/login").permitAll()
-                // Exige autenticação para qualquer outra requisição
                 .anyRequest().authenticated()
                 )
-                // Define a política de sessão como STATELESS, pois usamos JWT
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
-                // Adiciona nosso filtro JWT para ser executado antes do filtro padrão
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
