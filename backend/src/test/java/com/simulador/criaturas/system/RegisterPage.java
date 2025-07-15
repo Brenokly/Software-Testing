@@ -9,15 +9,15 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class RegisterPage {
 
-    private WebDriver driver;
-    private String pageUrl = "http://localhost:3000/register";
+    private final WebDriver driver;
+    private final String pageUrl = "http://localhost:3000/register";
 
-    private By loginInput = By.name("login");
-    private By passwordInput = By.name("password");
-    private By confirmPasswordInput = By.name("confirmPassword");
-    private By registerButton = By.xpath("//button[text()='Juntar-se à Guilda']");
+    private final By loginInput = By.name("login");
+    private final By passwordInput = By.name("password");
+    private final By confirmPasswordInput = By.name("confirmPassword");
+    private final By registerButton = By.xpath("//button[text()='Juntar-se à Guilda']");
 
-    private By successMessage = By.xpath("//p[contains(text(), 'Conta criada com sucesso!')]");
+    private final By successMessage = By.xpath("//p[contains(text(), 'Conta criada com sucesso!')]");
 
     public RegisterPage(WebDriver driver) {
         this.driver = driver;

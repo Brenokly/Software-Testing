@@ -9,11 +9,11 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class SimulationSetupPage {
 
-    private WebDriver driver;
+    private final WebDriver driver;
 
     // Localizadores baseados no seu código React
-    private By creatureCountInput = By.cssSelector("input[type='number']");
-    private By startButton = By.xpath("//button[text()='Iniciar Batalha!']");
+    private final By creatureCountInput = By.cssSelector("input[type='number']");
+    private final By startButton = By.xpath("//button[text()='Iniciar Batalha!']");
 
     public SimulationSetupPage(WebDriver driver) {
         this.driver = driver;

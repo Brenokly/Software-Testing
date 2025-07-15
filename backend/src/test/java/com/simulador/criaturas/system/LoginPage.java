@@ -9,12 +9,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class LoginPage {
 
-    private WebDriver driver;
-    private String pageUrlFragment = "/login";
+    private final WebDriver driver;
+    private final String pageUrlFragment = "/login";
 
-    private By loginInput = By.name("login");
-    private By passwordInput = By.name("password");
-    private By loginButton = By.xpath("//button[text()='Entrar na Guilda']");
+    private final By loginInput = By.name("login");
+    private final By passwordInput = By.name("password");
+    private final By loginButton = By.xpath("//button[text()='Entrar na Guilda']");
 
     public LoginPage(WebDriver driver) {
         this.driver = driver;
