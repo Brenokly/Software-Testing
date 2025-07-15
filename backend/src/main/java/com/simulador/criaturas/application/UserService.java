@@ -54,7 +54,6 @@ public class UserService implements UserUseCase {
      */
     @Override
     public Optional<User> authenticateUser(String login, String password) {
-        // É uma boa prática manter a validação aqui também.
         if (!StringUtils.hasText(login) || !StringUtils.hasText(password)) {
             return Optional.empty(); // Retorna vazio se a entrada for inválida.
         }
@@ -121,7 +120,7 @@ public class UserService implements UserUseCase {
      * @throws IllegalArgumentException Se o ID for nulo ou se nenhum usuário
      * for encontrado com o ID fornecido.
      */
-    private User findUserByIdOrThrow(Long userId) {
+    public User findUserByIdOrThrow(Long userId) {
         if (userId == null) {
             throw new IllegalArgumentException("O ID do usuário não pode ser nulo.");
         }

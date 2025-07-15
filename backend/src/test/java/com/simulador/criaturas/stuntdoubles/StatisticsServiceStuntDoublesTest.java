@@ -34,45 +34,36 @@ public class StatisticsServiceStuntDoublesTest {
 
     @Test
     @DisplayName("getGlobalStatistics: Deve retornar dados paginados e estatísticas globais corretamente")
-    void getGlobalStatistics_caminhoPrincipal_comDadosValidos() {
-        // Arrange
-        Pageable pageable = PageRequest.of(0, 5); // Simula a requisição da página 0 com 5 itens
+    void getGlobalStatistics_shouldReturnPagedDataAndGlobalStatsCorrectly() {
+        Pageable pageable = PageRequest.of(0, 5);
         User userA = new User(1L, "userA", "pass", 1, 10, 20);
         User userB = new User(2L, "userB", "pass", 1, 3, 5);
         List<User> userList = List.of(userA, userB);
 
-        // Cria um objeto Page para simular o retorno do repositório
         Page<User> userPage = new PageImpl<>(userList, pageable, userList.size());
 
-        // "Treina" os mocks
         when(userRepository.findAll(pageable)).thenReturn(userPage);
         when(userRepository.countTotalSimulations()).thenReturn(25L);
         when(userRepository.countTotalSuccesses()).thenReturn(13L);
 
-        // Act
         GlobalStatisticsDTO result = statisticsService.getGlobalStatistics(pageable);
 
-        // Assert
         assertNotNull(result);
 
-        // Verifica as estatísticas globais
         assertEquals(25, result.getTotalSimulationsRun());
         assertEquals(0.52, result.getOverallSuccessRate());
 
-        // Verifica os dados de paginação
         assertEquals(0, result.getCurrentPage());
         assertEquals(1, result.getTotalPages());
         assertEquals(2, result.getTotalUsers());
 
-        // Verifica o conteúdo da página
         assertEquals(2, result.getUserRankingPage().size());
         assertEquals("userA", result.getUserRankingPage().get(0).getLogin());
     }
 
     @Test
     @DisplayName("getGlobalStatistics: Deve retornar estado vazio quando não há usuários")
-    void getGlobalStatistics_caminhoDeBorda_quandoNaoHaUsuarios() {
-        // Arrange
+    void getGlobalStatistics_shouldReturnEmptyState_whenNoUsersExist() {
         Pageable pageable = PageRequest.of(0, 5);
         Page<User> emptyPage = Page.empty(pageable);
 
@@ -80,10 +71,8 @@ public class StatisticsServiceStuntDoublesTest {
         when(userRepository.countTotalSimulations()).thenReturn(0L);
         when(userRepository.countTotalSuccesses()).thenReturn(0L);
 
-        // Act
         GlobalStatisticsDTO result = statisticsService.getGlobalStatistics(pageable);
 
-        // Assert
         assertNotNull(result);
         assertEquals(0, result.getTotalSimulationsRun());
         assertEquals(0.0, result.getOverallSuccessRate());
@@ -93,8 +82,7 @@ public class StatisticsServiceStuntDoublesTest {
 
     @Test
     @DisplayName("getGlobalStatistics: Deve calcular taxa de sucesso como 0 quando não há simulações")
-    void getGlobalStatistics_caminhoDeBorda_comDivisaoPorZero() {
-        // Arrange
+    void getGlobalStatistics_shouldHandleDivisionByZero_whenNoSimulations() {
         Pageable pageable = PageRequest.of(0, 5);
         User userA = new User(1L, "userA", "pass", 1, 0, 0);
         Page<User> userPage = new PageImpl<>(List.of(userA), pageable, 1);
@@ -103,15 +91,13 @@ public class StatisticsServiceStuntDoublesTest {
         when(userRepository.countTotalSimulations()).thenReturn(0L);
         when(userRepository.countTotalSuccesses()).thenReturn(0L);
 
-        // Act
         GlobalStatisticsDTO result = statisticsService.getGlobalStatistics(pageable);
 
-        // Assert
         assertNotNull(result);
-        assertEquals(0.0, result.getOverallSuccessRate(), "A taxa geral deveria ser 0.");
+        assertEquals(0.0, result.getOverallSuccessRate());
 
         assertEquals(1, result.getUserRankingPage().size());
         UserStatisticsDTO statsA = result.getUserRankingPage().get(0);
-        assertEquals(0.0, statsA.getSuccessRate(), "A taxa do usuário deveria ser 0.");
+        assertEquals(0.0, statsA.getSuccessRate());
     }
 }

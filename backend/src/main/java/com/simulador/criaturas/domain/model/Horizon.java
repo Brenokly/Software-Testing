@@ -107,4 +107,38 @@ public class Horizon {
                 .filter(e -> e.getX() == position)
                 .toList();
     }
+
+    /**
+     * Retorna uma lista de todas as entidades que estão dentro de uma
+     * determinada faixa de uma posição central.
+     *
+     * @param centerPosition A posição central da busca.
+     * @param range A distância máxima do centro para ser considerado "dentro da
+     * faixa".
+     * @return Uma lista de entidades que atendem ao critério.
+     * @pre centerPosition e range devem ser números positivos válidos.
+     * @post A lista retornada contém todas as entidades cuja posição X está
+     * dentro da faixa definida por centerPosition ± range.
+     * @throws IllegalArgumentException se centerPosition for NaN, infinito ou
+     * se range for negativo.
+     */
+    public List<HorizonEntities> getEntitiesWithinRange(double centerPosition, double range) {
+        if (Double.isNaN(centerPosition) || Double.isInfinite(centerPosition) || centerPosition < 0) {
+            throw new IllegalArgumentException("A posição central não pode ser NaN, Infinita ou negativa.");
+        }
+
+        if (Double.isNaN(range) || Double.isInfinite(range) || range < 0) {
+            throw new IllegalArgumentException("A faixa deve ser um número positivo válido.");
+        }
+
+        List<HorizonEntities> foundEntities = new ArrayList<>();
+        // Inclui a busca na lista principal de entidades
+        for (HorizonEntities entity : this.getEntities()) {
+            if (Math.abs(entity.getX() - centerPosition) <= range) {
+                foundEntities.add(entity);
+            }
+        }
+
+        return foundEntities;
+    }
 }

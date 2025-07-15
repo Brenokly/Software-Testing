@@ -15,109 +15,81 @@ import net.jqwik.api.constraints.Positive;
 
 public class UserPropertyTest {
 
-    // --- PROPRIEDADES PARA incrementScore E incrementSimulationsRun ---
     @Property
-    void incrementScoreSempreAdicionaUm(
-            // Gera qualquer inteiro não-negativo para ser a pontuação inicial
+    void incrementScore_shouldAlwaysAddOne(
             @ForAll @PositiveOrZero int initialScore
     ) {
-        // Arrange
         User user = new User();
         user.setPontuation(initialScore);
 
-        // Act
         user.incrementScore();
 
-        // Assert
-        // A propriedade é que o resultado é sempre o inicial + 1.
         assertEquals(initialScore + 1, user.getPontuation());
     }
 
     @Property
-    void incrementSimulationsRunSempreAdicionaUm(
+    void incrementSimulationsRun_shouldAlwaysAddOne(
             @ForAll @PositiveOrZero int initialRuns
     ) {
-        // Arrange
         User user = new User();
         user.setSimulationsRun(initialRuns);
 
-        // Act
         user.incrementSimulationsRun();
 
-        // Assert
-        // A propriedade é que o resultado é sempre o inicial + 1.
         assertEquals(initialRuns + 1, user.getSimulationsRun());
     }
 
-    // --- PROPRIEDADES PARA changeAvatar ---
     @Property
-    void changeAvatarDeveAtualizarParaIdValido(
+    void changeAvatar_shouldUpdate_forValidId(
             @ForAll @Positive int validAvatarId
     ) {
-        // Arrange
         User user = new User();
-        user.setAvatarId(999); // Um valor inicial diferente
+        user.setAvatarId(999);
 
-        // Act
         user.changeAvatar(validAvatarId);
 
-        // Assert
         assertEquals(validAvatarId, user.getAvatarId());
     }
 
     @Property
-    void changeAvatarDeveIgnorarIdInvalido(
+    void changeAvatar_shouldIgnore_forInvalidId(
             @ForAll @Negative int invalidAvatarId
     ) {
-        // Arrange
         User user = new User();
         int initialAvatarId = 999;
         user.setAvatarId(initialAvatarId);
 
-        // Act
         user.changeAvatar(invalidAvatarId);
 
-        assertEquals(initialAvatarId, user.getAvatarId(), "O avatarId não deveria ter mudado para um valor negativo.");
+        assertEquals(initialAvatarId, user.getAvatarId());
     }
 
-    // --- PROPRIEDADES PARA getAverageSuccessRate ---
     @Property
-    void averageSuccessRateEstaSempreEntreZeroEUm(
+    void getAverageSuccessRate_shouldAlwaysBeBetweenZeroAndOne(
             @ForAll @IntRange(min = 0, max = 10000) int pontuation,
             @ForAll @IntRange(min = 0, max = 10000) int simulationsRun
     ) {
-        // Pré-condição: A pontuação nunca pode ser maior que o número de simulações.
-        // Assume.that() diz ao jqwik para pular as tentativas que não cumprem esta regra.
         Assume.that(pontuation <= simulationsRun);
 
-        // Arrange
         User user = new User();
         user.setPontuation(pontuation);
         user.setSimulationsRun(simulationsRun);
 
-        // Act
         double rate = user.getAverageSuccessRate();
 
-        // Assert
-        // A propriedade (invariante) é que a taxa é sempre um percentual válido.
-        assertTrue(rate >= 0.0 && rate <= 1.0, "A taxa de sucesso saiu do intervalo [0, 1]: " + rate);
+        assertTrue(rate >= 0.0 && rate <= 1.0);
     }
 
     @Property
-    void averageSuccessRateEZeroQuandoNaoHaSimulacoes(
-            // Gera qualquer pontuação para provar que ela não importa neste caso
+    void getAverageSuccessRate_shouldBeZero_whenNoSimulationsRun(
             @ForAll @PositiveOrZero int pontuation
     ) {
-        // Arrange
         User user = new User();
         user.setPontuation(pontuation);
-        user.setSimulationsRun(0); // Força a condição de fronteira
+        user.setSimulationsRun(0);
 
-        // Act
         double rate = user.getAverageSuccessRate();
 
-        // Assert
-        // A propriedade é que o resultado é sempre 0.0 para evitar divisão por zero.
         assertEquals(0.0, rate);
     }
 }

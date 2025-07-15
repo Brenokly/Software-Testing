@@ -86,9 +86,8 @@ public class SimulacaoService implements SimulacaoUseCase {
             contador++;
         }
 
-        if (horizonte.getStatus() != SimulationStatus.RUNNING) {
-            updateUserStatsAfterSimulation(userId, horizonte.getStatus() == SimulationStatus.SUCCESSFUL);
-        }
+        // Atualiza as estatísticas do usuário após o término da simulação.
+        updateUserStatsAfterSimulation(userId, horizonte.getStatus() == SimulationStatus.SUCCESSFUL);
 
         return horizonte;
     }
@@ -102,7 +101,6 @@ public class SimulacaoService implements SimulacaoUseCase {
      * caso contrário.
      */
     private void updateUserStatsAfterSimulation(Long userId, boolean wasSuccessful) {
-        // Assumimos que os métodos de userUseCase também validam o userId e
         // lançam exceção se o usuário não for encontrado.
         userUseCase.incrementSimulationsRun(userId);
         if (wasSuccessful) {

@@ -17,7 +17,8 @@ public interface Move {
      * @throws IllegalArgumentException se randomR estiver fora do intervalo
      * [-1, 1] ou se randomR for NaN ou infinito.
      * @pre -1 <= randomR <= 1.
-     * @post X será atualizado com X + (randomR * Gold).
+     * @post X será atualizado com X + (randomR * Gold). O novo X não pode ser
+     * negativo. Se o cálculo resultar em um X negativo, X será ajustado para 0.
      */
     default public void move(double randomR) {
         // Domínio: -1 <= randomR <= 1, Fronteira: -1 <= randomR <= 1
@@ -30,6 +31,12 @@ public interface Move {
         double currentX = getX();
         double currentGold = getGold();
         double newX = currentX + (randomR * currentGold);
+
+        // Garantindo que newX não seja negativo
+        if (newX < 0) {
+            newX = 0;
+        }
+
         setX(newX);
     }
 }

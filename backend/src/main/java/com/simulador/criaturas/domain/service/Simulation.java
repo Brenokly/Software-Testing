@@ -18,6 +18,7 @@ import com.simulador.criaturas.utils.SimulationStatus;
 public class Simulation {
 
     private final RandomPort randomPort;
+    private static final double COLLISION_RANGE = 0.5;
 
     /**
      * Constrói uma nova instância do serviço de simulação.
@@ -59,6 +60,15 @@ public class Simulation {
         return horizon;
     }
 
+    /**
+     * Executa uma iteração da simulação, processando as entidades no horizonte.
+     *
+     * @param horizonte O estado atual do horizonte.
+     * @return O horizonte atualizado após a iteração.
+     * @pre O horizonte não pode ser nulo.
+     * @post O horizonte é atualizado com o resultado da iteração.
+     * @throws IllegalArgumentException Se o horizonte for nulo.
+     */
     public Horizon runIteration(Horizon horizonte) {
         if (horizonte == null) {
             throw new IllegalArgumentException("Horizon não pode ser nulo.");
@@ -75,12 +85,6 @@ public class Simulation {
                 }
                 if (entity instanceof Move movel) {
                     movel.move(randomPort.nextFactor());
-
-                    // ===================================================================
-                    // Arredondo a posição para o inteiro mais próximo para facilitar colisões.
-                    // ===================================================================
-                    long roundedX = Math.round(movel.getX());
-                    movel.setX(roundedX);
                 }
 
                 HorizonEntities survivor = resolveInteractionsAt(horizonte, entity.getX());
@@ -93,22 +97,10 @@ public class Simulation {
 
         Guardian guardiao = horizonte.getGuardiao();
         if (guardiao != null) {
-            if (guardiao instanceof Move) {
-                guardiao.move(randomPort.nextFactor());
+            guardiao.move(randomPort.nextFactor());
 
-                // CORREÇÃO 1 (APLICADA AO GUARDIÃO TAMBÉM)
-                long roundedX = Math.round(guardiao.getX());
-                guardiao.setX(roundedX);
-            }
             resolveInteractionsAt(horizonte, guardiao.getX());
         }
-
-        // ===================================================================
-        // Removo todas as entidades (que não são o Guardião) com ouro <= 0.
-        // ===================================================================
-        horizonte.setEntities(horizonte.getEntities().stream()
-                .filter(e -> e.getGold() >= 1.0)
-                .toList());
 
         SimulationStatus novoStatus = getStatus(horizonte);
         horizonte.setStatus(novoStatus);
@@ -125,7 +117,6 @@ public class Simulation {
      * @post Nenhuma modificação é feita no horizonte. Um status é retornado com
      * base nas suas propriedades.
      */
-    // Versão Segura
     public SimulationStatus getStatus(Horizon horizonte) {
         if (horizonte == null) {
             throw new IllegalArgumentException("Horizon não pode ser nulo.");
@@ -226,59 +217,59 @@ public class Simulation {
 
     /**
      * Resolve todas as interações (colisões, fusões) que ocorrem em uma
-     * posição.
+     * posição. A "posição" aqui é o centro de uma busca por faixa.
      *
      * @param horizonte O contexto da simulação.
-     * @param position A coordenada no eixo X onde as interações devem ser
-     * resolvidas.
+     * @param centerPosition A coordenada central para verificar colisões.
      * @return A entidade sobrevivente que permanece na posição após as
      * interações.
      * @throws IllegalArgumentException Se horizonte for nulo ou a posição for
      * inválida.
-     * @pre 'horizonte' não pode ser nulo e 'position' deve ser um número
+     * @pre 'horizonte' não pode ser nulo e 'centerPosition' deve ser um número
      * finito.
      * @post Entidades na posição são fundidas ou removidas. A entidade
      * sobrevivente (se houver) é retornada.
      */
-    public HorizonEntities resolveInteractionsAt(Horizon horizonte, double position) {
-        if (horizonte == null || Double.isNaN(position) || Double.isInfinite(position)) {
+    public HorizonEntities resolveInteractionsAt(Horizon horizonte, double centerPosition) {
+        if (horizonte == null || Double.isNaN(centerPosition) || Double.isInfinite(centerPosition)) {
             throw new IllegalArgumentException("Horizon não pode ser nulo e a posição deve ser um número válido.");
         }
 
-        List<HorizonEntities> entitiesAtPosition = horizonte.getEntitiesInPosition(position);
-
-        List<CreatureCluster> creatureClusters = entitiesAtPosition.stream()
-                .filter(e -> e instanceof CreatureCluster)
-                .map(e -> (CreatureCluster) e)
-                .toList();
+        List<HorizonEntities> entitiesInRange = horizonte.getEntitiesWithinRange(centerPosition, COLLISION_RANGE);
 
         Guardian guardiao = horizonte.getGuardiao();
-        boolean guardianIsAtPosition = (guardiao != null && guardiao.getX() == position);
+
+        // Verifica se o guardião está envolvido na colisão
+        boolean guardianIsInvolved = (guardiao != null && Math.abs(guardiao.getX() - centerPosition) <= COLLISION_RANGE);
 
         // --- REGRA DE PRIORIDADE 1: INTERAÇÃO COM O GUARDIÃO ---
-        if (guardianIsAtPosition && !creatureClusters.isEmpty()) {
-            // Encontra qualquer cluster na mesma posição do guardião
-            CreatureCluster clusterVictim = creatureClusters.get(0);
+        if (guardianIsInvolved) {
+            CreatureCluster clusterVictim = entitiesInRange.stream()
+                    .filter(e -> e instanceof CreatureCluster)
+                    .map(e -> (CreatureCluster) e)
+                    .findFirst()
+                    .orElse(null);
 
-            ((StealGold) guardiao).stealGold(clusterVictim.getGold());
-            horizonte.removeEntity(clusterVictim);
-            return guardiao;
+            if (clusterVictim != null) {
+                ((StealGold) guardiao).stealGold(clusterVictim.getGold());
+                horizonte.removeEntity(clusterVictim);
+                return guardiao;
+            }
         }
 
         // --- REGRA DE PRIORIDADE 2: Houve colisão?
-        if (entitiesAtPosition.size() <= 1) {
-            // Se não houver colisão, não há nada a fazer.
-            return entitiesAtPosition.isEmpty() ? null : entitiesAtPosition.get(0);
+        if (entitiesInRange.size() <= 1) {
+            return entitiesInRange.isEmpty() ? null : entitiesInRange.get(0);
         }
 
         // --- REGRA DE PRIORIDADE 3: FUSÃO DE CLUSTERS OU CRIATURAS ---
-        Fusion baseFusion = entitiesAtPosition.stream()
+        Fusion baseFusion = entitiesInRange.stream()
                 .filter(c -> c instanceof Fusion)
                 .map(c -> (Fusion) c)
                 .findFirst().orElse(null);
 
-        if (baseFusion != null) { // Caso 1: Entre as entidades há um cluster
-            List<HorizonEntities> toBeAbsorbed = entitiesAtPosition.stream()
+        if (baseFusion != null) { // Caso 1: Já existe um cluster na colisão
+            List<HorizonEntities> toBeAbsorbed = entitiesInRange.stream()
                     .filter(c -> c != baseFusion).toList();
             for (HorizonEntities victim : toBeAbsorbed) {
                 baseFusion.fusion(victim);
@@ -286,15 +277,15 @@ public class Simulation {
             horizonte.removeEntities(toBeAbsorbed);
             return (HorizonEntities) baseFusion;
 
-        } else { // Caso 2: Entre as entidades há apenas criaturas individuais
-            HorizonEntities baseCreature = entitiesAtPosition.get(0);
+        } else { // Caso 2: Só há criaturas individuais na colisão
+            HorizonEntities baseCreature = entitiesInRange.get(0);
             CreatureCluster novoCluster = new CreatureCluster(baseCreature.getId(), baseCreature.getX(), baseCreature.getGold());
-            List<HorizonEntities> toBeAbsorbed = entitiesAtPosition.subList(1, entitiesAtPosition.size());
+            List<HorizonEntities> toBeAbsorbed = entitiesInRange.subList(1, entitiesInRange.size());
 
             for (HorizonEntities victim : toBeAbsorbed) {
                 novoCluster.fusion(victim);
             }
-            horizonte.removeEntities(entitiesAtPosition);
+            horizonte.removeEntities(entitiesInRange);
             horizonte.addEntity(novoCluster);
             return novoCluster;
         }

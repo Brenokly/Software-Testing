@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import com.simulador.criaturas.domain.model.CreatureUnit;
 
 @DisplayName("Testes Estruturais (MC/DC) para os comportamentos de CreatureUnit")
-public class CreatureUnitTestS {
+public class CreatureUnitStructuralTest {
 
     private CreatureUnit creature;
 
@@ -20,13 +20,9 @@ public class CreatureUnitTestS {
         creature.setGold(1000.0);
     }
 
-    // --- TESTES ESTRUTURAIS PARA O MÉTODO move(randomR) ---
-    // Decisão: if (Double.isNaN(randomR) || randomR < -1 || randomR > 1)
-    // Condições: C1: isNaN, C2: < -1, C3: > 1
     @Test
     @DisplayName("move: Cobre o caminho principal (else) onde o movimento ocorre")
-    void move_caminhoPrincipal_quandoFatorEValido() {
-        // Este teste força C1=false, C2=false, C3=false. A decisão do 'if' é FALSA.
+    void move_shouldFollowHappyPath_whenFactorIsValid() {
         creature.setX(100);
         creature.move(0.5);
         assertEquals(600.0, creature.getX());
@@ -34,102 +30,82 @@ public class CreatureUnitTestS {
 
     @Test
     @DisplayName("move: Cobre o caminho da exceção, isolando a condição isNaN (C1)")
-    void move_caminhoDeExcecao_quandoFatorIsNaN() {
-        // Este teste força C1=true. A decisão do 'if' é VERDADEIRA.
-        // Par com o teste acima para MC/DC da condição C1.
+    void move_shouldFollowExceptionPath_whenFactorIsNaN() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> creature.move(Double.NaN));
         assertEquals("Valor aleatório deve estar entre -1 e 1.", exception.getMessage());
     }
 
     @Test
     @DisplayName("move: Cobre o caminho da exceção, isolando a condição < -1 (C2)")
-    void move_caminhoDeExcecao_quandoFatorMenorQueMenosUm() {
-        // Este teste força C2=true. A decisão do 'if' é VERDADEIRA.
-        // Par com o teste de caminho principal para MC/DC da condição C2.
+    void move_shouldFollowExceptionPath_whenFactorIsLessThanMinusOne() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> creature.move(-1.1));
         assertEquals("Valor aleatório deve estar entre -1 e 1.", exception.getMessage());
     }
 
     @Test
     @DisplayName("move: Cobre o caminho da exceção, isolando a condição > 1 (C3)")
-    void move_caminhoDeExcecao_quandoFatorMaiorQueUm() {
-        // Este teste força C3=true. A decisão do 'if' é VERDADEIRA.
-        // Par com o teste de caminho principal para MC/DC da condição C3.
+    void move_shouldFollowExceptionPath_whenFactorIsGreaterThanOne() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> creature.move(1.1));
         assertEquals("Valor aleatório deve estar entre -1 e 1.", exception.getMessage());
     }
 
-    // --- TESTES ESTRUTURAIS PARA O MÉTODO stealGold(amountStolen) ---
-    // Decisão 1: if (!Double.isFinite(amountStolen))
-    // Decisão 2: else if (amountStolen == 0 || amountStolen < 0)
     @Test
     @DisplayName("stealGold: Cobre o caminho principal (else final) onde o roubo ocorre")
-    void stealGold_caminhoPrincipal_quandoQuantiaEValida() {
-        // Cobre o 'else' da Decisão 1 e o 'else' da Decisão 2.
+    void stealGold_shouldFollowHappyPath_whenAmountIsValid() {
         creature.stealGold(100.0);
         assertEquals(1100.0, creature.getGold());
     }
 
     @Test
     @DisplayName("stealGold: Cobre o caminho da exceção para valor não finito")
-    void stealGold_caminhoDeExcecao_quandoQuantiaNaoFinita() {
-        // Cobre o 'if' da Decisão 1.
+    void stealGold_shouldFollowExceptionPath_whenAmountIsNotFinite() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> creature.stealGold(Double.POSITIVE_INFINITY));
         assertEquals("Roubo inválido: valor roubado não pode ser infinito.", exception.getMessage());
     }
 
     @Test
     @DisplayName("stealGold: Cobre o caminho de retorno zero, isolando a condição == 0")
-    void stealGold_caminhoRetornoZero_quandoQuantiaIgualAZero() {
-        // Cobre o 'else if', focando na condição C1 (== 0). Par com o teste principal.
+    void stealGold_shouldFollowZeroReturnPath_whenAmountIsZero() {
         double result = creature.stealGold(0.0);
         assertEquals(0.0, result);
-        assertEquals(1000.0, creature.getGold()); // Garante que o ouro não mudou
+        assertEquals(1000.0, creature.getGold());
     }
 
     @Test
     @DisplayName("stealGold: Cobre o caminho de retorno zero, isolando a condição < 0")
-    void stealGold_caminhoRetornoZero_quandoQuantiaNegativa() {
-        // Cobre o 'else if', focando na condição C2 (< 0). Par com o teste principal.
+    void stealGold_shouldFollowZeroReturnPath_whenAmountIsNegative() {
         double result = creature.stealGold(-50.0);
         assertEquals(0.0, result);
         assertEquals(1000.0, creature.getGold());
     }
 
-    // --- TESTES ESTRUTURAIS PARA O MÉTODO loseGold(percentage) ---
-    // Decisão 1: if (percentage <= 0 || percentage > 1)
-    // Decisão 2: if (this.getGold() <= 0.0)
     @Test
     @DisplayName("loseGold: Cobre o caminho principal onde o ouro é perdido")
-    void loseGold_caminhoPrincipal_comOuroEPercentualValidos() {
-        // Cobre o 'else' da Decisão 1 e o 'else' da Decisão 2.
+    void loseGold_shouldFollowHappyPath_withValidGoldAndPercentage() {
         creature.loseGold(0.5);
         assertEquals(500.0, creature.getGold());
     }
 
     @Test
     @DisplayName("loseGold: Cobre o caminho da exceção, isolando a condição <= 0")
-    void loseGold_caminhoDeExcecao_quandoPercentualMenorOuIgualAZero() {
-        // Cobre o 'if' da Decisão 1, focando na condição C1 (<= 0). Par com o teste principal.
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> creature.loseGold(0.0));
-        assertEquals("Percentual de perda deve estar entre 0 e 1 (exclusivo de 0).", exception.getMessage());
+    void loseGold_shouldFollowExceptionPath_whenPercentageIsZeroOrLess() {
+        IllegalArgumentException exception_zero = assertThrows(IllegalArgumentException.class, () -> creature.loseGold(0.0));
+        assertEquals("Percentual de perda deve estar entre 0 e 1 (exclusivo de 0).", exception_zero.getMessage());
 
-        exception = assertThrows(IllegalArgumentException.class, () -> creature.loseGold(-0.1));
-        assertEquals("Percentual de perda deve estar entre 0 e 1 (exclusivo de 0).", exception.getMessage());
+        IllegalArgumentException exception_negative = assertThrows(IllegalArgumentException.class, () -> creature.loseGold(-0.1));
+        assertEquals("Percentual de perda deve estar entre 0 e 1 (exclusivo de 0).", exception_negative.getMessage());
     }
 
     @Test
     @DisplayName("loseGold: Cobre o caminho da exceção, isolando a condição > 1")
-    void loseGold_caminhoDeExcecao_quandoPercentualMaiorQueUm() {
-        // Cobre o 'if' da Decisão 1, focando na condição C2 (> 1). Par com o teste principal.
+    void loseGold_shouldFollowExceptionPath_whenPercentageIsGreaterThanOne() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> creature.loseGold(1.1));
         assertEquals("Percentual de perda deve estar entre 0 e 1 (exclusivo de 0).", exception.getMessage());
     }
 
     @Test
     @DisplayName("loseGold: Cobre o caminho de retorno zero quando o ouro inicial é zero")
-    void loseGold_caminhoRetornoZero_quandoOuroInicialEZero() {
-        // Cobre o 'if' da Decisão 2.
+    void loseGold_shouldFollowZeroReturnPath_whenInitialGoldIsZero() {
         creature.setGold(0.0);
         double result = creature.loseGold(0.5);
         assertEquals(0.0, result);

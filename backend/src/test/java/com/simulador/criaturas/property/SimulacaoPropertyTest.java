@@ -19,7 +19,6 @@ import net.jqwik.api.constraints.IntRange;
 
 class SimulationPropertyTest {
 
-    // --- Dublê de Teste (Stub) para controlar a aleatoriedade ---
     private static class FixedRandomPort implements RandomPort {
 
         private final double factor;
@@ -34,68 +33,45 @@ class SimulationPropertyTest {
         }
     }
 
-    // --- PROPRIEDADES PARA createNewSimulation ---
     @Property
-    void createNewSimulationSempreResultaEmEstadoValido(
-            // Gera um número de criaturas dentro do intervalo permitido pelo método
-            @ForAll @IntRange(min = 1, max = 10) int numeroDeCriaturas
+    void createNewSimulation_shouldAlwaysResultInValidState(
+            @ForAll @IntRange(min = 1, max = 10) int numberOfCreatures
     ) {
-        // Arrange
         Simulation simulation = new Simulation(new FixedRandomPort(0.0));
+        Horizon horizon = simulation.createNewSimulation(numberOfCreatures);
 
-        // Act
-        Horizon horizon = simulation.createNewSimulation(numeroDeCriaturas);
-
-        // Assert
-        // Propriedades que devem ser SEMPRE verdadeiras
         assertNotNull(horizon);
-        assertEquals(numeroDeCriaturas, horizon.getEntities().size());
+        assertEquals(numberOfCreatures, horizon.getEntities().size());
         assertEquals(SimulationStatus.RUNNING, horizon.getStatus());
         assertNotNull(horizon.getGuardiao());
     }
 
-    // --- PROPRIEDADES PARA runIteration ---
     @Property
-    void numeroDeEntidadesNuncaAumentaAposIteracao(
-            // Usa nosso gerador customizado de Horizontes
-            @ForAll("horizonsValidosParaIteracao") Horizon horizon
+    void runIteration_shouldNotIncreaseEntityCount(
+            @ForAll("validHorizonsForIteration") Horizon horizon
     ) {
-        // Arrange
-        // Usamos um fator aleatório válido para o movimento
         Simulation simulation = new Simulation(new FixedRandomPort(0.5));
-        int tamanhoInicial = horizon.getEntities().size();
+        int initialSize = horizon.getEntities().size();
 
-        // Act
         simulation.runIteration(horizon);
 
-        // Assert
-        int tamanhoFinal = horizon.getEntities().size();
-        // A propriedade é que o tamanho final é sempre menor ou igual ao inicial
-        assertTrue(tamanhoFinal <= tamanhoInicial, "O número de entidades não deveria aumentar.");
+        int finalSize = horizon.getEntities().size();
+        assertTrue(finalSize <= initialSize);
     }
 
     @Property
-    void quantidadeTotalDeOuroESempreConservada(
-            @ForAll("horizonsValidosParaIteracao") Horizon horizon
+    void runIteration_shouldAlwaysConserveTotalGold(
+            @ForAll("validHorizonsForIteration") Horizon horizon
     ) {
-        // Esta é a propriedade mais poderosa! Ela testa indiretamente toda a sua
-        // lógica de fusão, roubo e eliminação de uma só vez.
-
-        // Arrange
         Simulation simulation = new Simulation(new FixedRandomPort(0.2));
-        double ouroTotalInicial = calculateTotalGold(horizon);
+        double initialTotalGold = calculateTotalGold(horizon);
 
-        // Act
         simulation.runIteration(horizon);
 
-        // Assert
-        double ouroTotalFinal = calculateTotalGold(horizon);
-        // A propriedade é que, como o ouro só muda de mãos, o total no sistema
-        // deve ser o mesmo antes e depois.
-        assertEquals(ouroTotalInicial, ouroTotalFinal, 0.00001, "O ouro total do sistema deveria ser conservado.");
+        double finalTotalGold = calculateTotalGold(horizon);
+        assertEquals(initialTotalGold, finalTotalGold, 0.00001);
     }
 
-    // --- MÉTODOS AUXILIARES E PROVIDERS ---
     private double calculateTotalGold(Horizon horizon) {
         double entitiesGold = horizon.getEntities().stream()
                 .mapToDouble(HorizonEntities::getGold)
@@ -104,20 +80,15 @@ class SimulationPropertyTest {
         return entitiesGold + guardianGold;
     }
 
-    // Provider que gera Horizontes válidos e prontos para a iteração.
     @Provide
-    Arbitrary<Horizon> horizonsValidosParaIteracao() {
-        // Máquina que gera um número de criaturas
+    Arbitrary<Horizon> validHorizonsForIteration() {
         Arbitrary<Integer> size = Arbitraries.integers().between(2, 15);
 
-        // Para cada tamanho gerado, cria um Horizonte e define estados aleatórios
         return size.map(s -> {
-            // Corrige o tamanho para estar dentro do limite do createNewSimulation
             int validSize = Math.min(s, 10);
             Simulation tempSim = new Simulation(new FixedRandomPort(0));
             Horizon horizon = tempSim.createNewSimulation(validSize);
 
-            // Define ouro e posições aleatórias para as entidades e o guardião
             for (HorizonEntities entity : horizon.getEntities()) {
                 entity.setGold(Arbitraries.doubles().between(100, 10000).sample());
                 entity.setX(Arbitraries.integers().between(0, 5).sample() * 100.0);

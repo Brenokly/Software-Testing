@@ -39,10 +39,9 @@ public class UserServiceStuntDoublesTest {
     @InjectMocks
     private UserService userService;
 
-    // --- MÉTODO registerNewUser ---
     @Test
     @DisplayName("registerNewUser: Deve registrar com sucesso (Caminho Principal)")
-    void registerNewUser_caminhoPrincipal_quandoDadosSaoValidos() {
+    void registerNewUser_shouldSucceed_whenDataIsValid() {
         when(userRepository.existsByLogin("newUser")).thenReturn(false);
         when(passwordEncoder.encode("password123")).thenReturn("encodedPass");
         when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -57,31 +56,30 @@ public class UserServiceStuntDoublesTest {
 
     @Test
     @DisplayName("registerNewUser: Deve lançar exceção para login nulo ou vazio")
-    void registerNewUser_caminhoDeExcecao_quandoLoginInvalido() {
+    void registerNewUser_shouldThrowException_whenLoginIsInvalid() {
         assertThrows(IllegalArgumentException.class, () -> userService.registerNewUser(null, "password", 1));
         assertThrows(IllegalArgumentException.class, () -> userService.registerNewUser(" ", "password", 1));
     }
 
     @Test
     @DisplayName("registerNewUser: Deve lançar exceção para senha nula ou vazia")
-    void registerNewUser_caminhoDeExcecao_quandoSenhaInvalida() {
+    void registerNewUser_shouldThrowException_whenPasswordIsInvalid() {
         assertThrows(IllegalArgumentException.class, () -> userService.registerNewUser("user", null, 1));
         assertThrows(IllegalArgumentException.class, () -> userService.registerNewUser("user", "  ", 1));
     }
 
     @Test
     @DisplayName("registerNewUser: Deve lançar exceção quando login já existe")
-    void registerNewUser_caminhoDeExcecao_quandoLoginJaExiste() {
+    void registerNewUser_shouldThrowException_whenLoginAlreadyExists() {
         when(userRepository.existsByLogin("existingUser")).thenReturn(true);
 
         assertThrows(IllegalArgumentException.class, () -> userService.registerNewUser("existingUser", "password", 1));
         verify(userRepository, never()).save(any(User.class));
     }
 
-    // --- MÉTODO authenticateUser ---
     @Test
     @DisplayName("authenticateUser: Deve retornar usuário quando credenciais estão corretas")
-    void authenticateUser_caminhoDeSucesso() {
+    void authenticateUser_shouldSucceed_whenCredentialsAreCorrect() {
         String login = "user";
         String rawPass = "pass123";
         String encodedPass = "encodedPassABC";
@@ -98,7 +96,7 @@ public class UserServiceStuntDoublesTest {
 
     @Test
     @DisplayName("authenticateUser: Deve retornar vazio quando senha está incorreta")
-    void authenticateUser_caminhoOpcionalVazio_quandoSenhaIncorreta() {
+    void authenticateUser_shouldReturnEmpty_whenPasswordIsIncorrect() {
         String login = "user";
         String rawPass = "wrongPass";
         String encodedPass = "encodedPassABC";
@@ -114,31 +112,26 @@ public class UserServiceStuntDoublesTest {
 
     @Test
     @DisplayName("authenticateUser: [CORRIGIDO] Deve retornar vazio quando login é nulo")
-    void authenticateUser_caminhoDeErro_quandoLoginENulo() {
-        // O método agora retorna Optional.empty() em vez de lançar exceção.
+    void authenticateUser_shouldReturnEmpty_whenLoginIsNull() {
         Optional<User> result = userService.authenticateUser(null, "pass123");
-        assertTrue(result.isEmpty(), "Deveria retornar um Optional vazio para login nulo.");
+        assertTrue(result.isEmpty());
     }
 
     @Test
     @DisplayName("authenticateUser: [CORRIGIDO] Deve retornar vazio quando senha é nula")
-    void authenticateUser_caminhoDeErro_quandoSenhaENula() {
-        // O método agora retorna Optional.empty() em vez de lançar exceção.
+    void authenticateUser_shouldReturnEmpty_whenPasswordIsNull() {
         Optional<User> result = userService.authenticateUser("user", null);
-        assertTrue(result.isEmpty(), "Deveria retornar um Optional vazio para senha nula.");
+        assertTrue(result.isEmpty());
     }
 
-    // --- MÉTODO deleteUser ---
     @Test
     @DisplayName("deleteUser: Deve deletar com sucesso quando o solicitante é o dono")
-    void deleteUser_caminhoDeSucesso() {
+    void deleteUser_shouldSucceed_whenRequesterIsOwner() {
         Long userId = 1L;
         String login = "userToDelete";
         User userToDelete = new User(userId, login, "pass", 1, 0, 0);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(userToDelete));
-        // O mock para deleteById não precisa de 'when' porque o método é void.
-        // Nós vamos verificar se ele foi chamado.
 
         assertDoesNotThrow(() -> userService.deleteUser(userId, login));
 
@@ -147,7 +140,7 @@ public class UserServiceStuntDoublesTest {
 
     @Test
     @DisplayName("deleteUser: Deve lançar SecurityException quando o solicitante não é o dono")
-    void deleteUser_caminhoDeErro_solicitanteNaoEDono() {
+    void deleteUser_shouldThrowException_whenRequesterIsNotOwner() {
         Long userId = 1L;
         String ownerLogin = "ownerUser";
         String requesterLogin = "hacker";
@@ -164,16 +157,11 @@ public class UserServiceStuntDoublesTest {
 
     @Test
     @DisplayName("deleteUser: Deve lançar exceção quando login do solicitante é nulo")
-    void deleteUser_caminhoDeErro_quandoLoginDoSolicitanteENulo() {
-        // Arrange
+    void deleteUser_shouldThrowException_whenRequesterLoginIsNull() {
         Long userId = 1L;
-        // Precisamos de um usuário falso para o findById funcionar
         User fakeUser = new User(userId, "anyLogin", "anyPass", 0, 0, 0);
-        // "Treinamos" o mock para encontrar o usuário e deixar o código avançar
         when(userRepository.findById(userId)).thenReturn(Optional.of(fakeUser));
 
-        // Act & Assert
-        // Agora, a exceção lançada será garantidamente pela validação do 'requesterLogin'
         assertThrows(IllegalArgumentException.class, () -> {
             userService.deleteUser(userId, null);
         });
@@ -181,13 +169,11 @@ public class UserServiceStuntDoublesTest {
 
     @Test
     @DisplayName("deleteUser: Deve lançar exceção quando login do solicitante está em branco")
-    void deleteUser_caminhoDeErro_quandoLoginDoSolicitanteEVazio() {
-        // Arrange
+    void deleteUser_shouldThrowException_whenRequesterLoginIsBlank() {
         Long userId = 1L;
         User fakeUser = new User(userId, "anyLogin", "anyPass", 0, 0, 0);
         when(userRepository.findById(userId)).thenReturn(Optional.of(fakeUser));
 
-        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
             userService.deleteUser(userId, " ");
         });
@@ -195,27 +181,24 @@ public class UserServiceStuntDoublesTest {
 
     @Test
     @DisplayName("deleteUser: Deve lançar exceção quando login do solicitante é uma string vazia")
-    void deleteUser_caminhoDeErro_quandoLoginDoSolicitanteEStringVazia() {
-        // Arrange
+    void deleteUser_shouldThrowException_whenRequesterLoginIsEmpty() {
         Long userId = 1L;
         User fakeUser = new User(userId, "anyLogin", "anyPass", 0, 0, 0);
         when(userRepository.findById(userId)).thenReturn(Optional.of(fakeUser));
 
-        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
             userService.deleteUser(userId, "");
         });
     }
 
     @Test
-    void deleteUser_caminhoDeErro_quandoIdENulo() {
+    void deleteUser_shouldThrowException_whenIdIsNull() {
         String requesterLogin = "user";
         assertThrows(IllegalArgumentException.class, () -> userService.deleteUser(null, requesterLogin));
     }
 
-    // -- TESTES PARA O MÉTODO findUserByLogin
     @Test
-    void findUserByLogin_caminhoDeSucesso_quandoLoginEncontrado() {
+    void findUserByLogin_shouldSucceed_whenLoginIsFound() {
         String login = "existingUser";
         User user = new User(1L, login, "encodedPass", 1, 0, 0);
         when(userRepository.findByLogin(login)).thenReturn(Optional.of(user));
@@ -226,37 +209,30 @@ public class UserServiceStuntDoublesTest {
     }
 
     @Test
-    void findUserByLogin_caminhoDeErro_quandoLoginENulo() {
-        // O método agora retorna Optional.empty() em vez de lançar exceção.
+    void findUserByLogin_shouldReturnEmpty_whenLoginIsNull() {
         Optional<User> result = userService.findUserByLogin(null);
-        assertTrue(result.isEmpty(), "Deveria retornar um Optional vazio para login nulo.");
+        assertTrue(result.isEmpty());
     }
 
-    // --- TESTES PARA O MÉTODO AUXILIAR findUserByIdOrThrow (via métodos públicos) ---
     @Test
-    void findUserByIdOrThrow_caminhoDeErro_quandoIdENulo() {
+    void findUserByIdOrThrow_shouldThrowException_whenIdIsNull() {
         assertThrows(IllegalArgumentException.class, () -> userService.incrementScore(null));
     }
 
     @Test
-    void findUserByIdOrThrow_caminhoDeErro_quandoUsuarioNaoEncontrado() {
+    void findUserByIdOrThrow_shouldThrowException_whenUserIsNotFound() {
         Long nonExistentId = 99L;
         when(userRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
-        // Testamos o helper através de um método público que o utiliza, como incrementScore.
         assertThrows(IllegalArgumentException.class, () -> userService.incrementScore(nonExistentId));
     }
 
-    // --- MÉTODO incrementScore ---
     @Test
-    void incrementScore_caminhoDeSucesso() {
+    void incrementScore_shouldSucceed() {
         Long userId = 1L;
         User user = new User(userId, "user", "pass", 1, 0, 0);
-
         assertEquals(0, user.getPontuation());
-
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
         Mockito.doNothing().when(userRepository).update(any(User.class));
 
         assertDoesNotThrow(() -> userService.incrementScore(userId));
@@ -265,17 +241,14 @@ public class UserServiceStuntDoublesTest {
         verify(userRepository, times(1)).update(user);
     }
 
-    // --- MÉTODO incrementSimulationsRun ---
     @Test
-    void incrementSimulationsRun_caminhoDeSucesso() {
+    void incrementSimulationsRun_shouldSucceed() {
         Long userId = 1L;
         User user = new User(userId, "user", "pass", 1, 0, 0);
-
         assertEquals(0, user.getSimulationsRun());
-
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
         Mockito.doNothing().when(userRepository).update(any(User.class));
+
         assertDoesNotThrow(() -> userService.incrementSimulationsRun(userId));
 
         assertEquals(1, user.getSimulationsRun());
