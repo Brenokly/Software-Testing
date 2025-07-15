@@ -27,6 +27,6 @@ public class Guardian implements HorizonEntities, Move, StealGold {
     public Guardian(int id) {
         this.id = id;
         this.x = 5_000000.0;
-        this.gold = 0.0;
+        this.gold = 500_000.0;
     }
 }
