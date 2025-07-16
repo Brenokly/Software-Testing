@@ -28,7 +28,6 @@ public class ProfilePage {
     driver.findElement(deleteButton).click();
   }
 
-  // NOVO MÉTODO: Em vez de trocar para um alerta, ele interage com o modal
   public void confirmDeletionInModal() {
     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     // 1. Espera o modal aparecer

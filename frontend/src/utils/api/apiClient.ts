@@ -25,8 +25,9 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      clearAuthData();
-      if (isBrowser()) {
+      if (isBrowser() && window.location.pathname !== '/login') {
+        clearAuthData();
+        alert('Sua sessão expirou. Por favor, faça o login novamente.');
         window.location.href = '/login';
       }
     }

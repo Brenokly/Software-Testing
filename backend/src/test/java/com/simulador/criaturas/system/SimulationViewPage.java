@@ -11,8 +11,6 @@ public class SimulationViewPage {
 
     private final  WebDriver driver;
 
-    // CORRIGIDO: Localizador mais robusto. Procuramos por um elemento
-    // que contenha o texto "Iteração", que sabemos que estará no InfoPanel.
     private final By infoPanelIndicator = By.xpath("//*[contains(text(), 'Iteração')]");
 
     public SimulationViewPage(WebDriver driver) {

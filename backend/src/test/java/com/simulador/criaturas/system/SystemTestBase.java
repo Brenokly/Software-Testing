@@ -16,7 +16,7 @@ public abstract class SystemTestBase {
         WebDriverManager.firefoxdriver().setup();
         // Inicializa o navegador Firefox.
         driver = new FirefoxDriver();
-        driver.manage().window().maximize(); // Boa prática para maximizar a janela.
+        driver.manage().window().maximize(); 
     }
 
     @AfterEach

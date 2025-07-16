@@ -2,7 +2,6 @@ import { LoginForm } from "@/components/auth/LoginForm";
 
 export default function LoginPage() {
   return (
-    // O Header fica fixo no topo
     <>
       <main
         className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-8"

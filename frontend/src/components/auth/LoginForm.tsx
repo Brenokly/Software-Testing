@@ -45,8 +45,6 @@ export const LoginForm = () => {
   };
 
   return (
-    // Usando a textura de madeira da sua imagem 'Extra_Unfinished4.png'
-    // Certifique-se de recortar a textura da porta e salvá-la como 'wood-panel.png'
     <div
       className="w-full max-w-md p-8 space-y-6 bg-cover bg-center border-8 border-[#4a2c2a] rounded-lg shadow-2xl"
       style={{ backgroundImage: "url('/images/wood-panel.png')" }}
