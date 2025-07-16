@@ -33,7 +33,9 @@ export const LoginForm = () => {
       router.push("/simulacao");
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
-        setApiError(error.response.data.message || "Login ou senha inválidos.");
+        const message =
+          error.response.data?.message || "Login ou senha inválidos.";
+        setApiError(message);
       } else if (error instanceof Error) {
         setApiError(error.message);
       } else {

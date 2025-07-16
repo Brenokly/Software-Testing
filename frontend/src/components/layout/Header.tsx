@@ -70,19 +70,22 @@ export const Header = () => {
             <>
               {/* Perfil do Usuário com Avatar */}
               <div className="flex items-center gap-3">
-                <Image
-                  src={avatarUrl}
-                  alt={`Avatar de ${userData.login}`}
-                  width={48}
-                  height={48}
-                  className="rounded-full border-2 border-yellow-300 object-cover"
-                />
-                <div className="hidden md:flex flex-col text-white font-bold leading-tight">
-                  <span>{userData.login}</span>
-                  <span className="text-yellow-300 text-sm">
-                    💰 {userData.pontuation}
-                  </span>
-                </div>
+                <Link
+                  href="/perfil"
+                  data-testid="profile-link"
+                  className="flex items-center gap-3 cursor-pointer"
+                >
+                  <Image
+                    src={avatarUrl}
+                    alt={`Avatar de ${userData.login}`}
+                    width={48}
+                    height={48}
+                    className="rounded-full border-2 border-yellow-300 object-cover"
+                  />
+                  <div className="hidden md:flex flex-col text-white font-bold leading-tight">
+                    <span>{userData.login}</span>
+                  </div>
+                </Link>
               </div>
 
               <Link

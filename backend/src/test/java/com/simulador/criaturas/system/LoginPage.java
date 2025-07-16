@@ -12,6 +12,7 @@ public class LoginPage {
     private final WebDriver driver;
     private final String pageUrlFragment = "/login";
 
+    private final By apiError = By.xpath("//p[contains(text(), 'Login ou senha inválidos')]");
     private final By loginInput = By.name("login");
     private final By passwordInput = By.name("password");
     private final By loginButton = By.xpath("//button[text()='Entrar na Guilda']");
@@ -39,5 +40,13 @@ public class LoginPage {
     public void submit() {
         // Clica no botão de login
         driver.findElement(loginButton).click();
+    }
+
+    public boolean isLoginErrorMessageVisible() {
+        try {
+            return driver.findElement(apiError).isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

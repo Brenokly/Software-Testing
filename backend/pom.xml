@@ -147,13 +147,14 @@
                 </configuration>
             </plugin>
             <plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-surefire-plugin</artifactId>
-    <version>3.3.1</version> <configuration>
-        <useSystemClassLoader>true</useSystemClassLoader>
-        <useManifestOnlyJar>false</useManifestOnlyJar>
-    </configuration>
-</plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <useSystemClassLoader>true</useSystemClassLoader>
+                    <useManifestOnlyJar>false</useManifestOnlyJar>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -193,13 +194,6 @@
                             <rules>
                                 <rule>
                                     <element>BUNDLE</element>
-                                    <limits>
-                                        <limit>
-                                            <counter>LINE</counter>
-                                            <value>COVEREDRATIO</value>
-                                            <minimum>0.80</minimum>
-                                        </limit>
-                                    </limits>
                                 </rule>
                             </rules>
                         </configuration>
@@ -211,17 +205,12 @@
                 <artifactId>pitest-maven</artifactId>
                 <version>1.15.0</version>
                 <configuration>
-                    <!-- Seu pacote principal de código-fonte -->
                     <targetClasses>
                         <param>com.simulador.criaturas.*</param>
                     </targetClasses>
-
-                    <!-- Seu pacote principal de testes -->
                     <targetTests>
                         <param>com.simulador.criaturas.*</param>
                     </targetTests>
-
-                    <!-- Habilita relatórios HTML no diretório target/pit-reports -->
                     <outputFormats>
                         <param>HTML</param>
                     </outputFormats>

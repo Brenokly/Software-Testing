@@ -33,12 +33,13 @@ public class UserController {
     private final UserUseCase userUseCase;
     private final UserMapper userMapper;
     private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager; // Injete o AuthenticationManager
+    private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> register(@Valid @RequestBody UserRequestDTO requestDTO) {
 
-        User newUser = userUseCase.registerNewUser(requestDTO.getLogin(), requestDTO.getPassword(), requestDTO.getAvatarId());
+        User newUser = userUseCase.registerNewUser(requestDTO.getLogin(), requestDTO.getPassword(),
+                requestDTO.getAvatarId());
 
         UserResponseDTO responseDTO = userMapper.toResponseDto(newUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
@@ -46,13 +47,10 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody UserRequestDTO requestDTO) {
-        // O AuthenticationManager usa o Spring Security para verificar o usuário
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         requestDTO.getLogin(),
-                        requestDTO.getPassword()
-                )
-        );
+                        requestDTO.getPassword()));
 
         Optional<User> userOptional = userUseCase.authenticateUser(requestDTO.getLogin(), requestDTO.getPassword());
 
@@ -70,7 +68,7 @@ public class UserController {
 
             return ResponseEntity.ok(loginResponse);
         } else {
-            throw new RuntimeException("Login ou senha inválidos.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 

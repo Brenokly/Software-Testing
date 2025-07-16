@@ -44,7 +44,8 @@ public class UserService implements UserUseCase {
         novoUsuario.setLogin(login);
         novoUsuario.setPassword(senhaCriptografada);
         novoUsuario.setAvatarId(avatarId);
-        // pontuation e simulationsRun são inicializados com 0 por padrão para o tipo 'int'.
+        // pontuation e simulationsRun são inicializados com 0 por padrão para o tipo
+        // 'int'.
 
         return userRepository.save(novoUsuario);
     }
@@ -55,7 +56,7 @@ public class UserService implements UserUseCase {
     @Override
     public Optional<User> authenticateUser(String login, String password) {
         if (!StringUtils.hasText(login) || !StringUtils.hasText(password)) {
-            return Optional.empty(); // Retorna vazio se a entrada for inválida.
+            return Optional.empty();
         }
 
         return userRepository.findByLogin(login)
@@ -118,7 +119,7 @@ public class UserService implements UserUseCase {
      * @param userId O ID do usuário a ser buscado.
      * @return O objeto User encontrado.
      * @throws IllegalArgumentException Se o ID for nulo ou se nenhum usuário
-     * for encontrado com o ID fornecido.
+     *                                  for encontrado com o ID fornecido.
      */
     public User findUserByIdOrThrow(Long userId) {
         if (userId == null) {

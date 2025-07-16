@@ -26,8 +26,7 @@ public class StatisticsController {
      */
     @GetMapping
     public ResponseEntity<GlobalStatisticsDTO> getStatistics(
-            @PageableDefault(size = 5, sort = "pontuation", direction = Sort.Direction.DESC) Pageable pageable
-    ) {
+            @PageableDefault(size = 5, sort = "pontuation", direction = Sort.Direction.DESC) Pageable pageable) {
         GlobalStatisticsDTO stats = statisticsUseCase.getGlobalStatistics(pageable);
         return ResponseEntity.ok(stats);
     }
