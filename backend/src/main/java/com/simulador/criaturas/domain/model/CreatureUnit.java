@@ -29,7 +29,7 @@ public class CreatureUnit implements HorizonEntities, Move, StealGold, LoseGold 
 
     public CreatureUnit(int id) {
         this.id = id;
-        this.x = 0.0;
+        this.x = 25000.0 * id;
         this.gold = 1_000_000;
     }
 }

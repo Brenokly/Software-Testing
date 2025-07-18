@@ -28,7 +28,6 @@ export const RegisterForm = () => {
     watch,
   } = useForm<RegisterFormInputs>({
     resolver: zodResolver(registerSchema),
-    // Definimos um valor padrão para o avatarId para que um seja pré-selecionado
     defaultValues: {
       avatarId: 1,
     },

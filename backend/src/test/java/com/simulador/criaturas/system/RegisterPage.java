@@ -24,7 +24,7 @@ public class RegisterPage {
     }
 
     public void navigateTo() {
-        driver.get(pageUrl);
+        driver.get(pageUrl); // aqui deveria ser a url dinâmica, mas como vou conseguir ela?
     }
 
     public void fillForm(String login, String password) {
@@ -35,12 +35,10 @@ public class RegisterPage {
     }
 
     public void submit() {
-        // Clica no botão de registro
         driver.findElement(registerButton).click();
     }
 
     public boolean isSuccessMessageVisible() {
-        // Espera até que a mensagem de sucesso esteja visível
         try {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
             wait.until(ExpectedConditions.visibilityOfElementLocated(successMessage));

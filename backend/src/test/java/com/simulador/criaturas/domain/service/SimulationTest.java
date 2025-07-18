@@ -155,7 +155,7 @@ class SimulationTest {
         horizon.getEntities().get(0).setGold(100);
         horizon.getEntities().get(1).setX(100);
         horizon.getEntities().get(1).setGold(100);
-        horizon.getEntities().get(2).setX(200);
+        horizon.getEntities().get(2).setX(25201);
         horizon.getEntities().get(2).setGold(1000);
 
         simulation.runIteration(horizon);
@@ -188,6 +188,7 @@ class SimulationTest {
             simulation.runIteration(horizon);
         });
 
-        assertEquals("A simulação não pode ser executada pois seu status é: " + horizon.getStatus(), exception.getMessage());
+        assertEquals("A simulação não pode ser executada pois seu status é: " + horizon.getStatus(),
+                exception.getMessage());
     }
 }

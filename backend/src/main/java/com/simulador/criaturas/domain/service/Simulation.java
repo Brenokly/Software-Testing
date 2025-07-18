@@ -18,7 +18,7 @@ import com.simulador.criaturas.utils.SimulationStatus;
 public class Simulation {
 
     private final RandomPort randomPort;
-    private static final double COLLISION_RANGE = 0.5;
+    private static final double COLLISION_RANGE = 25000.0;
 
     /**
      * Constrói uma nova instância do serviço de simulação.

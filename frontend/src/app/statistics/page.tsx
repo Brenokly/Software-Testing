@@ -34,6 +34,7 @@ const RankingTable = ({
           <tr
             key={user.login}
             className="border-b border-gray-700 hover:bg-yellow-900/50"
+            data-testid="ranking-table-row"
           >
             <td className="py-3 px-6 text-left whitespace-nowrap">
               {currentPage * pageSize + index + 1}º
@@ -69,13 +70,14 @@ const PaginationControls = ({
     >
       Anterior
     </button>
-    <span className="text-white">
+    <span className="text-white" data-testid="page-indicator">
       Página {currentPage + 1} de {totalPages}
     </span>
     <button
       onClick={() => onPageChange(currentPage + 1)}
       disabled={currentPage + 1 >= totalPages}
       className="px-4 py-2 bg-blue-600 text-white font-bold rounded disabled:bg-gray-500"
+      data-testid="next-page-button"
     >
       Próximo
     </button>
@@ -123,6 +125,7 @@ export default function StatisticsPage() {
             <h1
               className="text-4xl text-yellow-300 text-center"
               style={{ textShadow: "3px 3px #000" }}
+              data-testid="ranking-title"
             >
               Ranking da Guilda
             </h1>

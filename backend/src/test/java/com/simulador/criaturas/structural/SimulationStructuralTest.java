@@ -50,21 +50,24 @@ public class SimulationStructuralTest {
     @Test
     @DisplayName("createNewSimulation: Cobre o caminho de exceção isolando a condição C1 (<=0)")
     void createNewSimulation_shouldFollowExceptionPath_forAmountZeroOrLess() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> simulation.createNewSimulation(0));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> simulation.createNewSimulation(0));
         assertEquals("O número de criaturas deve estar entre 1 e 10.", exception.getMessage());
     }
 
     @Test
     @DisplayName("createNewSimulation: Cobre o caminho de exceção isolando a condição C2 (>10)")
     void createNewSimulation_shouldFollowExceptionPath_forAmountGreaterThanTen() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> simulation.createNewSimulation(11));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> simulation.createNewSimulation(11));
         assertEquals("O número de criaturas deve estar entre 1 e 10.", exception.getMessage());
     }
 
     @Test
     @DisplayName("runIteration: [CAMINHO DE EXCEÇÃO] Deve lançar exceção se o horizonte for nulo")
     void runIteration_shouldThrowException_whenHorizonIsNull() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> simulation.runIteration(null));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> simulation.runIteration(null));
         assertEquals("Horizon não pode ser nulo.", exception.getMessage());
     }
 
@@ -75,7 +78,8 @@ public class SimulationStructuralTest {
         horizon.initializeEntities(1);
         horizon.setGuardiao(new Guardian(2));
         horizon.setStatus(SimulationStatus.SUCCESSFUL);
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> simulation.runIteration(horizon));
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+                () -> simulation.runIteration(horizon));
         assertEquals("A simulação não pode ser executada pois seu status é: Successful", exception.getMessage());
     }
 
@@ -129,7 +133,7 @@ public class SimulationStructuralTest {
         horizon.initializeEntities(2);
         horizon.setGuardiao(new Guardian(3));
         horizon.getEntities().get(0).setX(100);
-        horizon.getEntities().get(1).setX(200);
+        horizon.getEntities().get(1).setX(50000);
         simulation.runIteration(horizon);
         assertTrue(horizon.getEntities().get(1).getGold() > 0);
     }
@@ -232,7 +236,8 @@ public class SimulationStructuralTest {
     @Test
     @DisplayName("getStatus: [CAMINHO DE EXCEÇÃO] Deve lançar exceção se horizonte for nulo")
     void getStatus_shouldThrowException_whenHorizonIsNull() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> simulation.getStatus(null));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> simulation.getStatus(null));
         assertEquals("Horizon não pode ser nulo.", exception.getMessage());
     }
 
@@ -248,7 +253,7 @@ public class SimulationStructuralTest {
         assertEquals(SimulationStatus.FAILED, status);
     }
 
-    //---------------------------------------------------------------
+    // ---------------------------------------------------------------
     @Test
     @DisplayName("getStatus: [MC/DC] Cobre o caminho FAILED pela condição de ouro maior")
     void getStatus_mcdc_shouldReturnFailed_onHigherCreatureGold() {
@@ -354,7 +359,8 @@ public class SimulationStructuralTest {
     @Test
     @DisplayName("findNearestNeighbor: Cobre o caminho de exceção onde horizonte é nulo")
     void findNearestNeighbor_shouldThrowException_whenHorizonIsNull() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> simulation.findNearestNeighbor(null, new CreatureUnit(1)));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> simulation.findNearestNeighbor(null, new CreatureUnit(1)));
         assertEquals("Horizon e entidade atual não podem ser nulos.", exception.getMessage());
     }
 
@@ -364,7 +370,8 @@ public class SimulationStructuralTest {
         Horizon horizon = new Horizon();
         horizon.initializeEntities(1);
         horizon.setGuardiao(new Guardian(2));
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> simulation.findNearestNeighbor(horizon, null));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> simulation.findNearestNeighbor(horizon, null));
         assertEquals("Horizon e entidade atual não podem ser nulos.", exception.getMessage());
     }
 
@@ -400,7 +407,8 @@ public class SimulationStructuralTest {
         horizon.setGuardiao(new Guardian(2));
         horizon.getEntities().get(0).setX(100.0);
         horizon.getEntities().get(1).setX(200.0);
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> simulation.findNearestNeighbor(horizon, null));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> simulation.findNearestNeighbor(horizon, null));
         assertEquals("Horizon e entidade atual não podem ser nulos.", exception.getMessage());
     }
 
@@ -423,7 +431,7 @@ public class SimulationStructuralTest {
         horizon.initializeEntities(1);
         horizon.setGuardiao(new Guardian(2));
         HorizonEntities fakeVictim = new NonMovableEntity2();
-        fakeVictim.setX(200.0);
+        fakeVictim.setX(205000.0);
         fakeVictim.setGold(5000.0);
         horizon.addEntity(fakeVictim);
         double c1InitialGold = horizon.getEntities().get(0).getGold();
@@ -438,7 +446,7 @@ public class SimulationStructuralTest {
         horizon.initializeEntities(2);
         horizon.setGuardiao(new Guardian(2));
         HorizonEntities victim = new NonMovableEntity2();
-        victim.setX(200.0);
+        victim.setX(50000.0);
         victim.setGold(5000.0);
         horizon.addEntity(victim);
         double c1InitialGold = horizon.getEntities().get(0).getGold();
@@ -446,7 +454,7 @@ public class SimulationStructuralTest {
         assertTrue(horizon.getEntities().get(0).getGold() > c1InitialGold);
     }
 
-    //-------------------------------------------------------
+    // -------------------------------------------------------
     @Test
     @DisplayName("treatNeighborTheft: Cobre o caminho onde o atacante não pode roubar ouro")
     void treatNeighborTheft_shouldDoNothing_whenAttackerCannotSteal() {
@@ -465,7 +473,8 @@ public class SimulationStructuralTest {
     @Test
     @DisplayName("resolveInteractionsAt: Cobre o caminho de exceção onde horizonte é nulo")
     void resolveInteractionsAt_shouldThrowException_whenHorizonIsNull() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> simulation.resolveInteractionsAt(null, 100.0));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> simulation.resolveInteractionsAt(null, 100.0));
         assertEquals("Horizon não pode ser nulo e a posição deve ser um número válido.", exception.getMessage());
     }
 
@@ -475,7 +484,8 @@ public class SimulationStructuralTest {
         Horizon horizon = new Horizon();
         horizon.initializeEntities(1);
         horizon.setGuardiao(new Guardian(2));
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> simulation.resolveInteractionsAt(horizon, Double.NaN));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> simulation.resolveInteractionsAt(horizon, Double.NaN));
         assertEquals("Horizon não pode ser nulo e a posição deve ser um número válido.", exception.getMessage());
     }
 
@@ -485,7 +495,8 @@ public class SimulationStructuralTest {
         Horizon horizon = new Horizon();
         horizon.initializeEntities(1);
         horizon.setGuardiao(new Guardian(2));
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> simulation.resolveInteractionsAt(horizon, Double.POSITIVE_INFINITY));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> simulation.resolveInteractionsAt(horizon, Double.POSITIVE_INFINITY));
         assertEquals("Horizon não pode ser nulo e a posição deve ser um número válido.", exception.getMessage());
     }
 
@@ -497,7 +508,7 @@ public class SimulationStructuralTest {
         horizon.initializeEntities(2);
         horizon.setGuardiao(new Guardian(3));
         horizon.getEntities().get(0).setX(100.0);
-        horizon.getEntities().get(1).setX(200.0);
+        horizon.getEntities().get(1).setX(50000.0);
         long initialEntityCount = horizon.getEntities().size();
         simulation.runIteration(horizon);
         assertEquals(initialEntityCount, horizon.getEntities().size());
@@ -584,7 +595,8 @@ public class SimulationStructuralTest {
         horizon.getGuardiao().setX(100.0);
         HorizonEntities survivor = simulation.resolveInteractionsAt(horizon, 100.0);
         assertTrue(survivor instanceof Guardian, "O sobrevivente deve ser o guardião.");
-        assertEquals(horizon.getEntities().size(), 0, "Deveria não haver sobreviventes após a colisão, apenas o guardião.");
+        assertEquals(horizon.getEntities().size(), 0,
+                "Deveria não haver sobreviventes após a colisão, apenas o guardião.");
     }
 
     @Test
