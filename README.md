@@ -2,7 +2,7 @@
 
 ## 📜 Descrição do Projeto
 
-O **Software-Testing** é uma aplicação que simula um ecossistema dinâmico onde criaturas saltitantes competem por recursos, se fundem em clusters mais fortes e interagem com um guardião poderoso. Há um pequeno problema na criação dos clusters, como o valor de X está na casa dos milhões, é muito difícil a ocorrência de duas criaturas estarem no mesmo X.
+O **Software-Testing** é uma aplicação que simula um ecossistema dinâmico onde criaturas saltitantes competem por recursos, se fundem em clusters mais fortes e interagem com um guardião poderoso. Há um pequeno problema na criação dos clusters, como o valor de X está na casa dos milhões, é muito difícil a ocorrência de duas criaturas estarem no mesmo X. IMPORTANTE: Para que os testes de Sistema sejam executados e passem corretamente, é necessário limpar o banco manualmente antes e só eu tenho acesso ao banco.
 
 O objetivo principal é **aplicar e exercitar um conjunto completo de práticas de teste de software**, incluindo:
 
