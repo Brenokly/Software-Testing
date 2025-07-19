@@ -1,9 +1,16 @@
-package com.simulador.criaturas.system;
+package com.simulador.criaturas.system.journey;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import com.simulador.criaturas.system.LoginPage;
+import com.simulador.criaturas.system.RegisterPage;
+import com.simulador.criaturas.system.SystemTestBase;
+
+// Teste de jornada do usuário para tentar logar com senha incorreta
+// e verificar se a mensagem de erro é exibida corretamente.
 
 public class LoginWithWrongPasswordJourneyTest extends SystemTestBase {
 

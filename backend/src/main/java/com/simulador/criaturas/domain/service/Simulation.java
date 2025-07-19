@@ -130,10 +130,8 @@ public class Simulation {
             return SimulationStatus.SUCCESSFUL;
         }
 
-        // Se o código chegou até aqui, temos 100% de certeza de que a lista NÃO está vazia.
         // 2. Agora, podemos tratar com segurança o caso de ter 1 elemento.
         if (remainingEntities.size() == 1) {
-            // A chamada a .get(0) agora é 100% segura.
             if (guardiao.getGold() > remainingEntities.get(0).getGold()) {
                 return SimulationStatus.SUCCESSFUL;
             } else {

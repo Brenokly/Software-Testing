@@ -1,4 +1,4 @@
-package com.simulador.criaturas.system;
+package com.simulador.criaturas.system.journey;
 
 import java.time.Duration;
 
@@ -6,6 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.simulador.criaturas.system.HeaderPage;
+import com.simulador.criaturas.system.LoginPage;
+import com.simulador.criaturas.system.ProfilePage;
+import com.simulador.criaturas.system.RegisterPage;
+import com.simulador.criaturas.system.SystemTestBase;
+
+// Teste de jornada do usuário para deletar a própria conta
+// e verificar se o usuário é deletado corretamente.
 
 public class DeleteAccountJourneyTest extends SystemTestBase {
 

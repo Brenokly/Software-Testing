@@ -1,8 +1,17 @@
-package com.simulador.criaturas.system;
+package com.simulador.criaturas.system.journey;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import com.simulador.criaturas.system.LoginPage;
+import com.simulador.criaturas.system.RegisterPage;
+import com.simulador.criaturas.system.SimulationSetupPage;
+import com.simulador.criaturas.system.SimulationViewPage;
+import com.simulador.criaturas.system.SystemTestBase;
+
+// Teste de jornada do usuário para registrar, fazer login e iniciar uma simulação
+// e verificar se a simulação é iniciada corretamente.
 
 public class StartSimulationJourneyTest extends SystemTestBase {
 
@@ -29,6 +38,7 @@ public class StartSimulationJourneyTest extends SystemTestBase {
         setupPage.enterCreatureCount("8");
         setupPage.clickStartBattle();
 
-        assertTrue(viewPage.isSimulationViewVisible(), "A tela da simulação deveria estar visível após iniciar a batalha.");
+        assertTrue(viewPage.isSimulationViewVisible(),
+                "A tela da simulação deveria estar visível após iniciar a batalha.");
     }
 }

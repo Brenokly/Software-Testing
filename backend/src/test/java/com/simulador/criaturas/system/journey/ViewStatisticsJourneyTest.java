@@ -1,4 +1,4 @@
-package com.simulador.criaturas.system;
+package com.simulador.criaturas.system.journey;
 
 import java.time.Duration;
 
@@ -7,6 +7,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.simulador.criaturas.system.HeaderPage;
+import com.simulador.criaturas.system.LoginPage;
+import com.simulador.criaturas.system.RegisterPage;
+import com.simulador.criaturas.system.StatisticsPage;
+import com.simulador.criaturas.system.SystemTestBase;
+
+// Teste de jornada do usuário para visualizar estatísticas
+// e verificar se a paginação e os dados estão corretos.
 
 public class ViewStatisticsJourneyTest extends SystemTestBase {
 
