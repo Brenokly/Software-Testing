@@ -11,6 +11,8 @@ O objetivo principal é **aplicar e exercitar um conjunto completo de práticas 
 * ✅ **Testes Estruturais (Cobertura de Linha, Branch, MC/DC)**
 * ✅ **Testes de Mutação com PITest**
 * ✅ **Testes Baseados em Propriedades e uso de Dublês de Teste (Mocks/Stubs)**
+* ✅ **Testes de integração**
+* ✅ **Testes de Sistema**
 
 O projeto é composto por:
 
@@ -34,7 +36,7 @@ A simulação envolve **criaturas**, **clusters** e um **guardião**.
 
 #### Guardião
 * Uma criatura especial com ID `n+1`.
-* Começa com 🪙 **0 moedas de ouro**.
+* Começa com 🪙 **500_000.0 moedas de ouro**.
 * E com o **X == 5_000000.0**.
 * Sua missão é eliminar os clusters e proteger o horizonte.
 
@@ -56,10 +58,6 @@ A simulação envolve **criaturas**, **clusters** e um **guardião**.
     * **Guardião + Cluster → Absorção:** Se o guardião colide com um cluster, o cluster é **eliminado**, e todo o seu ouro é transferido para o guardião.
 
 3.  **Roubo do Vizinho:** Após o movimento e as colisões, cada criatura/cluster restante rouba **metade do ouro** da entidade mais próxima.
-
-### ⚰️ Eliminação
-
-* Se o ouro de uma criatura ou cluster chegar a **0 ou menos**, a entidade é **eliminada** da simulação.
 
 ### 🏁 Condições de Término
 
