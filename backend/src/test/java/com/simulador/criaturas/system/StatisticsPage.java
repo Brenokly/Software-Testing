@@ -24,9 +24,7 @@ public class StatisticsPage {
 
   public void waitForPageLoad() {
     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-
     wait.until(ExpectedConditions.visibilityOfElementLocated(rankingTitle));
-
     wait.until(ExpectedConditions.visibilityOfElementLocated(rankingRows));
   }
 
@@ -47,5 +45,9 @@ public class StatisticsPage {
 
   public String getPageIndicatorText() {
     return driver.findElement(pageIndicator).getText();
+  }
+
+  public By getPageIndicatorLocator() {
+    return pageIndicator;
   }
 }

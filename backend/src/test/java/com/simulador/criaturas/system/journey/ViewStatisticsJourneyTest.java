@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.simulador.criaturas.system.HeaderPage;
@@ -51,7 +52,6 @@ public class ViewStatisticsJourneyTest extends SystemTestBase {
     LoginPage loginPage = new LoginPage(driver);
 
     loginPage.waitForPageLoad();
-
     loginPage.fillForm("g_aventureiro", "senha_para_simulacao");
     loginPage.submit();
 
@@ -64,17 +64,15 @@ public class ViewStatisticsJourneyTest extends SystemTestBase {
     assertThat(statisticsPage.getDisplayedUsersCount()).isEqualTo(5);
     assertThat(statisticsPage.getPageIndicatorText()).isEqualTo("Página 1 de 3");
 
-    // assertThat(statisticsPage.getDisplayedUserLogins()).contains("a_aventureiro",
-    // "b_aventureiro", "c_aventureiro");
-
+    // --- PAGINAÇÃO PARA PÁGINA 2 ---
     statisticsPage.clickNextPage();
 
-    new WebDriverWait(driver, Duration.ofSeconds(5))
-        .until(d -> statisticsPage.getPageIndicatorText().equals("Página 2 de 3"));
+    // ESPERA ROBUSTA: espera até que o elemento correto tenha o texto esperado.
+    new WebDriverWait(driver, Duration.ofSeconds(10))
+        .until(ExpectedConditions.textToBe(statisticsPage.getPageIndicatorLocator(), "Página 2 de 3"));
 
     assertThat(statisticsPage.getDisplayedUsersCount()).isEqualTo(5);
-    assertThat(statisticsPage.getPageIndicatorText()).isEqualTo("Página 2 de 3");
-
+    assertThat(statisticsPage.getPageIndicatorText()).isEqualTo("Página 2 de 3"); // A asserção continua importante
     assertThat(statisticsPage.getDisplayedUserLogins()).containsExactly(
         "a_aventureiro",
         "b_aventureiro",
@@ -82,14 +80,16 @@ public class ViewStatisticsJourneyTest extends SystemTestBase {
         "d_aventureiro",
         "e_aventureiro");
 
+    // --- PAGINAÇÃO PARA PÁGINA 3 ---
     statisticsPage.clickNextPage();
 
-    new WebDriverWait(driver, Duration.ofSeconds(5))
-        .until(d -> statisticsPage.getPageIndicatorText().equals("Página 3 de 3"));
+    // ESPERA ROBUSTA novamente
+    new WebDriverWait(driver, Duration.ofSeconds(10))
+        .until(ExpectedConditions.textToBe(statisticsPage.getPageIndicatorLocator(), "Página 3 de 3"));
 
     assertThat(statisticsPage.getDisplayedUsersCount()).isEqualTo(2);
     assertThat(statisticsPage.getPageIndicatorText()).isEqualTo("Página 3 de 3");
-
     assertThat(statisticsPage.getDisplayedUserLogins()).containsExactly("f_aventureiro", "g_aventureiro");
   }
+
 }
