@@ -7,10 +7,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.simulador.criaturas.system.config.TestConfig;
+
 public class ProfilePage {
   private final WebDriver driver;
 
-  // Localizadores para a página e para o novo modal
   private final By deleteButton = By.cssSelector("[data-testid='delete-account-button']");
   private final By modalConfirmButton = By.cssSelector("[data-testid='confirm-delete-button']");
   private final By modal = By.cssSelector("[data-testid='confirmation-modal']");
@@ -20,7 +21,7 @@ public class ProfilePage {
   }
 
   public void waitForPageLoad() {
-    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TestConfig.getTimeoutSeconds()));
     wait.until(ExpectedConditions.visibilityOfElementLocated(deleteButton));
   }
 
@@ -29,10 +30,8 @@ public class ProfilePage {
   }
 
   public void confirmDeletionInModal() {
-    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-    // 1. Espera o modal aparecer
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TestConfig.getTimeoutSeconds()));
     wait.until(ExpectedConditions.visibilityOfElementLocated(modal));
-    // 2. Clica no botão de confirmação dentro do modal
     driver.findElement(modalConfirmButton).click();
   }
 }

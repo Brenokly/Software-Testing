@@ -12,6 +12,7 @@ import com.simulador.criaturas.system.LoginPage;
 import com.simulador.criaturas.system.ProfilePage;
 import com.simulador.criaturas.system.RegisterPage;
 import com.simulador.criaturas.system.SystemTestBase;
+import com.simulador.criaturas.system.config.TestConfig;
 
 // Teste de jornada do usuário para deletar a própria conta
 // e verificar se o usuário é deletado corretamente.
@@ -37,7 +38,7 @@ public class DeleteAccountJourneyTest extends SystemTestBase {
     loginPage.fillForm(userToDelete, password);
     loginPage.submit();
 
-    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TestConfig.getTimeoutSeconds()));
     wait.until(d -> d.getCurrentUrl().contains("/simulacao"));
 
     headerPage.clickProfile();
@@ -47,10 +48,10 @@ public class DeleteAccountJourneyTest extends SystemTestBase {
 
     profilePage.confirmDeletionInModal();
 
-    boolean onHomePage = wait.until(d -> d.getCurrentUrl().endsWith("/"));
+    boolean onHomePage = wait.until(d -> d.getCurrentUrl().equals(TestConfig.getBaseUrl() + "/"));
     assertTrue(onHomePage, "O usuário deveria ser redirecionado para a home após deletar a conta.");
 
-    driver.get("http://localhost:3000/login");
+    driver.get(TestConfig.getBaseUrl() + "/login");
     loginPage.waitForPageLoad();
     loginPage.fillForm(userToDelete, password);
     loginPage.submit();

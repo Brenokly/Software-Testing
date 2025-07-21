@@ -1,5 +1,7 @@
 package com.simulador.criaturas.system;
 
+import java.time.Duration; // <-- IMPORTANTE
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.simulador.criaturas.infrastructure.adapter.out.persistence.repository.SpringDataUserRepository;
+import com.simulador.criaturas.system.config.TestConfig;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
@@ -20,6 +23,8 @@ public abstract class SystemTestBase {
 
     protected static WebDriver driver;
 
+    protected Duration explicitWaitTimeout;
+
     @BeforeAll
     static void setUpAll() {
         WebDriverManager.firefoxdriver().setup();
@@ -30,6 +35,10 @@ public abstract class SystemTestBase {
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
+
+        long timeoutSeconds = TestConfig.getTimeoutSeconds();
+        System.out.println("INFO: Usando timeout explícito de: " + timeoutSeconds + " segundos.");
+        this.explicitWaitTimeout = Duration.ofSeconds(timeoutSeconds);
     }
 
     @AfterAll

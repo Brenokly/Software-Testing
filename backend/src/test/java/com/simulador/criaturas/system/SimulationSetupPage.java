@@ -7,11 +7,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.simulador.criaturas.system.config.TestConfig;
+
 public class SimulationSetupPage {
 
     private final WebDriver driver;
 
-    // Localizadores baseados no seu código React
     private final By creatureCountInput = By.cssSelector("input[type='number']");
     private final By startButton = By.xpath("//button[text()='Iniciar Batalha!']");
 
@@ -20,13 +21,12 @@ public class SimulationSetupPage {
     }
 
     public void waitForPageLoad() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        // Espera até que o input para o número de criaturas esteja visível
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TestConfig.getTimeoutSeconds()));
         wait.until(ExpectedConditions.visibilityOfElementLocated(creatureCountInput));
     }
 
     public void enterCreatureCount(String count) {
-        driver.findElement(creatureCountInput).clear(); // Limpa o valor padrão
+        driver.findElement(creatureCountInput).clear();
         driver.findElement(creatureCountInput).sendKeys(count);
     }
 

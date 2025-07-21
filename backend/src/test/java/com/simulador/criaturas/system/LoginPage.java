@@ -7,6 +7,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.simulador.criaturas.system.config.TestConfig;
+
 public class LoginPage {
 
     private final WebDriver driver;
@@ -22,32 +24,25 @@ public class LoginPage {
     }
 
     public void waitForPageLoad() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TestConfig.getTimeoutSeconds()));
 
-        // Espera até que a URL contenha o fragmento da página de login
         wait.until(ExpectedConditions.urlContains(pageUrlFragment));
-
-        // Espera até que o campo de login esteja visível e clicável
         wait.until(ExpectedConditions.elementToBeClickable(loginButton));
     }
 
     public void fillForm(String login, String password) {
-        // Preenche os campos de login e senha
         driver.findElement(loginInput).sendKeys(login);
         driver.findElement(passwordInput).sendKeys(password);
     }
 
     public void submit() {
-        // Clica no botão de login
         driver.findElement(loginButton).click();
     }
 
     public boolean isLoginErrorMessageVisible() {
         try {
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TestConfig.getTimeoutSeconds()));
             wait.until(ExpectedConditions.visibilityOfElementLocated(apiErrorLocator));
-
             return true;
         } catch (Exception e) {
             return false;

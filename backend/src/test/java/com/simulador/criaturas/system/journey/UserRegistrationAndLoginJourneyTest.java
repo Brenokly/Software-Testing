@@ -1,7 +1,5 @@
 package com.simulador.criaturas.system.journey;
 
-import java.time.Duration;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,9 +8,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import com.simulador.criaturas.system.LoginPage;
 import com.simulador.criaturas.system.RegisterPage;
 import com.simulador.criaturas.system.SystemTestBase;
-
-// Teste de jornada do usuário para registrar um novo usuário e fazer login com sucesso
-// e verificar se o usuário é redirecionado para a página de simulação após o login.
 
 public class UserRegistrationAndLoginJourneyTest extends SystemTestBase {
 
@@ -36,7 +31,7 @@ public class UserRegistrationAndLoginJourneyTest extends SystemTestBase {
         loginPage.fillForm(newUserLogin, password);
         loginPage.submit();
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebDriverWait wait = new WebDriverWait(driver, explicitWaitTimeout);
         boolean onSimulationPage = wait.until(d -> d.getCurrentUrl().contains("/simulacao"));
 
         assertTrue(onSimulationPage, "O usuário deveria ser redirecionado para a página de simulação após o login.");

@@ -10,6 +10,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.simulador.criaturas.system.config.TestConfig;
+
 public class StatisticsPage {
   private final WebDriver driver;
 
@@ -23,7 +25,7 @@ public class StatisticsPage {
   }
 
   public void waitForPageLoad() {
-    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TestConfig.getTimeoutSeconds()));
     wait.until(ExpectedConditions.visibilityOfElementLocated(rankingTitle));
     wait.until(ExpectedConditions.visibilityOfElementLocated(rankingRows));
   }

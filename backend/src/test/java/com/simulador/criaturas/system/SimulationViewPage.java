@@ -7,9 +7,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.simulador.criaturas.system.config.TestConfig;
+
 public class SimulationViewPage {
 
-    private final  WebDriver driver;
+    private final WebDriver driver;
 
     private final By infoPanelIndicator = By.xpath("//*[contains(text(), 'Iteração')]");
 
@@ -19,8 +21,7 @@ public class SimulationViewPage {
 
     public boolean isSimulationViewVisible() {
         try {
-            // A espera continua a mesma, mas agora com o localizador correto.
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TestConfig.getTimeoutSeconds()));
             wait.until(ExpectedConditions.visibilityOfElementLocated(infoPanelIndicator));
             return true;
         } catch (Exception e) {

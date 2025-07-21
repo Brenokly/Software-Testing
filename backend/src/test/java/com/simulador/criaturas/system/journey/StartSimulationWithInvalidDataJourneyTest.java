@@ -1,7 +1,5 @@
 package com.simulador.criaturas.system.journey;
 
-import java.time.Duration;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +11,6 @@ import com.simulador.criaturas.system.LoginPage;
 import com.simulador.criaturas.system.RegisterPage;
 import com.simulador.criaturas.system.SimulationSetupPage;
 import com.simulador.criaturas.system.SystemTestBase;
-
-// Teste de jornada do usuário para tentar iniciar uma simulação com dados inválidos
-// e verificar se a mensagem de erro é exibida corretamente.
 
 public class StartSimulationWithInvalidDataJourneyTest extends SystemTestBase {
 
@@ -45,7 +40,7 @@ public class StartSimulationWithInvalidDataJourneyTest extends SystemTestBase {
     // --- Verificação ---
     By errorMessageLocator = By.xpath("//p[contains(text(), 'Por favor, insira um número entre 1 e 10.')]");
 
-    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+    WebDriverWait wait = new WebDriverWait(driver, explicitWaitTimeout);
     wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessageLocator));
 
     assertThat(driver.findElement(errorMessageLocator).isDisplayed()).isTrue();
