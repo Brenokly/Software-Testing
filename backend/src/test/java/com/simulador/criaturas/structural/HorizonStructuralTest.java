@@ -1,12 +1,13 @@
 package com.simulador.criaturas.structural;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +37,8 @@ public class HorizonStructuralTest {
         Horizon horizon = new Horizon();
         horizon.setGuardiao(new Guardian(6));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> horizon.initializeEntities(0));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> horizon.initializeEntities(0));
         assertEquals("A quantidade de criaturas deve ser positiva.", exception.getMessage());
     }
 
@@ -58,7 +60,8 @@ public class HorizonStructuralTest {
         horizon.initializeEntities(1);
         horizon.setGuardiao(new Guardian(2));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> horizon.addEntity(null));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> horizon.addEntity(null));
         assertEquals("Não é permitido adicionar uma entidade nula ao horizonte.", exception.getMessage());
     }
 
@@ -82,7 +85,8 @@ public class HorizonStructuralTest {
         horizon.initializeEntities(3);
         horizon.setGuardiao(new Guardian(4));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> horizon.removeEntity(null));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> horizon.removeEntity(null));
         assertEquals("Não é permitido remover uma entidade nula do horizonte.", exception.getMessage());
     }
 
@@ -106,8 +110,10 @@ public class HorizonStructuralTest {
         horizon.initializeEntities(3);
         horizon.setGuardiao(new Guardian(4));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> horizon.removeEntities(null));
-        assertEquals("A lista de entidades a serem removidas não pode ser nula nem conter elementos nulos.", exception.getMessage());
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> horizon.removeEntities(null));
+        assertEquals("A lista de entidades a serem removidas não pode ser nula nem conter elementos nulos.",
+                exception.getMessage());
     }
 
     @Test
@@ -120,8 +126,10 @@ public class HorizonStructuralTest {
         List<HorizonEntities> toRemove = new ArrayList<>();
         toRemove.add(null);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> horizon.removeEntities(toRemove));
-        assertEquals("A lista de entidades a serem removidas não pode ser nula nem conter elementos nulos.", exception.getMessage());
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> horizon.removeEntities(toRemove));
+        assertEquals("A lista de entidades a serem removidas não pode ser nula nem conter elementos nulos.",
+                exception.getMessage());
     }
 
     @Test
@@ -150,7 +158,8 @@ public class HorizonStructuralTest {
     @DisplayName("getEntitiesInPosition: Cobre o caminho de exceção, isolando a condição C1 (isNaN)")
     void getEntitiesInPosition_mcdc_shouldFollowExceptionPath_whenPositionIsNaN() {
         Horizon horizon = new Horizon();
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> horizon.getEntitiesInPosition(Double.NaN));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> horizon.getEntitiesInPosition(Double.NaN));
         assertEquals("A posição não pode ser NaN ou Infinita.", exception.getMessage());
     }
 
@@ -158,7 +167,8 @@ public class HorizonStructuralTest {
     @DisplayName("getEntitiesInPosition: Cobre o caminho de exceção, isolando a condição C2 (isInfinite)")
     void getEntitiesInPosition_mcdc_shouldFollowExceptionPath_whenPositionIsInfinite() {
         Horizon horizon = new Horizon();
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> horizon.getEntitiesInPosition(Double.POSITIVE_INFINITY));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> horizon.getEntitiesInPosition(Double.POSITIVE_INFINITY));
         assertEquals("A posição não pode ser NaN ou Infinita.", exception.getMessage());
     }
 
@@ -216,10 +226,33 @@ public class HorizonStructuralTest {
     }
 
     @Test
+    @DisplayName("Deve lançar exceção para range infinito")
+    void getEntitiesWithinRange_shouldThrowException_forInfitinoRange() {
+        Horizon horizon = new Horizon();
+        assertThrows(IllegalArgumentException.class,
+                () -> horizon.getEntitiesWithinRange(10.0, Double.POSITIVE_INFINITY));
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção para range not number")
+    void getEntitiesWithinRange_shouldThrowException_forNotNumberRange() {
+        Horizon horizon = new Horizon();
+        assertThrows(IllegalArgumentException.class, () -> horizon.getEntitiesWithinRange(10.0, Double.NaN));
+    }
+
+    @Test
     @DisplayName("Deve lançar exceção para centerPosition sendo NaN")
     void getEntitiesWithinRange_shouldThrowException_forNaNCenterPosition() {
         Horizon horizon = new Horizon();
         assertThrows(IllegalArgumentException.class, () -> horizon.getEntitiesWithinRange(Double.NaN, 5.0));
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção para centerPosition sendo Infinito")
+    void getEntitiesWithinRange_shouldThrowException_forNaNCenterInfinito() {
+        Horizon horizon = new Horizon();
+        assertThrows(IllegalArgumentException.class,
+                () -> horizon.getEntitiesWithinRange(Double.POSITIVE_INFINITY, 5.0));
     }
 
     @Test

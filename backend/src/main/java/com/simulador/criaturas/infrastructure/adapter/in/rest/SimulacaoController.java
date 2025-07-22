@@ -52,7 +52,8 @@ public class SimulacaoController {
 
         // Verifico o status da simulação ANTES de fazer qualquer coisa.
         if (estadoAtualDTO.getStatus() != SimulationStatus.RUNNING) {
-            String errorMessage = "Não é possível iterar uma simulação que já foi concluída com o status: " + estadoAtualDTO.getStatus();
+            String errorMessage = "Não é possível iterar uma simulação que já foi concluída com o status: "
+                    + estadoAtualDTO.getStatus();
             return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
         }
 

@@ -201,12 +201,12 @@ public class Simulation {
         // Encontra o vizinho mais próximo do ladrão.
         HorizonEntities victim = findNearestNeighbor(horizonte, attacker);
 
-        if (victim != null && victim instanceof LoseGold victimGold) {
+        if (victim != null) {
             // A vítima deve ser capaz de perder ouro, ou seja, ter o comportamento LoseGold.
             // E o ladrão deve ser capaz de roubar ouro, ou seja, ter o comportamento StealGold.
 
             // Vitima perde metade do ouro.
-            double stolenAmount = victimGold.loseGold(0.5);
+            double stolenAmount = ((LoseGold) victim).loseGold(0.5);
 
             // Ladrão rouba metade do ouro da vítima.
             ladrao.stealGold(stolenAmount);

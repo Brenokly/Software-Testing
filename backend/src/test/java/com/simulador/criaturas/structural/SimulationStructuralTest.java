@@ -1,22 +1,23 @@
 package com.simulador.criaturas.structural;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.simulador.criaturas.domain.behaviors.HorizonEntities;
@@ -454,7 +455,6 @@ public class SimulationStructuralTest {
         assertTrue(horizon.getEntities().get(0).getGold() > c1InitialGold);
     }
 
-    // -------------------------------------------------------
     @Test
     @DisplayName("treatNeighborTheft: Cobre o caminho onde o atacante não pode roubar ouro")
     void treatNeighborTheft_shouldDoNothing_whenAttackerCannotSteal() {
@@ -467,6 +467,41 @@ public class SimulationStructuralTest {
         horizon.addEntity(attacker);
         double c1InitialGold = horizon.getEntities().get(0).getGold();
         simulation.runIteration(horizon);
+        assertEquals(c1InitialGold, horizon.getEntities().get(0).getGold());
+    }
+
+    @Test
+    @DisplayName("treatNeighborTheft: Cobre o caminho onde não há vítima para roubar")
+    void treatNeighborTheft_caminhoSemVitima() {
+        // Cobre o caso 'victim == null' no if do treatNeighborTheft
+        // Este cenário é o mesmo do teste acima.
+        when(randomPort.nextFactor()).thenReturn(0.0);
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
+        simulation.runIteration(horizon);
+
+        assertEquals(1_000_000, horizon.getEntities().get(0).getGold());
+    }
+
+    @Test
+    @DisplayName("treatNeighborTheft: Cobre o caminho onde o atacante não pode roubar ouro")
+    void treatNeighborTheft_caminhoAtacanteNaoRoubaOuro() {
+        when(randomPort.nextFactor()).thenReturn(0.0);
+
+        Horizon horizon = new Horizon();
+        horizon.initializeEntities(1);
+        horizon.setGuardiao(new Guardian(2));
+
+        HorizonEntities attacker = new NonMovableEntity2();
+        attacker.setX(100.0);
+        horizon.addEntity(attacker);
+
+        double c1InitialGold = horizon.getEntities().get(0).getGold();
+
+        simulation.runIteration(horizon);
+
         assertEquals(c1InitialGold, horizon.getEntities().get(0).getGold());
     }
 
