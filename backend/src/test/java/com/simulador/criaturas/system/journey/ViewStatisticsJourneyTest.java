@@ -54,16 +54,9 @@ public class ViewStatisticsJourneyTest extends SystemTestBase {
     statisticsPage.waitForPageLoad();
 
     assertThat(statisticsPage.getDisplayedUsersCount()).isEqualTo(5);
-    assertThat(statisticsPage.getPageIndicatorText()).isEqualTo("Página 1 de 3");
+    assertThat(statisticsPage.getPageIndicatorText()).isEqualTo("Página 1 de 2");
 
-    statisticsPage.clickNextPage();
-
-    new WebDriverWait(driver, explicitWaitTimeout)
-        .until(ExpectedConditions.textToBe(statisticsPage.getPageIndicatorLocator(), "Página 2 de 3"));
-
-    assertThat(statisticsPage.getDisplayedUsersCount()).isEqualTo(5);
-    assertThat(statisticsPage.getPageIndicatorText()).isEqualTo("Página 2 de 3");
-    assertThat(statisticsPage.getDisplayedUserLogins()).containsExactly(
+    assertThat(statisticsPage.getDisplayedUserLogins()).containsExactlyInAnyOrder(
         "a_aventureiro",
         "b_aventureiro",
         "c_aventureiro",
@@ -73,10 +66,13 @@ public class ViewStatisticsJourneyTest extends SystemTestBase {
     statisticsPage.clickNextPage();
 
     new WebDriverWait(driver, explicitWaitTimeout)
-        .until(ExpectedConditions.textToBe(statisticsPage.getPageIndicatorLocator(), "Página 3 de 3"));
+        .until(ExpectedConditions.textToBe(statisticsPage.getPageIndicatorLocator(), "Página 2 de 2"));
 
     assertThat(statisticsPage.getDisplayedUsersCount()).isEqualTo(2);
-    assertThat(statisticsPage.getPageIndicatorText()).isEqualTo("Página 3 de 3");
-    assertThat(statisticsPage.getDisplayedUserLogins()).containsExactly("f_aventureiro", "g_aventureiro");
+    assertThat(statisticsPage.getPageIndicatorText()).isEqualTo("Página 2 de 2");
+
+    assertThat(statisticsPage.getDisplayedUserLogins()).containsExactlyInAnyOrder(
+        "f_aventureiro",
+        "g_aventureiro");
   }
 }

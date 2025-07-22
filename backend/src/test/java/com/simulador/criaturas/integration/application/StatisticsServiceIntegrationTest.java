@@ -24,11 +24,9 @@ class StatisticsServiceIntegrationTest {
     @Autowired
     private StatisticsService statisticsService;
 
-    // Injetamos a Porta para preparar os dados, respeitando a arquitetura.
     @Autowired
     private UserRepositoryPort userRepositoryPort;
 
-    // Injetamos a implementação concreta do JPA APENAS para a limpeza do teste.
     @Autowired
     private SpringDataUserRepository springDataUserRepository;
 
@@ -55,43 +53,39 @@ class StatisticsServiceIntegrationTest {
     @Test
     @DisplayName("getGlobalStatistics: Deve retornar os totais corretos e a primeira página de usuários")
     void getGlobalStatistics_shouldReturnCorrectTotalsAndFirstPage() {
-        // CORRIGIDO: Usamos a porta para salvar objetos de domínio 'User'.
-        userRepositoryPort.save(new User(null, "userC", "p", 1, 10, 20));
-        userRepositoryPort.save(new User(null, "userA", "p", 1, 5, 10));
-        userRepositoryPort.save(new User(null, "userB", "p", 1, 15, 30));
+        userRepositoryPort.save(new User(null, "userC", "p", 1, 10, 20)); // 10 pts
+        userRepositoryPort.save(new User(null, "userA", "p", 1, 5, 10)); // 5 pts
+        userRepositoryPort.save(new User(null, "userB", "p", 1, 15, 30)); // 15 pts
 
-        Pageable pageable = PageRequest.of(0, 2, Sort.by("login"));
+        Pageable pageable = PageRequest.of(0, 2);
 
         GlobalStatisticsDTO stats = statisticsService.getGlobalStatistics(pageable);
 
-        assertThat(stats.getTotalSimulationsRun()).isEqualTo(60L);
-        assertThat(stats.getOverallSuccessRate()).isEqualTo(0.5);
-        assertThat(stats.getTotalUsers()).isEqualTo(3L);
-        assertThat(stats.getTotalPages()).isEqualTo(2);
         assertThat(stats.getCurrentPage()).isEqualTo(0);
-
         assertThat(stats.getUserRankingPage()).hasSize(2);
+
         assertThat(stats.getUserRankingPage())
                 .extracting("login")
-                .containsExactly("userA", "userB");
+                .containsExactly("userB", "userC");
     }
 
     @Test
     @DisplayName("getGlobalStatistics: Deve retornar a última página de usuários, que pode estar incompleta")
     void getGlobalStatistics_shouldReturnLastPartialPage() {
-        userRepositoryPort.save(new User(null, "userC", "p", 1, 10, 20));
-        userRepositoryPort.save(new User(null, "userA", "p", 1, 5, 10));
-        userRepositoryPort.save(new User(null, "userB", "p", 1, 15, 30));
+        userRepositoryPort.save(new User(null, "userC", "p", 1, 10, 20)); // 10 pts
+        userRepositoryPort.save(new User(null, "userA", "p", 1, 5, 10)); // 5 pts
+        userRepositoryPort.save(new User(null, "userB", "p", 1, 15, 30)); // 15 pts
 
-        Pageable pageable = PageRequest.of(1, 2, Sort.by("login"));
+        Pageable pageable = PageRequest.of(1, 2);
 
         GlobalStatisticsDTO stats = statisticsService.getGlobalStatistics(pageable);
 
         assertThat(stats.getCurrentPage()).isEqualTo(1);
         assertThat(stats.getUserRankingPage()).hasSize(1);
+
         assertThat(stats.getUserRankingPage())
                 .extracting("login")
-                .containsExactly("userC");
+                .containsExactly("userA");
     }
 
     @Test

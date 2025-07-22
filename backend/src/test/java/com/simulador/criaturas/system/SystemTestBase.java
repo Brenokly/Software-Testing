@@ -1,6 +1,6 @@
 package com.simulador.criaturas.system;
 
-import java.time.Duration; // <-- IMPORTANTE
+import java.time.Duration;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -9,13 +9,15 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.simulador.criaturas.infrastructure.adapter.out.persistence.repository.SpringDataUserRepository;
 import com.simulador.criaturas.system.config.TestConfig;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("test")
 public abstract class SystemTestBase {
 
     @Autowired

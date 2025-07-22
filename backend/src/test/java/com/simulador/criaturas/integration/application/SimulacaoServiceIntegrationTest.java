@@ -79,30 +79,20 @@ class SimulacaoServiceIntegrationTest {
     @Test
     @DisplayName("runNextSimulation: Deve atualizar estatísticas somente se a simulação terminar")
     void runNextSimulation_shouldOnlyUpdateStats_whenSimulationHasEnded() {
-        // Arrange
         int initialScore = testUser.getPontuation();
         int initialSimulationsRun = testUser.getSimulationsRun();
         Horizon horizonState = simulacaoService.initNewSimulation(10);
 
-        // Act
-        // O estado do objeto 'horizonState' será modificado pela chamada de serviço.
         simulacaoService.runNextSimulation(horizonState, testUser.getId());
 
-        // Assert
-        // A verificação agora depende do resultado do turno, tornando o teste robusto.
         User userFromDb = userRepositoryPort.findById(testUser.getId()).orElseThrow();
 
         if (horizonState.getStatus() == SimulationStatus.RUNNING) {
-            // Este é o cenário mais comum. Se o jogo CONTINUA...
-            // ...as estatísticas NÃO DEVEM ter mudado.
             assertThat(userFromDb.getPontuation()).isEqualTo(initialScore);
             assertThat(userFromDb.getSimulationsRun()).isEqualTo(initialSimulationsRun);
         } else {
-            // Este é o cenário raro em que o jogo terminou em um turno. Se o jogo TERMINOU...
-            // ...as estatísticas DEVEM ter sido atualizadas.
             assertThat(userFromDb.getSimulationsRun()).isEqualTo(initialSimulationsRun + 1);
 
-            // Opcional, mas bom ter: verifica a pontuação neste caso raro também.
             if (horizonState.getStatus() == SimulationStatus.SUCCESSFUL) {
                 assertThat(userFromDb.getPontuation()).isEqualTo(initialScore + 1);
             }
