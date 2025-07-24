@@ -14,6 +14,14 @@ O objetivo principal é **aplicar e exercitar um conjunto completo de práticas 
 * ✅ **Testes de integração**
 * ✅ **Testes de Sistema**
 
+---
+
+A respeito da quantidade **Cobertura MC/DC**, o cheguei a 100% de cobertura em todos os campos que foram testados.
+
+<img width="871" height="249" alt="Cobertura" src="https://github.com/user-attachments/assets/6c6b64d5-158a-4441-962f-e09ccab16ac3" />
+
+Como pode ver na imagem acima, os testes feitos nessa disciplina englobam apenas os pacotes **Application e Domain**. Os pacotes **infraestructure e utils** não estão no escopo de teste da disciplina. Dentro Infraestructure, que é o código dos controllers (adpatadores de saída e entrada), a única coisa que os testes dessa disciplina englobam é os repositórios que são responsáveis por acessarem o banco de dados, mas eles foram testados completamente nos testes de integração.
+
 O projeto é composto por:
 
 * 🎯 **Backend:** Desenvolvido em **Java 17** com **Spring Boot**, expondo uma API REST completa.
